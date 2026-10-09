@@ -1,0 +1,13 @@
+{
+  "name": "exam-duty-management-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix ExamDutyManagement/backend run build && npm --prefix ExamDutyManagement/frontend run build",
+    "build:backend": "npm --prefix ExamDutyManagement/backend run build",
+    "build:frontend": "npm --prefix ExamDutyManagement/frontend run build",
+    "install:all": "npm --prefix ExamDutyManagement/backend install && npm --prefix ExamDutyManagement/frontend install",
+    "install:backend": "npm --prefix ExamDutyManagement/backend install",
+    "install:frontend": "npm --prefix ExamDutyManagement/frontend install"
+  }
+}
