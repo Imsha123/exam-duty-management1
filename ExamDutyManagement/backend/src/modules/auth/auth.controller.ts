@@ -3,11 +3,10 @@ import { AuthService } from './auth.service';
 import { IsNotEmpty, Matches, IsOptional } from 'class-validator';
 
 export class LoginDto {
-  @IsNotEmpty({ message: 'Resource ID is required' })
+  @IsNotEmpty({ message: 'Resource ID / Username is required' })
   resourceId: string;
 
-  @IsNotEmpty({ message: 'Mobile number is required' })
-  @Matches(/^\d{10}$/, { message: 'Mobile number must be exactly 10 digits' })
+  @IsNotEmpty({ message: 'Mobile Number / Password is required' })
   mobile: string;
 
   @IsOptional()

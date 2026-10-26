@@ -7,6 +7,9 @@ import AddDutyScreen from './pages/AddDutyScreen';
 import MyDutiesScreen from './pages/MyDutiesScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import AddEmployeeScreen from './pages/AddEmployeeScreen';
+import AddCityScreen from './pages/AddCityScreen';
+import AddCenterScreen from './pages/AddCenterScreen';
+import AddExamScreen from './pages/AddExamScreen';
 import IdentityVerificationScreen from './pages/IdentityVerificationScreen';
 import BottomNav from './components/BottomNav';
 import './styles/App.css';
@@ -45,6 +48,9 @@ export const App: React.FC = () => {
           <Route path="/verify-identity" element={<IdentityVerificationScreen />} />
           <Route path="/dashboard" element={<DashboardScreen />} />
           <Route path="/add-employee" element={<AddEmployeeScreen />} />
+          <Route path="/add-city" element={<AddCityScreen />} />
+          <Route path="/add-center" element={<AddCenterScreen />} />
+          <Route path="/add-exam" element={<AddExamScreen />} />
           <Route path="/add-duty" element={<AddDutyScreen />} />
           <Route path="/my-duties" element={<MyDutiesScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />

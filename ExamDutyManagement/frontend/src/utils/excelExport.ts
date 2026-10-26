@@ -3,6 +3,7 @@ import { DutyItem } from '../services/duty.service';
 import { EmployeeItem } from '../services/master.service';
 
 export interface ExportFilters {
+  date?: string;
   fromDate?: string;
   toDate?: string;
   workPlace?: string;
@@ -96,7 +97,7 @@ export const exportDutiesToExcel = (
     if (e.id) empMap.set(e.id.toLowerCase().trim(), e);
   });
 
-  // Filter duties according to From Date, To Date, and Work Place
+  // Filter duties according to Date, From Date, To Date, and Work Place
   const filteredDuties = duties.filter((d) => {
     // Work place filter
     const resId = d.employee?.resourceId || '';
@@ -108,6 +109,12 @@ export const exportDutiesToExcel = (
 
     // Date filters (normalized to YYYY-MM-DD for accurate comparison)
     const dutyYMD = normalizeDateToYMD(d.dutyDate);
+
+    // Exact Date filter
+    if (filters.date) {
+      const targetYMD = normalizeDateToYMD(filters.date);
+      if (targetYMD && dutyYMD !== targetYMD) return false;
+    }
 
     // From Date filter
     if (filters.fromDate) {

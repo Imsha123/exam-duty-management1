@@ -10,14 +10,70 @@ export class MasterDataController {
     return this.masterDataService.getCities();
   }
 
+  @Post('cities')
+  async createCity(@Body() body: { name: string; state?: string }) {
+    return this.masterDataService.createCity(body);
+  }
+
+  @Delete('cities/:id')
+  async deleteCity(@Param('id') id: string) {
+    return this.masterDataService.deleteCity(id);
+  }
+
+  @Put('cities/:id')
+  async updateCity(
+    @Param('id') id: string,
+    @Body() body: { name?: string; state?: string },
+  ) {
+    return this.masterDataService.updateCity(id, body);
+  }
+
   @Get('centers')
   async getCenters(@Query('cityId') cityId?: string) {
     return this.masterDataService.getCenters(cityId);
   }
 
+  @Post('centers')
+  async createCenter(
+    @Body() body: { centerCode: string; centerName: string; cityId: string; address?: string },
+  ) {
+    return this.masterDataService.createCenter(body);
+  }
+
+  @Put('centers/:id')
+  async updateCenter(
+    @Param('id') id: string,
+    @Body() body: { centerCode?: string; centerName?: string; cityId?: string; address?: string },
+  ) {
+    return this.masterDataService.updateCenter(id, body);
+  }
+
+  @Delete('centers/:id')
+  async deleteCenter(@Param('id') id: string) {
+    return this.masterDataService.deleteCenter(id);
+  }
+
   @Get('exams')
   async getExams() {
     return this.masterDataService.getExams();
+  }
+
+  @Post('exams')
+  async createExam(@Body() body: { name: string; code?: string; type?: string }) {
+    return this.masterDataService.createExam(body);
+  }
+
+  @Put('exams/:id')
+  async updateExam(
+    @Param('id') id: string,
+    @Body() body: { name?: string; code?: string; type?: string },
+  ) {
+    return this.masterDataService.updateExam(id, body);
+  }
+
+  @Delete('exams/:id')
+  async deleteExam(@Param('id') id: string) {
+    return this.masterDataService.deleteExam(id);
   }
 
   @Get('roles')

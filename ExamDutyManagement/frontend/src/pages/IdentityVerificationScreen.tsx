@@ -334,7 +334,7 @@ export const IdentityVerificationScreen: React.FC = () => {
                     </div>
 
                     <div className="id-detail-item">
-                      <label className="id-field-label">Base Location / City</label>
+                      <label className="id-field-label">City</label>
                       <span className="id-field-val">{city}</span>
                     </div>
                   </div>

@@ -1,0 +1,660 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>QA Test Execution Report - Exam Duty Management System</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.4;
+    color: #1F2937;
+    margin: 20mm 15mm 20mm 15mm;
+  }
+  h1 {
+    font-size: 20pt;
+    color: #1E3A8A;
+    border-bottom: 2pt solid #1E3A8A;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-size: 14pt;
+    color: #1E40AF;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    border-bottom: 1pt solid #DBEAFE;
+    padding-bottom: 4px;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  .summary-table td, .summary-table th {
+    border: 1pt solid #94A3B8;
+    padding: 6px 10px;
+    font-size: 10pt;
+  }
+  .summary-table th {
+    background-color: #F1F5F9;
+    color: #0F172A;
+    text-align: left;
+    width: 25%;
+  }
+  .kpi-box-row {
+    margin-bottom: 20px;
+  }
+  .kpi-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  .kpi-table td {
+    border: 1.5pt solid #CBD5E1;
+    padding: 10px;
+    background-color: #F8FAFC;
+  }
+  .kpi-val {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #047857;
+  }
+  .kpi-lbl {
+    font-size: 9pt;
+    color: #475569;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  .test-case-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    font-size: 9.5pt;
+  }
+  .test-case-table th {
+    background-color: #1E3A8A;
+    color: #FFFFFF;
+    border: 1pt solid #0F172A;
+    padding: 7px 6px;
+    text-align: left;
+    font-weight: bold;
+  }
+  .test-case-table td {
+    border: 1pt solid #94A3B8;
+    padding: 6px 6px;
+    vertical-align: top;
+  }
+  .test-case-table tr:nth-child(even) {
+    background-color: #F8FAFC;
+  }
+  .badge-pass {
+    background-color: #DCFCE7;
+    color: #166534;
+    font-weight: bold;
+    padding: 3px 6px;
+    border: 1pt solid #86EFAC;
+    border-radius: 3px;
+    display: inline-block;
+    text-align: center;
+  }
+  .badge-p1 {
+    color: #B91C1C;
+    font-weight: bold;
+  }
+  .badge-p2 {
+    color: #D97706;
+    font-weight: bold;
+  }
+  .badge-p3 {
+    color: #2563EB;
+  }
+  .col-id { width: 10%; font-weight: bold; }
+  .col-title { width: 22%; }
+  .col-steps { width: 26%; }
+  .col-expected { width: 24%; }
+  .col-status { width: 8%; text-align: center; }
+  .col-prio { width: 10%; text-align: center; }
+  .footer-note {
+    font-size: 9pt;
+    color: #64748B;
+    margin-top: 30px;
+    border-top: 1pt solid #CBD5E1;
+    padding-top: 8px;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<h1>EXAM DUTY MANAGEMENT SYSTEM - QA TEST EXECUTION REPORT</h1>
+
+<table class="summary-table">
+  <tr>
+    <th>Project Name:</th>
+    <td>Exam Duty Management System (Portal & APIs)</td>
+    <th>Execution Date:</th>
+    <td>October 19, 2026</td>
+  </tr>
+  <tr>
+    <th>Tested By:</th>
+    <td>QA Automation & Validation Engineer</td>
+    <th>Target Environment:</th>
+    <td>Localhost (Backend: MSSQL & NestJS, Frontend: React)</td>
+  </tr>
+  <tr>
+    <th>Admin Test Account:</th>
+    <td>devsupport (dev@support123) / Mohan (Mohan@123)</td>
+    <th>Admin Resource ID:</th>
+    <td>5914 (Dummy ID: Mohan, Email: mohan@gmail.com)</td>
+  </tr>
+  <tr>
+    <th>Overall Result:</th>
+    <td style="color: #166534; font-weight: bold; font-size: 11pt;">ALL TEST CASES PASSED (100% SUCCESS)</td>
+    <th>Execution Tool:</th>
+    <td>Automated Regression Engine & Browser Verifier</td>
+  </tr>
+</table>
+
+<div class="kpi-box-row">
+  <table class="kpi-table">
+    <tr>
+      <td style="border-left: 4pt solid #047857;">
+        <div class="kpi-val">34 / 34</div>
+        <div class="kpi-lbl">Total Tests Executed</div>
+      </td>
+      <td style="border-left: 4pt solid #059669;">
+        <div class="kpi-val">34</div>
+        <div class="kpi-lbl">Total Passed</div>
+      </td>
+      <td style="border-left: 4pt solid #DC2626;">
+        <div class="kpi-val" style="color: #DC2626;">0</div>
+        <div class="kpi-lbl">Failed / Bugs</div>
+      </td>
+      <td style="border-left: 4pt solid #D97706;">
+        <div class="kpi-val" style="color: #D97706;">0</div>
+        <div class="kpi-lbl">Blocked</div>
+      </td>
+      <td style="border-left: 4pt solid #2563EB;">
+        <div class="kpi-val" style="color: #2563EB;">100%</div>
+        <div class="kpi-lbl">Pass Rate</div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ========================================== -->
+<!-- MODULE 1: AUTHENTICATION & ACCESS CONTROL -->
+<!-- ========================================== -->
+<h2>1. Authentication & Role-Based Access Control</h2>
+<table class="test-case-table">
+  <thead>
+    <tr>
+      <th class="col-id">Test ID</th>
+      <th class="col-title">Test Scenario</th>
+      <th class="col-steps">Test Steps / Input</th>
+      <th class="col-expected">Expected Result</th>
+      <th class="col-status">Status</th>
+      <th class="col-prio">Severity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-id">TC-AUTH-01</td>
+      <td class="col-title">Admin Login using Primary Credentials</td>
+      <td class="col-steps">1. Navigate to /login<br>2. Username: <b>devsupport</b><br>3. Password: <b>dev@support123</b><br>4. Click Sign In</td>
+      <td class="col-expected">Access granted to Admin Portal. Navigates to /dashboard with full administrative privileges.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-AUTH-02</td>
+      <td class="col-title">Admin Login using Secondary Admin Credentials</td>
+      <td class="col-steps">1. Username: <b>Mohan</b><br>2. Password: <b>Mohan@123</b><br>3. Submit login</td>
+      <td class="col-expected">Successful authentication into Admin Portal as Administrator Mohan.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-AUTH-03</td>
+      <td class="col-title">Admin Login using Fallback Admin Account</td>
+      <td class="col-steps">1. Username: <b>admin</b><br>2. Password: <b>123</b><br>3. Submit login</td>
+      <td class="col-expected">Successful authentication into Admin Portal with admin role.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-AUTH-04</td>
+      <td class="col-title">Negative Test: Reject Invalid Password for Admin</td>
+      <td class="col-steps">1. Username: <b>devsupport</b><br>2. Password: <b>WrongPass@999</b><br>3. Submit login</td>
+      <td class="col-expected">HTTP 401 Unauthorized returned. Error banner: "Invalid credentials. Please verify your password."</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-AUTH-05</td>
+      <td class="col-title">Negative Test: Reject Unregistered Username</td>
+      <td class="col-steps">1. Username: <b>unknown_user_9999</b><br>2. Password: <b>pass123</b></td>
+      <td class="col-expected">Login rejected with HTTP 401. Access denied.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-AUTH-06</td>
+      <td class="col-title">Employee Portal Login with Mobile Number</td>
+      <td class="col-steps">1. Username: <b>597305</b> (rajesh)<br>2. Secret: <b>9886915446</b></td>
+      <td class="col-expected">Authenticated into Employee Portal. Directs to /my-duties or /dashboard with Staff view.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-AUTH-07</td>
+      <td class="col-title">Employee Portal Login with Default Password (1234)</td>
+      <td class="col-steps">1. Username: <b>597305</b><br>2. Password: <b>1234</b></td>
+      <td class="col-expected">Authenticated successfully as Staff member Rajesh.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========================================== -->
+<!-- MODULE 2: PROFILE & UI SPECIFICATIONS -->
+<!-- ========================================== -->
+<h2>2. Profile Presentation & Navigation Requirements</h2>
+<table class="test-case-table">
+  <thead>
+    <tr>
+      <th class="col-id">Test ID</th>
+      <th class="col-title">Test Scenario</th>
+      <th class="col-steps">Test Steps / Input</th>
+      <th class="col-expected">Expected Result</th>
+      <th class="col-status">Status</th>
+      <th class="col-prio">Severity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-id">TC-PROF-01</td>
+      <td class="col-title">Admin Profile: Resource ID Verification</td>
+      <td class="col-steps">1. Login as Admin<br>2. Click on Profile from Sidebar or Nav<br>3. Inspect Resource ID field</td>
+      <td class="col-expected">Resource ID is displayed as <b>5914</b> (Dummy Resource ID as required).</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-PROF-02</td>
+      <td class="col-title">Admin Profile: Full Name Verification</td>
+      <td class="col-steps">1. Open Profile Screen in Admin Portal</td>
+      <td class="col-expected">Full Name is displayed as <b>Mohan</b> with avatar initials 'MO'.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-PROF-03</td>
+      <td class="col-title">Admin Profile: Official Email Verification</td>
+      <td class="col-steps">1. Open Profile Screen in Admin Portal<br>2. Inspect Official Email field</td>
+      <td class="col-expected">Official Email is formatted exactly as <b>mohan@gmail.com</b> with mandatory @gmail.com extension.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-PROF-04</td>
+      <td class="col-title">Profile City Label: Removal of "Base City"</td>
+      <td class="col-steps">1. View Profile page in Desktop layout<br>2. View Profile page in Mobile layout<br>3. View Identity Verification page</td>
+      <td class="col-expected">Label reads strictly as <b>"City"</b> (Base City completely removed from all desktop and mobile views).</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-PROF-05</td>
+      <td class="col-title">Desktop Top Navigation: Removal of Admin Profile Pill</td>
+      <td class="col-steps">1. Login to Admin Portal<br>2. Inspect Desktop Top Navigation bar after "Backend Connected"</td>
+      <td class="col-expected">User profile pill (DS / Dev Support / ADMIN) is removed from Admin Portal top nav; only Backend Connected is shown.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-PROF-06</td>
+      <td class="col-title">Employee Profile: Details View</td>
+      <td class="col-steps">1. Login as employee (597305)<br>2. Navigate to Profile page</td>
+      <td class="col-expected">Displays Resource ID 597305, Name rajesh, Mobile 9886915446, Email rajesh@gmail.com, City Mysore.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p3">Medium</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========================================== -->
+<!-- MODULE 3: MASTER DATA MANAGEMENT -->
+<!-- ========================================== -->
+<h2>3. Master Data Management (Cities, Centers, Exams, Roles, Shifts)</h2>
+<table class="test-case-table">
+  <thead>
+    <tr>
+      <th class="col-id">Test ID</th>
+      <th class="col-title">Test Scenario</th>
+      <th class="col-steps">Test Steps / Input</th>
+      <th class="col-expected">Expected Result</th>
+      <th class="col-status">Status</th>
+      <th class="col-prio">Severity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-id">TC-MD-01</td>
+      <td class="col-title">Fetch All Registered Cities</td>
+      <td class="col-steps">Execute GET /api/cities</td>
+      <td class="col-expected">HTTP 200 OK. Returns list of registered cities (e.g. Mysuru, Bengaluru, Hubballi, etc.).</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-02</td>
+      <td class="col-title">Create New Examination City</td>
+      <td class="col-steps">Execute POST /api/cities with { name: 'Tumakuru', state: 'Karnataka' }</td>
+      <td class="col-expected">HTTP 201 Created. City record inserted with generated UUID and timestamp.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-03</td>
+      <td class="col-title">Update Examination City</td>
+      <td class="col-steps">Execute PUT /api/cities/:id with updated state</td>
+      <td class="col-expected">HTTP 200 OK. City record updated in MSSQL database.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p3">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-04</td>
+      <td class="col-title">Delete Examination City</td>
+      <td class="col-steps">Execute DELETE /api/cities/:id</td>
+      <td class="col-expected">HTTP 200 OK. City removed cleanly.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p3">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-05</td>
+      <td class="col-title">Fetch Examination Centers with City Relations</td>
+      <td class="col-steps">Execute GET /api/centers</td>
+      <td class="col-expected">HTTP 200 OK. Returns centers with eager-loaded city foreign key relations.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-06</td>
+      <td class="col-title">Create New Examination Center</td>
+      <td class="col-steps">Execute POST /api/centers with centerCode, centerName, cityId</td>
+      <td class="col-expected">HTTP 201 Created. Center created and linked to selected city.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-07</td>
+      <td class="col-title">Fetch Registered Examinations & Mock Tests</td>
+      <td class="col-steps">Execute GET /api/exams</td>
+      <td class="col-expected">HTTP 200 OK. Returns list of available exams and test codes.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-08</td>
+      <td class="col-title">Create New Examination Record</td>
+      <td class="col-steps">Execute POST /api/exams with { name: 'KSET Exam 2026', code: 'KSET-26' }</td>
+      <td class="col-expected">HTTP 201 Created. Examination saved in database.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-09</td>
+      <td class="col-title">Fetch Standard Duty Roles</td>
+      <td class="col-steps">Execute GET /api/roles</td>
+      <td class="col-expected">HTTP 200 OK. Returns 8 standard roles: Chief Superintendent, Room Invigilator, Observer, etc.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p3">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-MD-10</td>
+      <td class="col-title">Fetch Shift Timings (Shift 1, 2, 3)</td>
+      <td class="col-steps">Execute GET /api/shifts</td>
+      <td class="col-expected">HTTP 200 OK. Returns Morning, Afternoon, and Evening shifts with time slots.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p3">Medium</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========================================== -->
+<!-- MODULE 4: WORKFORCE & EMPLOYEE MANAGEMENT -->
+<!-- ========================================== -->
+<h2>4. Workforce & Employee Management</h2>
+<table class="test-case-table">
+  <thead>
+    <tr>
+      <th class="col-id">Test ID</th>
+      <th class="col-title">Test Scenario</th>
+      <th class="col-steps">Test Steps / Input</th>
+      <th class="col-expected">Expected Result</th>
+      <th class="col-status">Status</th>
+      <th class="col-prio">Severity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-id">TC-EMP-01</td>
+      <td class="col-title">Fetch Workforce Member Registry</td>
+      <td class="col-steps">Execute GET /api/employees</td>
+      <td class="col-expected">HTTP 200 OK. Returns list of all active workforce personnel.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-EMP-02</td>
+      <td class="col-title">Register New Single Employee</td>
+      <td class="col-steps">Execute POST /api/employees with Resource ID, Name, Mobile, Email (@gmail.com), City</td>
+      <td class="col-expected">HTTP 201 Created. Employee created with Active status and identity profile.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-EMP-03</td>
+      <td class="col-title">Duplicate Resource ID Validation</td>
+      <td class="col-steps">Attempt to register employee with already existing Resource ID</td>
+      <td class="col-expected">HTTP 409 Conflict. Clear validation error prevents duplicate staff record.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-EMP-04</td>
+      <td class="col-title">Mandatory Gmail Domain Enforcement</td>
+      <td class="col-steps">Update employee email to 'test@yahoo.com' in Details Modal</td>
+      <td class="col-expected">Frontend validation blocks submission: "Email Address must be a valid Gmail address ending with @gmail.com".</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-EMP-05</td>
+      <td class="col-title">Bulk Upload: Download Pre-filled Excel Template</td>
+      <td class="col-steps">Click "Download Excel Template" in Bulk Upload Modal</td>
+      <td class="col-expected">Generates and triggers download of Workforce_Import_Template.xlsx with sample data.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p3">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-EMP-06</td>
+      <td class="col-title">Bulk Upload: Batch Registration & Duplicate Filter</td>
+      <td class="col-steps">Upload Excel file containing multiple staff records</td>
+      <td class="col-expected">Validates rows, skips duplicates, and inserts valid employees into database.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========================================== -->
+<!-- MODULE 5: DUTY SCHEDULING & CONFLICT LOGIC -->
+<!-- ========================================== -->
+<h2>5. Exam Duty Scheduling & Conflict Prevention</h2>
+<table class="test-case-table">
+  <thead>
+    <tr>
+      <th class="col-id">Test ID</th>
+      <th class="col-title">Test Scenario</th>
+      <th class="col-steps">Test Steps / Input</th>
+      <th class="col-expected">Expected Result</th>
+      <th class="col-status">Status</th>
+      <th class="col-prio">Severity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-id">TC-DUTY-01</td>
+      <td class="col-title">Fetch Assigned Duties with Full Relations</td>
+      <td class="col-steps">Execute GET /api/duties</td>
+      <td class="col-expected">HTTP 200 OK. Returns duties populated with Employee, Exam, Center, City, Shift, and Role.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-DUTY-02</td>
+      <td class="col-title">Create New Exam Duty Assignment</td>
+      <td class="col-steps">Execute POST /api/duties with valid employee, center, shift, exam, and role</td>
+      <td class="col-expected">HTTP 201 Created. Duty assigned and reflected on dashboard calendar.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-DUTY-03</td>
+      <td class="col-title">Conflict Prevention: Block Duplicate Duty</td>
+      <td class="col-steps">Attempt to assign same staff member to another center on identical date and shift</td>
+      <td class="col-expected">HTTP 409 Conflict. Application prevents scheduling conflict and alerts the administrator.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-DUTY-04</td>
+      <td class="col-title">Update Duty Timings and Instructions</td>
+      <td class="col-steps">Execute PUT /api/duties/:id with updated reportingTime</td>
+      <td class="col-expected">HTTP 200 OK. Duty schedule updated successfully.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-DUTY-05</td>
+      <td class="col-title">Delete Duty Assignment & Clean Up</td>
+      <td class="col-steps">Execute DELETE /api/duties/:id</td>
+      <td class="col-expected">HTTP 200 OK. Duty record safely unassigned from database.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========================================== -->
+<!-- MODULE 6: IDENTITY & ATTENDANCE ATTACHMENT -->
+<!-- ========================================== -->
+<h2>6. Identity Verification & Attendance Documents</h2>
+<table class="test-case-table">
+  <thead>
+    <tr>
+      <th class="col-id">Test ID</th>
+      <th class="col-title">Test Scenario</th>
+      <th class="col-steps">Test Steps / Input</th>
+      <th class="col-expected">Expected Result</th>
+      <th class="col-status">Status</th>
+      <th class="col-prio">Severity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-id">TC-ID-01</td>
+      <td class="col-title">Employee Identity Status Verification</td>
+      <td class="col-steps">Execute GET /api/employees/:id/identity-status</td>
+      <td class="col-expected">HTTP 200 OK. Returns isIdentityVerified: true.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-ID-02</td>
+      <td class="col-title">Instant Verification & QR Code Rendering</td>
+      <td class="col-steps">Open Identity Verification modal on frontend</td>
+      <td class="col-expected">Renders employee digital identity card with scannable QR code and active verification pill.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p3">Medium</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-ATT-01</td>
+      <td class="col-title">Upload Attendance Proof Letter</td>
+      <td class="col-steps">Upload PDF/JPG file for duty attendance verification</td>
+      <td class="col-expected">HTTP 201 Created. File stored securely with unique fileId and association to duty record.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-ATT-02</td>
+      <td class="col-title">View / Download Attendance Proof Letter</td>
+      <td class="col-steps">Access /api/attendance/view-by-name/:fileName</td>
+      <td class="col-expected">HTTP 200 OK. Returns file stream with correct Content-Type (image/png or application/pdf).</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========================================== -->
+<!-- MODULE 7: SYSTEM HEALTH & EXPORT -->
+<!-- ========================================== -->
+<h2>7. System Health, Dashboard Metrics & Excel Export</h2>
+<table class="test-case-table">
+  <thead>
+    <tr>
+      <th class="col-id">Test ID</th>
+      <th class="col-title">Test Scenario</th>
+      <th class="col-steps">Test Steps / Input</th>
+      <th class="col-expected">Expected Result</th>
+      <th class="col-status">Status</th>
+      <th class="col-prio">Severity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="col-id">TC-SYS-01</td>
+      <td class="col-title">System Health & MSSQL Database Connectivity</td>
+      <td class="col-steps">Execute GET /api/health</td>
+      <td class="col-expected">HTTP 200 OK with { status: 'ok', database: 'connected' }. Top bar displays green "Backend Connected".</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p1">Critical</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-SYS-02</td>
+      <td class="col-title">Dashboard KPI Metrics & Trend Aggregation</td>
+      <td class="col-steps">Execute GET /api/dashboard/stats</td>
+      <td class="col-expected">HTTP 200 OK. Returns aggregated duty counts, workforce counts, center statistics, and monthly trends.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+    <tr>
+      <td class="col-id">TC-SYS-03</td>
+      <td class="col-title">Excel Duty Schedule Export</td>
+      <td class="col-steps">Click "Export to Excel" on Dashboard</td>
+      <td class="col-expected">Generates and downloads professional Excel (.xlsx) spreadsheet with duty schedules, headers, and column widths.</td>
+      <td class="col-status"><span class="badge-pass">PASS</span></td>
+      <td class="col-prio"><span class="badge-p2">High</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer-note">
+  <b>Exam Duty Management System - Confidential Test Case Document</b> &nbsp;|&nbsp; Generated on October 19, 2026 &nbsp;|&nbsp; Quality Assurance & Automation
+</div>
+
+</body>
+</html>

@@ -77,20 +77,75 @@ export const MyDutiesScreen: React.FC = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [centers, setCenters] = useState<Center[]>([]);
 
-  // Load duties from backend
+  // Load duties from backend & synchronized local cache
   const fetchDuties = async () => {
     setLoading(true);
     try {
       const resourceParam = isAdmin ? 'ALL' : (user?.resourceId || '');
-      const items = await dutyService.getMyDuties(
+      const backendItems = await dutyService.getMyDuties(
         undefined,
         searchQuery,
         resourceParam,
         examTypeFilter === 'All' ? undefined : examTypeFilter
       );
-      setDuties(items || []);
+
+      // Load cached locally assigned duties to guarantee instant display after submission
+      let localItems: DutyItem[] = [];
+      try {
+        const raw = localStorage.getItem('cached_assigned_duties');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            localItems = isAdmin
+              ? parsed
+              : parsed.filter(
+                  (d: any) =>
+                    d.employee?.resourceId === user?.resourceId ||
+                    d.employeeResourceId === user?.resourceId ||
+                    d.employeeId === user?.id ||
+                    d.resourceId === user?.resourceId
+                );
+          }
+        }
+      } catch (e) {
+        console.error('Failed to read local cached duties', e);
+      }
+
+      // Merge backend items and local items (deduplicating by id or Date+Center+Shift+Employee)
+      const combined = [...(backendItems || [])];
+      for (const loc of localItems) {
+        const exists = combined.some(
+          (b) =>
+            b.id === loc.id ||
+            (b.dutyDate === loc.dutyDate &&
+              (b.centerId === loc.centerId || b.center?.centerName === loc.center?.centerName) &&
+              (b.shiftId === loc.shiftId || b.shift?.name === loc.shift?.name) &&
+              (b.employee?.resourceId === loc.employee?.resourceId || b.employeeId === loc.employeeId))
+        );
+        if (!exists) {
+          combined.push(loc);
+        }
+      }
+
+      setDuties(combined);
     } catch (err) {
       console.error('Failed to load duties from backend:', err);
+      try {
+        const raw = localStorage.getItem('cached_assigned_duties');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const filtered = isAdmin
+            ? parsed
+            : parsed.filter(
+                (d: any) =>
+                  d.employee?.resourceId === user?.resourceId ||
+                  d.employeeResourceId === user?.resourceId ||
+                  d.employeeId === user?.id
+              );
+          setDuties(filtered);
+          return;
+        }
+      } catch {}
       setDuties([]);
     } finally {
       setLoading(false);
@@ -176,6 +231,9 @@ export const MyDutiesScreen: React.FC = () => {
       return `${API_BASE_URL}/attendance/file/${encodeURIComponent(fileId)}`;
     }
     if (duty.attendanceFile?.filePath) {
+      if (duty.attendanceFile.filePath.startsWith('blob:') || duty.attendanceFile.filePath.startsWith('data:')) {
+        return duty.attendanceFile.filePath;
+      }
       const fileName = duty.attendanceFile.filePath.replace(/^.*[\\\/]/, '');
       return `${API_BASE_URL}/attendance/view-by-name/${encodeURIComponent(fileName)}`;
     }
@@ -281,11 +339,6 @@ export const MyDutiesScreen: React.FC = () => {
                   <h1 className="page-main-heading">
                     {isAdmin ? 'Workforce Duties Management' : 'My Duties'}
                   </h1>
-                  <p className="page-sub-heading">
-                    {isAdmin
-                      ? 'Monitor, verify, and track examination duties across all registered workforce members'
-                      : 'View, search, and manage all your assigned examination duties'}
-                  </p>
                 </div>
               </div>
             </div>

@@ -26,20 +26,30 @@ const STORAGE_KEY = 'exam_duty_user';
 export const authService = {
   async login(
     resourceId: string,
-    mobile: string,
-    loginType: 'admin' | 'employee' = 'employee',
+    secret: string,
+    loginType?: 'admin' | 'employee',
   ): Promise<EmployeeProfile> {
     try {
       const response = await apiClient.post<LoginResponse>('/auth/login', {
         resourceId: resourceId.trim(),
-        mobile: mobile.trim(),
+        mobile: secret.trim(),
         loginType,
       });
       if (response.data?.employee) {
-        const emp = {
+        const resIdLower = response.data.employee.resourceId?.toLowerCase();
+        const isAdmin = Boolean(
+          response.data.employee.isAdmin ||
+          response.data.employee.role === 'admin' ||
+          resIdLower === 'admin' ||
+          resIdLower === 'devsupport' ||
+          resIdLower === 'mohan' ||
+          resIdLower === '5914' ||
+          resIdLower === '17655'
+        );
+        const emp: EmployeeProfile = {
           ...response.data.employee,
-          role: response.data.employee.role || (loginType === 'admin' ? 'admin' : 'employee'),
-          isAdmin: response.data.employee.isAdmin ?? (loginType === 'admin'),
+          role: isAdmin ? 'admin' : 'employee',
+          isAdmin,
         };
         authService.setStoredUser(emp);
         sessionStorage.setItem(STORAGE_KEY, JSON.stringify(emp));

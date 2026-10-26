@@ -9,14 +9,7 @@ import {
   Mail,
   MapPin,
   Shield,
-  HelpCircle,
   CheckCircle2,
-  CalendarCheck,
-  Building,
-  Headphones,
-  ExternalLink,
-  CreditCard,
-  ShieldCheck,
 } from 'lucide-react';
 import authService, { EmployeeProfile } from '../services/auth.service';
 
@@ -24,9 +17,6 @@ export const ProfileScreen: React.FC = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<EmployeeProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // Help modal
-  const [showHelpModal, setShowHelpModal] = useState<boolean>(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -51,11 +41,40 @@ export const ProfileScreen: React.FC = () => {
     navigate('/login');
   };
 
-  const displayName = profile?.name || 'Sanjeev Kumar N';
-  const resourceId = profile?.resourceId || '17655';
-  const mobile = profile?.mobile || '9876543210';
-  const email = profile?.email || 'sanjeev.kumar@examduty.gov.in';
-  const city = profile?.city || 'Bengaluru';
+  const storedUser = authService.getStoredUser();
+  const isAdmin = Boolean(
+    storedUser?.isAdmin ||
+    storedUser?.role === 'admin' ||
+    storedUser?.resourceId === '17655' ||
+    storedUser?.resourceId?.toLowerCase() === 'admin' ||
+    storedUser?.resourceId?.toLowerCase() === 'mohan' ||
+    storedUser?.resourceId?.toLowerCase() === 'devsupport' ||
+    storedUser?.resourceId === '5914' ||
+    profile?.isAdmin ||
+    profile?.role === 'admin' ||
+    profile?.resourceId === '17655' ||
+    profile?.resourceId?.toLowerCase() === 'admin' ||
+    profile?.resourceId?.toLowerCase() === 'mohan' ||
+    profile?.resourceId?.toLowerCase() === 'devsupport' ||
+    profile?.resourceId === '5914'
+  );
+
+  const displayName = isAdmin ? 'Mohan' : (profile?.name || storedUser?.name || 'Sanjeev Kumar N');
+  // Inside admin portal, dummy resource ID is 5914
+  const resourceId = isAdmin ? '5914' : (profile?.resourceId || storedUser?.resourceId || '5914');
+  const mobile = profile?.mobile || storedUser?.mobile || '9876543210';
+
+  // Ensure email format has @gmail.com extension, and when admin portal it is mohan@gmail.com
+  let email = (profile?.email || storedUser?.email || '').trim();
+  if (isAdmin) {
+    email = 'mohan@gmail.com';
+  } else if (!email) {
+    email = 'mohan@gmail.com';
+  } else if (!email.endsWith('@gmail.com')) {
+    email = email.replace(/@[^.]+.*$/, '@gmail.com');
+  }
+
+  const city = profile?.city || storedUser?.city || 'Mysuru';
   const aadhaarNumber = profile?.aadhaarNumber;
   const panNumber = profile?.panNumber;
   const initials = displayName
@@ -82,9 +101,6 @@ export const ProfileScreen: React.FC = () => {
               </div>
               <div>
                 <h1 className="page-main-heading">Employee Profile</h1>
-                <p className="page-sub-heading">
-                  Manage your workforce credentials, personal information, and portal preferences
-                </p>
               </div>
             </div>
 
@@ -110,7 +126,12 @@ export const ProfileScreen: React.FC = () => {
             </div>
 
             {/* Profile Info Grid */}
-            <div className="profile-details-grid">
+            <div
+              className="profile-details-grid"
+              style={{
+                gridTemplateColumns: 'minmax(0, 680px)',
+              }}
+            >
               <div className="profile-info-card">
                 <h3 className="card-subhead">Workforce Details</h3>
                 <div className="info-item-row">
@@ -137,48 +158,11 @@ export const ProfileScreen: React.FC = () => {
                   </span>
                   <span className="info-val">{email}</span>
                 </div>
-                <div className="info-item-row">
+                <div className="info-item-row" style={{ borderBottom: 'none' }}>
                   <span className="info-label">
-                    <MapPin size={16} /> Base City
+                    <MapPin size={16} /> City
                   </span>
                   <span className="info-val">{city}</span>
-                </div>
-                <div className="info-item-row">
-                  <span className="info-label">
-                    <ShieldCheck size={16} /> Aadhaar Card
-                  </span>
-                  <span className="info-val bold" style={{ color: '#047857' }}>
-                    {aadhaarNumber ? `XXXX-XXXX-${aadhaarNumber.replace(/\s+/g, '').slice(-4)}` : 'Verified on Portal'}
-                  </span>
-                </div>
-                <div className="info-item-row">
-                  <span className="info-label">
-                    <CreditCard size={16} /> PAN Card
-                  </span>
-                  <span className="info-val bold" style={{ color: '#0369A1' }}>
-                    {panNumber || 'Verified on Portal'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="profile-info-card">
-                <h3 className="card-subhead">System &amp; Quick Actions</h3>
-                <div className="quick-action-list">
-                  <button
-                    className="quick-action-row"
-                    onClick={() => setShowHelpModal(true)}
-                  >
-                    <div className="action-row-left">
-                      <div className="action-row-icon green">
-                        <HelpCircle size={18} />
-                      </div>
-                      <div>
-                        <span className="action-row-title">Help &amp; Support</span>
-                        <span className="action-row-sub">Exam cell contacts &amp; guidelines</span>
-                      </div>
-                    </div>
-                    <ExternalLink size={15} color="#94A3B8" />
-                  </button>
                 </div>
               </div>
             </div>
@@ -214,83 +198,14 @@ export const ProfileScreen: React.FC = () => {
                 <Mail size={16} />
                 <span>{email}</span>
               </div>
-              <div className="mobile-info-line">
+              <div className="mobile-info-line" style={{ borderBottom: 'none' }}>
                 <MapPin size={16} />
                 <span>{city}</span>
               </div>
-              <div className="mobile-info-line">
-                <ShieldCheck size={16} />
-                <span>Aadhaar: {aadhaarNumber ? `XXXX-XXXX-${aadhaarNumber.replace(/\s+/g, '').slice(-4)}` : 'Verified'}</span>
-              </div>
-              <div className="mobile-info-line">
-                <CreditCard size={16} />
-                <span>PAN: {panNumber || 'Verified'}</span>
-              </div>
-            </div>
-
-            <div className="mobile-profile-btn-stack">
-              <button
-                className="mobile-btn-outline"
-                onClick={() => setShowHelpModal(true)}
-              >
-                <HelpCircle size={16} />
-                <span>Help &amp; Support</span>
-              </button>
             </div>
           </div>
         </main>
       </div>
-
-
-      {/* HELP & SUPPORT MODAL */}
-      {showHelpModal && (
-        <div className="modal-overlay" onClick={() => setShowHelpModal(false)}>
-          <div className="modal-content-card" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header-row">
-              <h3 className="modal-title">Help &amp; Examination Support</h3>
-              <button className="modal-close-btn" onClick={() => setShowHelpModal(false)}>
-                &times;
-              </button>
-            </div>
-
-            <div className="modal-body-details">
-              <div className="help-box-item">
-                <Headphones size={20} color="#2563EB" />
-                <div>
-                  <span className="help-box-title">Examination Control Room Helpdesk</span>
-                  <span className="help-box-val">+91 (080) 2296-1000 / 1800-425-0011</span>
-                  <span className="help-box-desc">Available 24x7 during examination schedules</span>
-                </div>
-              </div>
-
-              <div className="help-box-item">
-                <Mail size={20} color="#2563EB" />
-                <div>
-                  <span className="help-box-title">Official Support Email</span>
-                  <span className="help-box-val">support.examduty@karnataka.gov.in</span>
-                  <span className="help-box-desc">For attendance proofs and duty verification inquiries</span>
-                </div>
-              </div>
-
-              <div className="help-box-item">
-                <Building size={20} color="#2563EB" />
-                <div>
-                  <span className="help-box-title">Duty Assignment Guidelines</span>
-                  <span className="help-box-desc">
-                    All duties must have attendance uploaded within 48 hours of shift completion for approval.
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="modal-footer-row">
-              <button className="btn-primary" onClick={() => setShowHelpModal(false)}>
-                Got it
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

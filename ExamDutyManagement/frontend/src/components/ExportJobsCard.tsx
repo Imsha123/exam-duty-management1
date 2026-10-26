@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { ExternalLink, CheckCircle, Calendar, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ExternalLink, CheckCircle } from 'lucide-react';
 import { DutyItem } from '../services/duty.service';
-import { EmployeeItem } from '../services/master.service';
+import masterService, { EmployeeItem } from '../services/master.service';
 import { exportDutiesToExcel, ExportFilters } from '../utils/excelExport';
 
 interface ExportJobsCardProps {
@@ -17,38 +17,49 @@ export const ExportJobsCard: React.FC<ExportJobsCardProps> = ({
   onFilterChange,
   className = '',
 }) => {
-  const [fromDate, setFromDate] = useState<string>('');
-  const [toDate, setToDate] = useState<string>('');
+  const [date, setDate] = useState<string>('');
   const [workPlace, setWorkPlace] = useState<string>('All Places');
   const [exportNotice, setExportNotice] = useState<string | null>(null);
+  const [citiesList, setCitiesList] = useState<string[]>([
+    'Mysore',
+    'Bengaluru',
+    'Mangalore',
+    'Shivamogga',
+    'Mandya',
+    'Davanagere',
+    'Dharwad',
+  ]);
 
-  const handleFromDateChange = (val: string) => {
-    setFromDate(val);
-    if (onFilterChange) onFilterChange({ fromDate: val, toDate, workPlace });
-  };
+  useEffect(() => {
+    masterService.getCities().then((cts) => {
+      if (Array.isArray(cts) && cts.length > 0) {
+        const names = Array.from(new Set(cts.map((c) => c.name).filter(Boolean)));
+        setCitiesList(names);
+      }
+    }).catch(() => {
+      // Keep defaults
+    });
+  }, []);
 
-  const handleToDateChange = (val: string) => {
-    setToDate(val);
-    if (onFilterChange) onFilterChange({ fromDate, toDate: val, workPlace });
+  const handleDateChange = (val: string) => {
+    setDate(val);
+    if (onFilterChange) onFilterChange({ date: val, workPlace });
   };
 
   const handleWorkPlaceChange = (val: string) => {
     setWorkPlace(val);
-    if (onFilterChange) onFilterChange({ fromDate, toDate, workPlace: val });
+    if (onFilterChange) onFilterChange({ date, workPlace: val });
   };
 
   const handleExport = () => {
     const result = exportDutiesToExcel(duties, employees, {
-      fromDate,
-      toDate,
+      date,
       workPlace,
     });
     const placeName = (!workPlace || workPlace === 'ALL' || workPlace === 'All Places') 
       ? 'All Places' 
       : workPlace;
-    const dateDesc = fromDate || toDate
-      ? ` (${[fromDate ? `from ${fromDate}` : '', toDate ? `to ${toDate}` : ''].filter(Boolean).join(' ')})`
-      : '';
+    const dateDesc = date ? ` (${date})` : '';
     if (result.count === 0) {
       setExportNotice(
         `No assigned duty record(s) found for ${placeName}${dateDesc}. An empty spreadsheet template was downloaded.`
@@ -77,29 +88,16 @@ export const ExportJobsCard: React.FC<ExportJobsCardProps> = ({
       )}
 
       <div className="export-jobs-controls-row">
-        {/* From Date */}
+        {/* Date */}
         <div className="export-input-col">
-          <label className="export-input-label">From Date</label>
+          <label className="export-input-label">Date</label>
           <div className="export-input-wrapper">
             <input
               type="date"
               className="export-native-input"
-              value={fromDate}
-              onChange={(e) => handleFromDateChange(e.target.value)}
+              value={date}
+              onChange={(e) => handleDateChange(e.target.value)}
               placeholder="dd-mm-yyyy"
-            />
-          </div>
-        </div>
-
-        {/* To Date */}
-        <div className="export-input-col">
-          <label className="export-input-label">To Date</label>
-          <div className="export-input-wrapper">
-            <input
-              type="date"
-              className="export-native-input"
-              value={toDate}
-              onChange={(e) => handleToDateChange(e.target.value)}
             />
           </div>
         </div>
@@ -115,13 +113,11 @@ export const ExportJobsCard: React.FC<ExportJobsCardProps> = ({
               title="Filter duties by workplace city for Excel export"
             >
               <option value="All Places">All Places</option>
-              <option value="Mysore">Mysore</option>
-              <option value="Bengaluru">Bengaluru</option>
-              <option value="Mangalore">Mangalore</option>
-              <option value="Shivamogga">Shivamogga</option>
-              <option value="Mandya">Mandya</option>
-              <option value="Davanagere">Davanagere</option>
-              <option value="Dharwad">Dharwad</option>
+              {citiesList.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
             </select>
           </div>
         </div>

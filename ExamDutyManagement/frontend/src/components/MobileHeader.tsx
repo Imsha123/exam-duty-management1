@@ -12,6 +12,9 @@ import {
   User,
   LogOut,
   ChevronRight,
+  MapPin,
+  School,
+  GraduationCap,
 } from 'lucide-react';
 import { HealthBadge } from './HealthBadge';
 import authService from '../services/auth.service';
@@ -21,9 +24,18 @@ export const MobileHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = authService.getStoredUser();
-  const isAdmin = Boolean(user?.isAdmin || user?.role === 'admin' || user?.resourceId === '17655');
-  const displayName = user?.name || (isAdmin ? 'Sanjeev Kumar N' : 'Staff Member');
-  const resourceId = user?.resourceId || (isAdmin ? '17655' : '---');
+  const resIdLower = user?.resourceId?.toLowerCase() || '';
+  const isAdmin = Boolean(
+    user?.isAdmin ||
+    user?.role === 'admin' ||
+    user?.resourceId === '17655' ||
+    resIdLower === 'admin' ||
+    resIdLower === 'mohan' ||
+    resIdLower === 'devsupport' ||
+    resIdLower === '5914'
+  );
+  const displayName = user?.name || (isAdmin ? 'Mohan' : 'Staff Member');
+  const resourceId = user?.resourceId || (isAdmin ? '5914' : '---');
 
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -48,6 +60,21 @@ export const MobileHeader: React.FC = () => {
             label: 'Register Workforce',
             path: '/add-employee',
             icon: <UserPlus size={20} />,
+          },
+          {
+            label: 'Add City',
+            path: '/add-city',
+            icon: <MapPin size={20} />,
+          },
+          {
+            label: 'Add Exam Center',
+            path: '/add-center',
+            icon: <School size={20} />,
+          },
+          {
+            label: 'Add Exam Name',
+            path: '/add-exam',
+            icon: <GraduationCap size={20} />,
           },
           {
             label: 'Assign Duty to Employee',
@@ -116,14 +143,14 @@ export const MobileHeader: React.FC = () => {
       <div className="mobile-blue-banner">
         {/* Row 1: Greeting on left, Backend Status on right (Properly balanced & aligned) */}
         <div className="mobile-banner-header-row">
-          <span className="welcome-label">Welcome Back,</span>
+          <span className="welcome-label">Welcome</span>
           <div className="mobile-banner-badge">
             <HealthBadge />
           </div>
         </div>
 
         {/* Row 2: Full-width User Name (Never squeezed by badges) */}
-        <h1 className="user-name">{displayName}</h1>
+        {!isAdmin && <h1 className="user-name">{displayName}</h1>}
 
         {/* Row 3: Resource ID Pill & Role Badge */}
         <div className="mobile-banner-pills-row">

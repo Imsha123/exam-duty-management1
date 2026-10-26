@@ -6,8 +6,17 @@ import EmployeeDetailsModal from './EmployeeDetailsModal';
 
 export const DesktopTopNav: React.FC = () => {
   const user = authService.getStoredUser();
-  const displayName = user?.name || 'Sanjeev Kumar N';
-  const resourceId = user?.resourceId || '17655';
+  const resIdLower = user?.resourceId?.toLowerCase() || '';
+  const isAdmin = Boolean(
+    user?.isAdmin ||
+    user?.role === 'admin' ||
+    user?.resourceId === '17655' ||
+    resIdLower === 'admin' ||
+    resIdLower === 'mohan' ||
+    resIdLower === 'devsupport'
+  );
+  const displayName = user?.name || (resIdLower === 'mohan' ? 'Mohan' : resIdLower === 'devsupport' ? 'Dev Support' : (isAdmin ? 'Mohan' : 'Staff Member'));
+  const resourceId = user?.resourceId || (isAdmin ? 'Mohan' : '17655');
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
 
   const initials = displayName
@@ -35,34 +44,20 @@ export const DesktopTopNav: React.FC = () => {
         {/* Backend Connected Indicator */}
         <HealthBadge />
 
-        {/* User Profile Pill (Clickable to view personal details) */}
-        <div
-          className="top-nav-user-profile"
-          onClick={() => setShowDetailsModal(true)}
-          title="Click to view & update your personal details (Aadhaar, PAN, etc.)"
-          style={{ cursor: 'pointer', transition: 'all 0.15s ease' }}
-        >
-          <div className="user-avatar-circle">
-            <span>{initials}</span>
-          </div>
-          <div className="user-text-meta">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span className="user-display-name">{displayName}</span>
-              {user?.isAdmin ? (
-                <span
-                  style={{
-                    padding: '2px 8px',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    borderRadius: '4px',
-                    background: '#FEF3C7',
-                    color: '#B45309',
-                    border: '1px solid #FCD34D',
-                  }}
-                >
-                  ADMIN
-                </span>
-              ) : (
+        {/* User Profile Pill (Visible only in Employee portal, removed in Admin portal) */}
+        {!isAdmin && (
+          <div
+            className="top-nav-user-profile"
+            onClick={() => setShowDetailsModal(true)}
+            title="Click to view & update your personal details (Aadhaar, PAN, etc.)"
+            style={{ cursor: 'pointer', transition: 'all 0.15s ease' }}
+          >
+            <div className="user-avatar-circle">
+              <span>{initials}</span>
+            </div>
+            <div className="user-text-meta">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="user-display-name">{displayName}</span>
                 <span
                   style={{
                     padding: '2px 8px',
@@ -76,13 +71,13 @@ export const DesktopTopNav: React.FC = () => {
                 >
                   STAFF
                 </span>
-              )}
+              </div>
+              <span className="user-resource-id" style={{ textDecoration: 'underline' }}>
+                Resource ID: {resourceId}
+              </span>
             </div>
-            <span className="user-resource-id" style={{ textDecoration: 'underline' }}>
-              Resource ID: {resourceId}
-            </span>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Employee Personal Details Modal */}

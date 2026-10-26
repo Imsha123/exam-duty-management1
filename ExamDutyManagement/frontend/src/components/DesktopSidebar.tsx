@@ -1,13 +1,32 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, UserPlus, CalendarPlus, ClipboardList, User, LogOut } from 'lucide-react';
+import {
+  LayoutDashboard,
+  UserPlus,
+  CalendarPlus,
+  ClipboardList,
+  User,
+  LogOut,
+  MapPin,
+  School,
+  GraduationCap,
+} from 'lucide-react';
 import authService from '../services/auth.service';
 
 export const DesktopSidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = authService.getStoredUser();
-  const isAdmin = Boolean(user?.isAdmin || user?.role === 'admin' || user?.resourceId === '17655');
+  const resIdLower = user?.resourceId?.toLowerCase() || '';
+  const isAdmin = Boolean(
+    user?.isAdmin ||
+    user?.role === 'admin' ||
+    user?.resourceId === '17655' ||
+    resIdLower === 'admin' ||
+    resIdLower === 'mohan' ||
+    resIdLower === 'devsupport' ||
+    resIdLower === '5914'
+  );
 
   const navItems = [
     {
@@ -23,6 +42,24 @@ export const DesktopSidebar: React.FC = () => {
             label: 'Add Employee',
             path: '/add-employee',
             icon: <UserPlus size={19} />,
+          },
+          {
+            id: 'add-city',
+            label: 'Add City',
+            path: '/add-city',
+            icon: <MapPin size={19} />,
+          },
+          {
+            id: 'add-center',
+            label: 'Add Exam Center',
+            path: '/add-center',
+            icon: <School size={19} />,
+          },
+          {
+            id: 'add-exam',
+            label: 'Add Exam Name',
+            path: '/add-exam',
+            icon: <GraduationCap size={19} />,
           },
           {
             id: 'add-duty',

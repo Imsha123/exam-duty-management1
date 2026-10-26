@@ -159,7 +159,7 @@ export class SeedService implements OnModuleInit {
         resourceId: '17655',
         name: 'Sanjeev Kumar N',
         mobile: '9876543210',
-        email: 'sanjeev.kumar@examduty.gov.in',
+        email: 'sanjeev.kumar@gmail.com',
         city: 'Mysuru',
         status: 'Active',
       });
@@ -173,6 +173,54 @@ export class SeedService implements OnModuleInit {
     if (adminDuties.length > 0) {
       this.logger.log(`Cleaning up ${adminDuties.length} dummy duties for admin Sanjeev Kumar N...`);
       await this.dutyRepo.remove(adminDuties);
+    }
+
+    // Ensure Employee rajesh (597305) exists
+    let rajesh = await this.employeeRepo.findOne({ where: { resourceId: '597305' } });
+    if (!rajesh) {
+      rajesh = await this.employeeRepo.save({
+        resourceId: '597305',
+        name: 'rajesh',
+        mobile: '9886915446',
+        email: 'rajesh@gmail.com',
+        city: 'Mysore',
+        status: 'Active',
+      });
+    }
+
+    // Ensure rajesh has assigned duty with all details
+    const rajeshDuties = await this.dutyRepo.find({
+      where: [{ employeeId: rajesh.id }, { employeeId: '597305' }],
+    });
+    if (rajeshDuties.length === 0) {
+      const allCities = await this.cityRepo.find();
+      const city = allCities.find((c) => c.name.toLowerCase().includes('myso')) || allCities[0];
+      const allCenters = await this.centerRepo.find();
+      const center = (city ? allCenters.find((c) => c.cityId === city.id) : null) || allCenters[0];
+      const allExams = await this.examRepo.find();
+      const exam = allExams[0];
+      const allRoles = await this.roleRepo.find();
+      const role = allRoles.find((r) => r.code === 'MOT' || r.code === 'SO') || allRoles[0];
+      const allShifts = await this.shiftRepo.find();
+      const shift = allShifts[0];
+
+      if (city && center && exam && role && shift) {
+        const todayDate = new Date().toISOString().split('T')[0];
+        await this.dutyRepo.save({
+          employeeId: rajesh.id,
+          dutyDate: todayDate,
+          cityId: city.id,
+          centerId: center.id,
+          dutyType: exam.type || 'Exam',
+          examId: exam.id,
+          roleId: role.id,
+          shiftId: shift.id,
+          reportingTime: shift.defaultReportingTime || '07:30 AM',
+          shiftEndTime: shift.defaultEndTime || '01:30 PM',
+          status: 'Pending',
+        });
+        this.logger.log('Seeded examination duty for rajesh (597305)');
+      }
     }
   }
 

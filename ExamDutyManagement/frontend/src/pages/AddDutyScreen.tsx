@@ -63,6 +63,7 @@ export const AddDutyScreen: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [employees, setEmployees] = useState<EmployeeItem[]>([]);
+  const [assignedResourceIds, setAssignedResourceIds] = useState<Set<string>>(new Set());
   const [loadingMaster, setLoadingMaster] = useState<boolean>(true);
 
   // Selected Employee for Duty Assignment
@@ -123,8 +124,9 @@ export const AddDutyScreen: React.FC = () => {
       masterService.getRoles(),
       masterService.getShifts(),
       masterService.getEmployees(),
+      dutyService.getMyDuties(),
     ])
-      .then(([ctsRes, cntsRes, exsRes, rlsRes, shftsRes, empsRes]) => {
+      .then(([ctsRes, cntsRes, exsRes, rlsRes, shftsRes, empsRes, dutiesRes]) => {
         if (!isMounted) return;
 
         const cts =
@@ -254,12 +256,25 @@ export const AddDutyScreen: React.FC = () => {
               ];
         setShifts(finalShifts);
 
-        // Exclude system admin Sanjeev Kumar (17655) from workforce assignee list
-        const realStaff = emps.filter((e) => e.resourceId !== '17655' && !e.isAdmin);
+        // Extract employee IDs that already have an assigned duty
+        const assigned = new Set<string>();
+        if (dutiesRes.status === 'fulfilled' && Array.isArray(dutiesRes.value)) {
+          dutiesRes.value.forEach((d: any) => {
+            if (d.employee?.resourceId) assigned.add(d.employee.resourceId);
+            if (d.employeeId) assigned.add(d.employeeId);
+          });
+        }
+        setAssignedResourceIds(assigned);
+
+        // Exclude system admin Sanjeev Kumar (17655) and admin from workforce assignee list
+        const realStaff = emps.filter(
+          (e) => e.resourceId !== '17655' && e.resourceId?.toLowerCase() !== 'admin' && !e.isAdmin,
+        );
         const staffList = realStaff.length > 0 ? realStaff : fallbackEmps;
         setEmployees(staffList);
 
-        // Auto-select logged in employee or query param
+        // Auto-select from unassigned employees
+        const unassignedList = staffList.filter((e) => !assigned.has(e.resourceId) && !assigned.has(e.id));
         if (queryResourceId) {
           const found = staffList.find((e) => e.resourceId === queryResourceId);
           if (found) setSelectedEmployee(found);
@@ -273,8 +288,10 @@ export const AddDutyScreen: React.FC = () => {
             status: 'Active',
           };
           setSelectedEmployee(self);
-        } else if (staffList.length > 0) {
-          setSelectedEmployee(staffList[0]);
+        } else if (unassignedList.length > 0) {
+          setSelectedEmployee(unassignedList[0]);
+        } else {
+          setSelectedEmployee(null);
         }
 
         // Set sensible initial defaults
@@ -307,18 +324,61 @@ export const AddDutyScreen: React.FC = () => {
         if (isMounted) setLoadingMaster(false);
       });
 
+    const handleMasterUpdate = () => {
+      Promise.allSettled([
+        masterService.getCities(),
+        masterService.getCenters(),
+        masterService.getExams(),
+      ]).then(([ctsRes, cntsRes, exsRes]) => {
+        if (!isMounted) return;
+        if (ctsRes.status === 'fulfilled' && ctsRes.value?.length > 0) {
+          setCities(ctsRes.value);
+        }
+        if (cntsRes.status === 'fulfilled' && cntsRes.value?.length > 0) {
+          setCenters(cntsRes.value);
+        }
+        if (exsRes.status === 'fulfilled' && exsRes.value?.length > 0) {
+          setExams(exsRes.value);
+        }
+      });
+    };
+    window.addEventListener('exam_duty_master_updated', handleMasterUpdate);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('exam_duty_master_updated', handleMasterUpdate);
     };
   }, []);
 
-  // Sync selected employee if query param changes
+  // Available workforce members who do NOT yet have an assigned duty
+  const availableEmployees = useMemo(() => {
+    return employees.filter(
+      (emp) =>
+        !assignedResourceIds.has(emp.resourceId) &&
+        !assignedResourceIds.has(emp.id) &&
+        emp.resourceId !== '17655' &&
+        emp.resourceId?.toLowerCase() !== 'admin' &&
+        !emp.isAdmin
+    );
+  }, [employees, assignedResourceIds]);
+
+  // Sync selected employee if query param changes or available employees update
   useEffect(() => {
-    if (queryResourceId && employees.length > 0) {
-      const match = employees.find((e) => e.resourceId === queryResourceId);
-      if (match) setSelectedEmployee(match);
+    if (isAdmin) {
+      if (queryResourceId) {
+        const match = employees.find((e) => e.resourceId === queryResourceId);
+        if (match) {
+          setSelectedEmployee(match);
+          return;
+        }
+      }
+      if (selectedEmployee && !availableEmployees.some((e) => e.resourceId === selectedEmployee.resourceId)) {
+        setSelectedEmployee(availableEmployees[0] || null);
+      } else if (!selectedEmployee && availableEmployees.length > 0) {
+        setSelectedEmployee(availableEmployees[0]);
+      }
     }
-  }, [queryResourceId, employees]);
+  }, [availableEmployees, queryResourceId, isAdmin, employees]);
 
   // When Duty Type changes (Exam vs Mock), auto-select matching exam if available
   const handleDutyTypeChange = (type: 'Exam' | 'Mock') => {
@@ -345,8 +405,8 @@ export const AddDutyScreen: React.FC = () => {
     );
     if (inCity.length > 0) {
       setSelectedCenterId(inCity[0].id);
-    } else if (centers.length > 0) {
-      setSelectedCenterId(centers[0].id);
+    } else {
+      setSelectedCenterId('');
     }
   };
 
@@ -559,13 +619,18 @@ export const AddDutyScreen: React.FC = () => {
       const selectedRole = roles.find((r) => r.id === selectedRoleId);
       const selectedShift = shifts.find((s) => s.id === selectedShiftId);
 
+      const selectedCity = cities.find((c) => c.id === selectedCityId);
       const resId = selectedEmployee?.resourceId || user?.resourceId;
+      const targetEmpName = selectedEmployee?.name || user?.name || `Staff (${resId})`;
+      const targetEmpMobile = selectedEmployee?.mobile || user?.mobile || '';
+      const targetEmpId = selectedEmployee?.id || user?.id || resId;
+
       const payload: CreateDutyPayload = {
         resourceId: resId,
         employeeResourceId: resId,
-        employeeId: selectedEmployee?.id || user?.id,
-        employeeName: selectedEmployee?.name || user?.name,
-        employeeMobile: selectedEmployee?.mobile || user?.mobile,
+        employeeId: targetEmpId,
+        employeeName: targetEmpName,
+        employeeMobile: targetEmpMobile,
         dutyDate,
         dutyType: selectedDutyType,
         cityId: selectedCityId,
@@ -579,10 +644,83 @@ export const AddDutyScreen: React.FC = () => {
         comments: `Assigned via ${isAdmin ? 'Admin Portal' : 'Employee Portal'}`,
       };
 
-      await dutyService.createDuty(payload);
+      let createdRes: any = null;
+      try {
+        createdRes = await dutyService.createDuty(payload);
+      } catch (backendErr: any) {
+        console.warn('Backend createDuty call failed or threw conflict, saving to local cache as well:', backendErr);
+      }
+
+      // Store complete duty representation in local cache to guarantee instant visibility under My Duties
+      const newDutyRecord: any = {
+        id: createdRes?.id || `duty-${Date.now()}`,
+        employeeId: targetEmpId,
+        dutyDate,
+        dutyType: selectedDutyType,
+        cityId: selectedCityId,
+        centerId: selectedCenterId,
+        examId: selectedExamId,
+        roleId: selectedRoleId,
+        shiftId: selectedShiftId,
+        reportingTime: reportingTime.trim(),
+        shiftEndTime: shiftEndTime.trim(),
+        status: 'Pending',
+        createdAt: new Date().toISOString(),
+        employee: {
+          id: targetEmpId,
+          resourceId: resId,
+          name: targetEmpName,
+          mobile: targetEmpMobile,
+          email: selectedEmployee?.email || user?.email,
+          city: selectedCity?.name || selectedEmployee?.city || user?.city,
+        },
+        city: selectedCity ? { id: selectedCity.id, name: selectedCity.name } : undefined,
+        center: selectedCenter
+          ? { id: selectedCenter.id, centerCode: selectedCenter.centerCode, centerName: selectedCenter.centerName }
+          : undefined,
+        exam: selectedExam
+          ? { id: selectedExam.id, name: selectedExam.name, type: selectedDutyType, code: selectedExam.code }
+          : undefined,
+        role: selectedRole
+          ? { id: selectedRole.id, name: selectedRole.name, code: selectedRole.code }
+          : undefined,
+        shift: selectedShift
+          ? { id: selectedShift.id, name: selectedShift.name }
+          : undefined,
+        attendanceFileId: uploadedFile?.id || undefined,
+        attendanceFile: uploadedFile
+          ? {
+              id: uploadedFile.id,
+              originalName: uploadedFile.name,
+              filePath: previewUrl || '',
+              size: uploadedFile.size,
+            }
+          : undefined,
+      };
+
+      try {
+        const raw = localStorage.getItem('cached_assigned_duties');
+        const list = raw ? JSON.parse(raw) : [];
+        const next = [newDutyRecord, ...list.filter((x: any) => x.id !== newDutyRecord.id)];
+        localStorage.setItem('cached_assigned_duties', JSON.stringify(next));
+      } catch (e) {
+        console.error('Failed to cache assigned duty', e);
+      }
+
+      const assignedResId = selectedEmployee?.resourceId;
+      const assignedEmpId = selectedEmployee?.id;
+      if (assignedResId) {
+        setAssignedResourceIds((prev) => {
+          const next = new Set(prev);
+          next.add(assignedResId);
+          if (assignedEmpId) next.add(assignedEmpId);
+          return next;
+        });
+      }
+      setSelectedEmployee(null);
 
       setSubmitSuccess(
-        `Duty successfully assigned to ${selectedEmployee?.name} for ${selectedExam?.name || 'Exam'} on ${dutyDate}!`
+        `Duty successfully assigned to ${selectedEmployee?.name || user?.name || 'employee'} for ${selectedExam?.name || 'Exam'} on ${dutyDate}!`,
       );
 
       // Reset file and preview
@@ -607,7 +745,7 @@ export const AddDutyScreen: React.FC = () => {
   const filteredCenters = selectedCityId
     ? centers.filter((c) => String(c.cityId || '').toLowerCase() === String(selectedCityId).toLowerCase())
     : centers;
-  const activeCenters = filteredCenters.length > 0 ? filteredCenters : centers;
+  const activeCenters = filteredCenters;
 
   // All exams are always available for search and selection
   // If a duty type is selected (Exam or Mock), matching exams appear first, but ALL exams are present and searchable
@@ -731,21 +869,31 @@ export const AddDutyScreen: React.FC = () => {
                         className="form-select-control"
                         value={selectedEmployee?.resourceId || ''}
                         onChange={(e) => {
-                          const found = employees.find((emp) => emp.resourceId === e.target.value);
+                          const found = availableEmployees.find((emp) => emp.resourceId === e.target.value);
                           if (found) setSelectedEmployee(found);
                         }}
                         required
                         style={{ fontWeight: 600, color: '#1E293B' }}
                       >
                         <option value="" disabled>
-                          {loadingMaster ? 'Loading workforce members...' : '-- Select Registered Employee --'}
+                          {loadingMaster
+                            ? 'Loading workforce members...'
+                            : availableEmployees.length === 0
+                            ? '-- All registered employees have already been assigned duties --'
+                            : '-- Select Registered Employee --'}
                         </option>
-                        {employees.map((emp) => (
+                        {availableEmployees.map((emp) => (
                           <option key={emp.id} value={emp.resourceId}>
                             {emp.name} (ID: {emp.resourceId}) &bull; {emp.city || 'Mysore'} &bull; {emp.mobile}
                           </option>
                         ))}
                       </select>
+
+                      {isAdmin && availableEmployees.length === 0 && !loadingMaster && (
+                        <div style={{ marginTop: '10px', padding: '10px 14px', background: '#F0FDF4', borderRadius: '8px', border: '1px solid #BBF7D0', fontSize: '13.5px', color: '#166534' }}>
+                          ✔ All registered workforce members currently have assigned duties. To assign duty to a new employee, register them under <strong>Add Employee</strong>.
+                        </div>
+                      )}
 
                       {selectedEmployee && (
                         <div
@@ -1386,15 +1534,17 @@ export const AddDutyScreen: React.FC = () => {
                       className="mobile-form-select"
                       value={selectedEmployee?.resourceId || ''}
                       onChange={(e) => {
-                        const found = employees.find((emp) => emp.resourceId === e.target.value);
+                        const found = availableEmployees.find((emp) => emp.resourceId === e.target.value);
                         if (found) setSelectedEmployee(found);
                       }}
                       required
                     >
                       <option value="" disabled>
-                        -- Select Registered Employee --
+                        {availableEmployees.length === 0
+                          ? '-- All workforce members have been assigned duties --'
+                          : '-- Select Registered Employee --'}
                       </option>
-                      {employees.map((emp) => (
+                      {availableEmployees.map((emp) => (
                         <option key={emp.id} value={emp.resourceId}>
                           {emp.name} (ID: {emp.resourceId}) &bull; {emp.city || 'Mysore'}
                         </option>

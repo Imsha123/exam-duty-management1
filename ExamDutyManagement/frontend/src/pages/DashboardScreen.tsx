@@ -17,7 +17,12 @@ import authService from '../services/auth.service';
 
 export const DashboardScreen: React.FC = () => {
   const user = authService.getStoredUser();
-  const isAdmin = Boolean(user?.isAdmin || user?.role === 'admin' || user?.resourceId === '17655');
+  const isAdmin = Boolean(
+    user?.isAdmin ||
+    user?.role === 'admin' ||
+    user?.resourceId === '17655' ||
+    user?.resourceId?.toLowerCase() === 'admin'
+  );
   const filterResourceId = isAdmin ? 'ALL' : (user?.resourceId || '');
   const [selectedYear, setSelectedYear] = useState<number>(2026);
 
@@ -87,8 +92,7 @@ export const DashboardScreen: React.FC = () => {
             <div className="desktop-welcome-banner">
               <div className="welcome-banner-left">
                 <div className="banner-title-row">
-                  <span className="banner-greeting">Welcome Back,</span>
-                  <h1 className="banner-name">{displayName}</h1>
+                  <h1 className="banner-name">Welcome</h1>
                 </div>
 
                 <div className="banner-meta-row">

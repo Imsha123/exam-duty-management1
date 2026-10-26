@@ -1,0 +1,1775 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style>
+  body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; margin: 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 11pt; }
+  th { background-color: #1E3A8A; color: #FFFFFF; font-weight: bold; border: 1px solid #94A3B8; padding: 10px 8px; text-align: left; }
+  td { border: 1px solid #CBD5E1; padding: 8px; vertical-align: top; }
+  tr:nth-child(even) { background-color: #F8FAFC; }
+  .section-row { background-color: #E2E8F0 !important; font-weight: bold; font-size: 12pt; color: #0F172A; }
+  .pass { background-color: #DCFCE7 !important; color: #166534; font-weight: bold; text-align: center; }
+  .fail { background-color: #FEE2E2 !important; color: #991B1B; font-weight: bold; text-align: center; }
+  .pending { background-color: #FEF3C7 !important; color: #92400E; font-weight: bold; text-align: center; }
+  .num { text-align: center; font-weight: 500; }
+</style>
+</head>
+<body>
+<h2>Exam Duty Management System &mdash; QA Test Cases (TrackClock)</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 60px;">SL NO.</th>
+      <th style="width: 160px;">Test Cases</th>
+      <th style="width: 220px;">Test Scenarious</th>
+      <th style="width: 280px;">Expected Result</th>
+      <th style="width: 280px;">Actual Result</th>
+      <th style="width: 90px; text-align: center;">Pass/Fail</th>
+      <th style="width: 260px;">Additional Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="num">0</td>
+      <td><strong>Login Page</strong></td>
+      <td>Enter a vaild credentials</td>
+      <td>if super admin credentails then redirect to superadmin dashboard</td>
+      <td>Entered valid Super Admin credentials and was redirected to the Super Admin dashboard.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">1</td>
+      <td></td>
+      <td></td>
+      <td>if Manger cerdentials then redirect to manager dashboard</td>
+      <td>Entered valid Manager credentials and was redirected to the Manager dashboard.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">2</td>
+      <td></td>
+      <td></td>
+      <td>If employee credentails then redirect to employee dashboard</td>
+      <td>Entered valid Employee credentials and was redirected to the Employee dashboard.</td>
+      <td class="pass">PASS</td>
+      <td>Login access is restricted to approved employee IDs. Unapproved employee IDs cannot access the Employee Dashboard.</td>
+    </tr>
+    <tr>
+      <td class="num">3</td>
+      <td></td>
+      <td>Enter In Valid credentials</td>
+      <td>Invalid credentials should not redirect to dashboard</td>
+      <td>Entered invalid credentials and the user was not redirected to any dashboard.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">4</td>
+      <td></td>
+      <td></td>
+      <td>show pop message saying invaild credentials</td>
+      <td>Entered invalid credentials and an "Invalid credentials" pop-up message was displayed.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr class="section-row">
+      <td class="num"></td>
+      <td colspan="6">Superadmin</td>
+    </tr>
+    <tr>
+      <td class="num">6</td>
+      <td><strong>Employee Details</strong></td>
+      <td>employee view</td>
+      <td>All employee view should display</td>
+      <td>All employee details are displayed correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">7</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Place: filter according to place selected</td>
+      <td>Employee list is filtered according to the selected place.</td>
+      <td class="pass">PASS</td>
+      <td>For some places shows 'No records found'</td>
+    </tr>
+    <tr>
+      <td class="num">8</td>
+      <td></td>
+      <td></td>
+      <td>Filter - employee id / name: filter according to employee id / name selected</td>
+      <td>Employee list is filtered according to the selected Employee ID/Name.</td>
+      <td class="pass">PASS</td>
+      <td>emp_id shows when filtered with particular places and with all places</td>
+    </tr>
+    <tr>
+      <td class="num">9</td>
+      <td></td>
+      <td></td>
+      <td>Filter - status: filter according to status selected</td>
+      <td>Employee list is filtered according to the selected status.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">10</td>
+      <td></td>
+      <td></td>
+      <td>single approve / reject : single approve or reject status should change according to user selection</td>
+      <td>Employee status is changed according to the selected Approve/Reject action.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">11</td>
+      <td></td>
+      <td></td>
+      <td>Pop-up message for action performed for single approve /reject:</td>
+      <td>A confirmation / A rejection pop-up message is displayed after the action.</td>
+      <td class="pass">PASS</td>
+      <td>pop-up message appears but once rejected or approved not able to redo</td>
+    </tr>
+    <tr>
+      <td class="num">12</td>
+      <td></td>
+      <td></td>
+      <td>Action buttons reddirect to particular page</td>
+      <td>Action buttons redirect to the respective page correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">13</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: approve and reject- selected employee should get approve or reject</td>
+      <td>All selected employees are approved/rejected successfully.</td>
+      <td class="pass">PASS</td>
+      <td>before approve or rejection pop-up message appears for confirmation.</td>
+    </tr>
+    <tr>
+      <td class="num">14</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: approve and reject- Check on already approved status it should not approve or reject . pop message should come</td>
+      <td>Already approved employees cannot be approved/rejected and an appropriate pop-up message is displayed.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">15</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: delete - selected employee should delete.</td>
+      <td>All selected employees are deleted successfully.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">17</td>
+      <td></td>
+      <td></td>
+      <td>Before deleting an employee,it should ask for remark</td>
+      <td>No remark field is displayed before deleting the selected employee. Only a confirmation popup with "Yes, delete!" and "Cancel" is displayed.</td>
+      <td class="fail">FAIL</td>
+      <td>Remark/reason for deletion is not requested before deletion. Only a confirmation popup is displayed.</td>
+    </tr>
+    <tr>
+      <td class="num">18</td>
+      <td></td>
+      <td></td>
+      <td>disclaimer checkbox should be marked</td>
+      <td>no disclaimer checkbox is displayed.</td>
+      <td class="fail">FAIL</td>
+      <td>The employee can proceed to the delete confirmation without selecting a disclaimer checkbox.</td>
+    </tr>
+    <tr>
+      <td class="num">18</td>
+      <td></td>
+      <td></td>
+      <td>while adding employee work place which we have selected,it should be display in table as it is</td>
+      <td>-</td>
+      <td class="pending">PENDING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">19</td>
+      <td></td>
+      <td></td>
+      <td>Add in the bulk-employee details: a pop-up message for bulk upload.<br>without file can not submit.<br>After successfull submit a pop-message regarding status</td>
+      <td>submission without file is prevented;but xlsx and csv file sample formate provided is not accepted.</td>
+      <td class="fail">FAIL</td>
+      <td>The provided sample-format XLSX file is not being accepted by the bulk employee upload feature even though XLSX is listed as an allowed format.</td>
+    </tr>
+    <tr>
+      <td class="num">20</td>
+      <td></td>
+      <td></td>
+      <td>SMS once approved sms notification to employee with login credentials</td>
+      <td>sms notification is sent to employee with login credentials.</td>
+      <td class="pass">PASS</td>
+      <td>sms is sent after 2 to 3 days after registeration.</td>
+    </tr>
+    <tr>
+      <td class="num">21</td>
+      <td></td>
+      <td></td>
+      <td>export the employee details accroding to place selected</td>
+      <td>Employee details are exported according to the selected place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">22</td>
+      <td></td>
+      <td></td>
+      <td>export - if data is not present for selected employee message should populate</td>
+      <td>A message is displayed saying that no employee data is available for export.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">23</td>
+      <td></td>
+      <td>Edit employee Details</td>
+      <td>Validate the perticular employee details is populating in screen</td>
+      <td>The selected employee's details are displayed correctly in the form.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>Should able to edit all fields except date of joining</td>
+      <td>All employee details can be edited except Date of Joining.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">25</td>
+      <td></td>
+      <td></td>
+      <td>Validate all fields empty (except photo) should not sumbit the form</td>
+      <td>All employee details can be edited except Date of Joining.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">26</td>
+      <td></td>
+      <td></td>
+      <td>If aadhaar and phone number same as existing one show error alert</td>
+      <td>-</td>
+      <td class="pending">PENDING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">27</td>
+      <td></td>
+      <td></td>
+      <td>work place which we have selected,it should be display in table as it is</td>
+      <td>The selected workplace is displayed correctly in the employee table.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">28</td>
+      <td></td>
+      <td></td>
+      <td>After submiting pop-up message for status - redirect to employee details view on success</td>
+      <td>A success/status popup is displayed and the user is redirected to the Employee Details page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">29</td>
+      <td></td>
+      <td>employee profile view</td>
+      <td>All the data related to employee should display</td>
+      <td>All details related to the employee are displayed in the profile.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">30</td>
+      <td></td>
+      <td></td>
+      <td>validate the amount showing properly according to attendace status approved. No rejected attendace amount should add.</td>
+      <td>The amount is calculated using only approved attendance. Rejected attendance is not included.</td>
+      <td class="pass">PASS</td>
+      <td>Once attendance is rejected, it cannot be given again, and the rejected attendance is not included in the amount calculation.</td>
+    </tr>
+    <tr>
+      <td class="num">31</td>
+      <td></td>
+      <td></td>
+      <td>display the latest 8 employee attendace details</td>
+      <td>The latest 8 attendance records are displayed correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">32</td>
+      <td><strong>Manager Details</strong></td>
+      <td>manager view</td>
+      <td>All manager view should display</td>
+      <td>All manager details are displayed correctly in the Manager View.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">33</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Place: filter according to place selected</td>
+      <td>Manager list is filtered according to the selected place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">34</td>
+      <td></td>
+      <td></td>
+      <td>Filter - manager id / name: filter according to manager id / name selected</td>
+      <td>Manager list is filtered correctly according to the entered Manager ID/Name.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: delete - selected manager should delete.</td>
+      <td>Selected managers were deleted successfully.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">36</td>
+      <td></td>
+      <td></td>
+      <td>Action button reddirect to particular page</td>
+      <td>The action button redirects to the respective manager details page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">37</td>
+      <td></td>
+      <td>Add manager</td>
+      <td>If aadhaar and phone number same as existing one show error alert</td>
+      <td>No error alert is displayed when an existing Aadhaar number or phone number is entered.</td>
+      <td class="pass">PASS</td>
+      <td>The system allows duplicate Aadhaar/phone numbers without displaying a validation or error message.</td>
+    </tr>
+    <tr>
+      <td class="num">38</td>
+      <td></td>
+      <td></td>
+      <td>Validate all fields empty, should not sumbit the form</td>
+      <td>The form is not submitted when all fields are left empty.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>Validation for manager aadhar number</td>
+      <td>No error alert is displayed when an existing Aadhaar number or phone number is entered.</td>
+      <td class="fail">FAIL</td>
+      <td>The system allows duplicate Aadhaar/phone numbers without displaying a validation or error message.</td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>all workplaces must be unique, if not should show pop up</td>
+      <td>The system allows the same workplace to be assigned to multiple managers without displaying any warning message.</td>
+      <td class="fail">FAIL</td>
+      <td>Duplicate workplace is allowed.</td>
+    </tr>
+    <tr>
+      <td class="num">41</td>
+      <td></td>
+      <td></td>
+      <td>After submiting pop-up message for status - redirect to employee details view on success</td>
+      <td>A success/status popup is displayed after submission, and the user is redirected to the Manager Details page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">42</td>
+      <td></td>
+      <td>Edit manager Details</td>
+      <td>Validate the perticular manager details is populating in screen</td>
+      <td>The selected manager's details are populated correctly in the Edit Manager screen.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">43</td>
+      <td></td>
+      <td></td>
+      <td>Validate all fields empty (except photo) should not sumbit the form</td>
+      <td>The form is not submitted when all required fields are left empty.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>profile picture should allow only png or jpg formats</td>
+      <td>The profile picture field allows unsupported file formats.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">45</td>
+      <td></td>
+      <td></td>
+      <td>If aadhaar and phone number same as existing one show error alert</td>
+      <td>-</td>
+      <td class="pending">PENDING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">46</td>
+      <td></td>
+      <td></td>
+      <td>After submiting pop-up message for status - redirect to manager details view on success</td>
+      <td>A success/status popup is displayed after submission, and the user is redirected to the Manager Details view.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">47</td>
+      <td><strong>Job Details</strong></td>
+      <td>Job details view</td>
+      <td>display all job details order by date wise, work place</td>
+      <td>All job details are displayed and arranged according to date and workplace.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">48</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Job details are filtered according to the selected center.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">49</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Place: filter according to place selected</td>
+      <td>Job details are filtered according to the selected place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">50</td>
+      <td></td>
+      <td></td>
+      <td>Filter - job name: filter according to job name selected</td>
+      <td>Job details are filtered according to the selected job name.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">51</td>
+      <td></td>
+      <td></td>
+      <td>multiple select: Delete - delete the selected job.before deleteing a confirmation pop-up message. after deleteing a pop message for confirmation</td>
+      <td>Selected jobs are deleted successfully. A confirmation popup is displayed before deletion and a success message is displayed after deletion.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">52</td>
+      <td></td>
+      <td></td>
+      <td>Add in the bulk-job details: a pop-up message for bulk upload.<br>with out file can not submit.<br>After successfull submit a pop-message regarding status</td>
+      <td>The bulk job upload popup is displayed, but the provided sample format file is not accepted and the system does not allow the file to be uploaded.</td>
+      <td class="fail">FAIL</td>
+      <td>The system rejects the sample format file even though it is provided as the required format for bulk job upload. File upload cannot be completed.</td>
+    </tr>
+    <tr>
+      <td class="num">53</td>
+      <td></td>
+      <td></td>
+      <td>validating clicking the add job details - redirect to add job details</td>
+      <td>Clicking Add Job Details redirects to the Add Job Details page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">54</td>
+      <td></td>
+      <td></td>
+      <td>validate on edit option under action column , particular job details is coming in edit</td>
+      <td>The selected job details are populated correctly in the Edit Job Details page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">55</td>
+      <td></td>
+      <td>Add job details</td>
+      <td>Validate all fields empty (except annexure file) should not sumbit the form</td>
+      <td>The form is not submitted when all required fields are left empty.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">56</td>
+      <td></td>
+      <td></td>
+      <td>Validate if the empty file is added to bulk employee details it should give error message</td>
+      <td>an error occurred while submitting empty file</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">57</td>
+      <td></td>
+      <td></td>
+      <td>validate the job date &gt;= current date</td>
+      <td>The system does not allow a past date to be selected for the Job Date.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">58</td>
+      <td></td>
+      <td></td>
+      <td>After submiting pop-up message for status - redirect to job details view on success</td>
+      <td>A success/status popup is displayed after submission, and the user is redirected to the Job Details view.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">59</td>
+      <td></td>
+      <td></td>
+      <td>Annexure File Upload for particular Jobs</td>
+      <td>Annexure file was uploaded successfully for the selected job.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">60</td>
+      <td></td>
+      <td>Edit Job Details</td>
+      <td>Validate the perticular job details is populating on screen</td>
+      <td>The selected job details are populated correctly on the Edit Job Details screen.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">61</td>
+      <td></td>
+      <td></td>
+      <td>Validate all fields empty should not sumbit the form</td>
+      <td>The form is not submitted when all required fields are empty.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>validate the actual &gt; paying amount</td>
+      <td>The Actual amount and Paying amount are displayed correctly according to the job details.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">63</td>
+      <td></td>
+      <td></td>
+      <td>validate the job date &gt;= current date</td>
+      <td>The system does not allow a past date to be entered/selected for the Job Date.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">64</td>
+      <td></td>
+      <td></td>
+      <td>After submiting pop-up message for status - redirect to job details view on success</td>
+      <td>A success/status popup is displayed and the user is redirected to the Job Details view.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">65</td>
+      <td><strong>Assigned job employee</strong></td>
+      <td>Assign a job employee view</td>
+      <td>display all employeedetails order by date wise, work place</td>
+      <td>All employee details are displayed in date-wise order along with the workplace.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">66</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Center name is not available as a filter option. Only the Duty Name option is displayed.</td>
+      <td class="fail">FAIL</td>
+      <td>The Center filter is missing from the assigned job  employee View, so employees cannot be filtered according to Center.</td>
+    </tr>
+    <tr>
+      <td class="num">67</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Place: filter according to place selected</td>
+      <td>Employee list is filtered according to the selection place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">68</td>
+      <td></td>
+      <td></td>
+      <td>Filter - emp name/id: filter according to employee name or emp id selected</td>
+      <td>Employee list is filtered according to the selected employee name or ID.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">69</td>
+      <td></td>
+      <td></td>
+      <td>Save - display all duty name available according to duty date selected</td>
+      <td>All available duty names are displayed according to the selected duty date.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">70</td>
+      <td></td>
+      <td></td>
+      <td>Save - if no duty available on selected date, should populate "No duty available on this date"</td>
+      <td>"no duty available on this date" message is displayed when no duty is available for the selected date.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">71</td>
+      <td></td>
+      <td></td>
+      <td>Save - if job already assigned,should show warning</td>
+      <td>A warning message is displayed when the selected job is already assigned to the employee.</td>
+      <td class="pass">PASS</td>
+      <td>When the selected job is already assigned to the employee, the system displays the duplicate count.</td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>After submitting save it should show a pop up.</td>
+      <td>A success/status popup is displayed after successfully saving the job assignment.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">73</td>
+      <td></td>
+      <td></td>
+      <td>Save - if work place doesn't match,should show warning</td>
+      <td>A warning is displayed when the employee's workplace does not match the selected job workplace</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">74</td>
+      <td><strong>Employee Assigned details</strong></td>
+      <td>Employee assigned Jobs view</td>
+      <td>display all job details order by date wise, work place</td>
+      <td>Displaying job details ordered by date and work place</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">75</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Job details are filtered according to the selected center.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">76</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Place: filter according to place selected</td>
+      <td>Job details are filtered according to the selected place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">77</td>
+      <td></td>
+      <td></td>
+      <td>Filter - emp name/id: filter according to employee name or emp id selected</td>
+      <td>Job details are filtered according to the selected employee name or ID.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">78</td>
+      <td></td>
+      <td></td>
+      <td>single approve / reject : single approve or reject status should change according to user selection</td>
+      <td>Job details are filtered according to the selected employee name or ID.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">79</td>
+      <td></td>
+      <td></td>
+      <td>Pop-up message for action performed for single approve /reject:</td>
+      <td>A pop-up message is displayed for single action approve / reject option.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">80</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: approve and reject- selected employee should get approve or reject</td>
+      <td>The selected employee jobs are successfully approved/rejected after performing the bulk action.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">81</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: approve and reject- Check on already approved status it should not approve or reject . pop message should come</td>
+      <td>Already approved jobs cannot be approved/rejected again.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">82</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: delete - selected employee should delete.</td>
+      <td>The selected employee jobs are deleted successfully.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>after employee mark the job,it should be display in table</td>
+      <td>The job marked by the employee is displayed correctly in the Employee Assigned Jobs table.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">84</td>
+      <td></td>
+      <td></td>
+      <td>export the employee job details accroding to date and place wise</td>
+      <td>The employee job details according to date and place can be exported.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">85</td>
+      <td></td>
+      <td></td>
+      <td>export - if data is not present for selected date message should populate</td>
+      <td>No records found! Please try selecting another date</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">86</td>
+      <td><strong>Attendanace details</strong></td>
+      <td>employee attendace view</td>
+      <td>All employee attendace view should display</td>
+      <td>Employee Attendance View is displayed with employee attendance records and all relevant details.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">87</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>The attendance records were filtered according to the selected center.</td>
+      <td class="pass">PASS</td>
+      <td>After selecting Tcsidz Shivamoga center, only attendance records belonging to Tcsidz Shivamoga were displayed. Other selected centers with no records displayed "No records found".</td>
+    </tr>
+    <tr>
+      <td class="num">88</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Place: filter according to place selected</td>
+      <td>The attendance records were filtered according to the selected place</td>
+      <td class="pass">PASS</td>
+      <td>After selecting Shivamogga as the Work Place, only attendance records with Work Place as Shivamogga were displayed. For places with no attendance records, "No records found" was displayed.</td>
+    </tr>
+    <tr>
+      <td class="num">89</td>
+      <td></td>
+      <td></td>
+      <td>Filter - employee id / name: filter according to employee id / name selected</td>
+      <td>Employee ID and name search filter returned the matching employee record.</td>
+      <td class="pass">PASS</td>
+      <td>Searching SHI04030563 and Afiya displayed Afiya Banu with the corresponding employee details</td>
+    </tr>
+    <tr>
+      <td class="num">90</td>
+      <td></td>
+      <td></td>
+      <td>Filter - status: filter according to status selected</td>
+      <td>Records were filtered according to selected status.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">91</td>
+      <td></td>
+      <td></td>
+      <td>single approve / reject : single approve or reject status should change according to user selection</td>
+      <td>Approved/Rejected status can be changed for a single employee.</td>
+      <td class="pass">PASS</td>
+      <td>The selected employee’s status updates correctly after clicking Approve or Reject.</td>
+    </tr>
+    <tr>
+      <td class="num">92</td>
+      <td></td>
+      <td></td>
+      <td>Pop-up message for action performed for single approve /reject:</td>
+      <td>Pop-up message is displayed after the approve/reject action.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">93</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: approve and reject- selected employee should get approve or reject</td>
+      <td>Selected employees are approved or rejected successfully.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">94</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: approve and reject- Check on already approved status it should not approve or reject . pop message should come</td>
+      <td>Already approved records cannot be approved or rejected again.</td>
+      <td class="pass">PASS</td>
+      <td>pop up "no eligible employees selected for this action".</td>
+    </tr>
+    <tr>
+      <td class="num">95</td>
+      <td></td>
+      <td></td>
+      <td>multiple selection and action perform: delete - selected employee should delete.</td>
+      <td>Selected emolyee deleted successfully!.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">96</td>
+      <td></td>
+      <td></td>
+      <td>SMS: sms notification to employee about status of attendance details</td>
+      <td>sms notification is not sent to registered employee abt attendence details.</td>
+      <td class="fail">FAIL</td>
+      <td>can view recent attendence records,in load more it also shows attendence status.</td>
+    </tr>
+    <tr>
+      <td class="num">97</td>
+      <td></td>
+      <td></td>
+      <td>export the employee attendace details according to date and place wise</td>
+      <td>Attendance details exported according to selected date and place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">98</td>
+      <td></td>
+      <td></td>
+      <td>export - if data is not present for selected date message should populate</td>
+      <td>No Records Found! Please try selecting another date.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr class="section-row">
+      <td class="num"></td>
+      <td colspan="6">Employee</td>
+    </tr>
+    <tr>
+      <td class="num">100</td>
+      <td></td>
+      <td></td>
+      <td>Add Header as employee</td>
+      <td>Employee View header is displayed correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">101</td>
+      <td><strong>profile view</strong></td>
+      <td>employee profile view</td>
+      <td>validate all the details are correct to that perticular employee</td>
+      <td>Employees details are displayed correctly for the selected employee'</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">102</td>
+      <td></td>
+      <td></td>
+      <td>confirmation pop redirect to dashboard</td>
+      <td>Confirmation pop-up displayed and redirected to dashboard successfully.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">103</td>
+      <td></td>
+      <td>employee profile edit</td>
+      <td>Employee can be edit only these details.<br>1.Email ID<br>2.Qualification<br>3.Address<br>4.Profile Pic</td>
+      <td>These details can be edited.</td>
+      <td class="pass">PASS</td>
+      <td>Only date of joining can't be edited.</td>
+    </tr>
+    <tr>
+      <td class="num">104</td>
+      <td></td>
+      <td></td>
+      <td>Able to upload both front and back side of aadhar card</td>
+      <td>Aadhaar front and back documents can be uploaded or edited.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">105</td>
+      <td></td>
+      <td></td>
+      <td>After submitting save changes it should redirect to employee dashboard</td>
+      <td>After saving changes, the page is redirected to the Employee Dashboard successfully.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">106</td>
+      <td><strong>Dashboard</strong></td>
+      <td>dashboard</td>
+      <td>validate employee name, Employee ID, Work Place, Payment Remaining, Previous Month Pending are proper according to particular employee</td>
+      <td>Employee details and payment information are displayed correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">107</td>
+      <td></td>
+      <td></td>
+      <td>bank details are populating properly</td>
+      <td>Bank details are populating correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">108</td>
+      <td></td>
+      <td></td>
+      <td>if bank details are not present then warning pop message regarding bank deatils</td>
+      <td>A warning message pop-up if bank details are not present.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">109</td>
+      <td></td>
+      <td></td>
+      <td>current date job details displaying</td>
+      <td>Current date 28/08/2026 and corresponding job details are displayed correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">110</td>
+      <td></td>
+      <td></td>
+      <td>latest recent attendace record display</td>
+      <td>Attendance records are displayed, with the latest available attendance date shown as 2026-08-11.</td>
+      <td class="pass">PASS</td>
+      <td>No attendance record is available for the current date.</td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>after submitiing mark job,a pop up message should come</td>
+      <td>it shows pop up message as "no job selected"</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">112</td>
+      <td></td>
+      <td></td>
+      <td>validate on login and logout btn redirect to perticular page</td>
+      <td>Login and logout redirection works correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">113</td>
+      <td></td>
+      <td></td>
+      <td>should able to update the profile pic if not updated in bulk upload</td>
+      <td>Profile picture was successfully uploaded and updated.</td>
+      <td class="pass">PASS</td>
+      <td>The updated photo is displayed on the employee profile.</td>
+    </tr>
+    <tr>
+      <td class="num">114</td>
+      <td><strong>Update bank Details</strong></td>
+      <td>update bank Details</td>
+      <td>validation all the fields</td>
+      <td>All mandatory fields are validated correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">115</td>
+      <td></td>
+      <td></td>
+      <td>after submitiing a pop message regarding status</td>
+      <td>Success popup is displayed after submitting the employee details.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">116</td>
+      <td></td>
+      <td></td>
+      <td>validate in dashboard a correct bank details is comming</td>
+      <td>correct bank details are displaying.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">117</td>
+      <td><strong>LogIn / Logout</strong></td>
+      <td>Login</td>
+      <td>validate current date and time is populating</td>
+      <td>-</td>
+      <td class="pending">PENDING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">118</td>
+      <td></td>
+      <td></td>
+      <td>validate based on work place and current date the job details are present in drop down. Shift number and paying amount is populating based on job deatils selected</td>
+      <td>validated based on workplace,date,shifts and paying amount is populating on job details.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">119</td>
+      <td></td>
+      <td></td>
+      <td>captures the live pic. validate no dark image is considering</td>
+      <td>Live photo/camera capture option is not available in the current application. Therefore, live picture capture and dark image validation could not be performed.</td>
+      <td class="fail">FAIL</td>
+      <td>The application does not provide a live photo/camera capture option, so the required live photo cannot be captured or submitted.</td>
+    </tr>
+    <tr>
+      <td class="num">120</td>
+      <td></td>
+      <td></td>
+      <td>After save the entry should display in attendance details</td>
+      <td>No option to create or save a new attendance entry is available in the accessible Admin pages. Therefore, verification of the saved entry in Attendance Details could not be performed.</td>
+      <td class="fail">FAIL</td>
+      <td>Live photo capture is not available in the system; therefore, the system cannot capture or validate the employee's live image.</td>
+    </tr>
+    <tr>
+      <td class="num">121</td>
+      <td></td>
+      <td></td>
+      <td>After submitting logint it should redirect to employee profile page</td>
+      <td>After submitting the login details, the user is successfully redirected to the Employee Profile page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">122</td>
+      <td></td>
+      <td></td>
+      <td>Logout btn enables and login btn disable in dashboard after successfully saving the login details</td>
+      <td>After successfully saving the login details, the Logout button is enabled and the Login button is disabled on the dashboard.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">117</td>
+      <td></td>
+      <td>Logout</td>
+      <td>Annexure should be uploaded before attendance logout(need a pop up as"please upload annexure".</td>
+      <td>When the required document is not uploaded, a pop-up message "Please upload your documents" is displayed and logout is prevented.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">124</td>
+      <td></td>
+      <td></td>
+      <td>Validate based on login details data populating.</td>
+      <td>Employee details are validated and the correct details are populated based on the logged-in user.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">125</td>
+      <td></td>
+      <td></td>
+      <td>captures the live pic. validate no dark image is considering</td>
+      <td>Live picture is not being captured by the system.</td>
+      <td class="fail">FAIL</td>
+      <td>Live photo capture functionality is not available/implemented, so the system cannot validate or reject dark/unclear images.</td>
+    </tr>
+    <tr>
+      <td class="num">126</td>
+      <td></td>
+      <td></td>
+      <td>After save the entry should display in attendance details</td>
+      <td>the attendance entry is not displayed in the Attendance Details section.</td>
+      <td class="fail">FAIL</td>
+      <td>The newly created attendance entry is not displayed in the Attendance Details section, making it difficult to verify whether the attendance was recorded successfully.</td>
+    </tr>
+    <tr>
+      <td class="num"></td>
+      <td></td>
+      <td></td>
+      <td>After submitting logout it should redirect to employee profile page</td>
+      <td>After submitting logout, the user is successfully redirected to the Employee Profile page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">128</td>
+      <td></td>
+      <td></td>
+      <td>Logout and Login btn disable. A message showing current date attendace is already marked</td>
+      <td>the Login and Logout buttons are disabled, and the message indicating that attendance for the current date has already been marked is not displayed.</td>
+      <td class="fail">FAIL</td>
+      <td>The expected current-status message is not displayed correctly after performing the relevant action.</td>
+    </tr>
+    <tr>
+      <td class="num">123</td>
+      <td></td>
+      <td></td>
+      <td>populating time should be correct</td>
+      <td>The attendance time is populated correctly according to the actual logout time.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">130</td>
+      <td><strong>Registartion Form</strong></td>
+      <td>Aadhar registration</td>
+      <td>with one aadhar number only one time registration</td>
+      <td>The system does not allow the same Aadhar number to be registered more than once.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">131</td>
+      <td></td>
+      <td>Validating aadhar number</td>
+      <td>If 12 digit number,then allow 12 digit numbers only</td>
+      <td>Only 12-digit Aadhar numbers is accepted.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">132</td>
+      <td></td>
+      <td>Validating Phone number</td>
+      <td>If 10 digit number,then allow 10 digit numbers only</td>
+      <td>Only 10-digit phone numbers is being accepted</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">133</td>
+      <td></td>
+      <td>Pan registration</td>
+      <td>with one Pan card number only one time registration</td>
+      <td>-</td>
+      <td class="pending">PENDING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">134</td>
+      <td></td>
+      <td>Validation for Employee name</td>
+      <td>If alphabets then should take only alphabets</td>
+      <td>The system allows non-alphabetic characters such as numbers in the Employee Name field.</td>
+      <td class="fail">FAIL</td>
+      <td>The field accepts numeric and other non-alphabetic characters even though it is expected to accept alphabetic characters only.</td>
+    </tr>
+    <tr>
+      <td class="num">135</td>
+      <td></td>
+      <td>IMPLEMENTATION STAGE: SMS after successful registration</td>
+      <td>validate sms is going to employee after registration completed</td>
+      <td>SMS after successful registration is sent to employee.</td>
+      <td class="pass">PASS</td>
+      <td>Registration completes successfully, but the expected SMS notification is received by the employee within 2 or 3 days of registration.</td>
+    </tr>
+    <tr class="section-row">
+      <td class="num"></td>
+      <td colspan="6">Manager</td>
+    </tr>
+    <tr>
+      <td class="num">137</td>
+      <td><strong>Dashboard</strong></td>
+      <td>Menu bar</td>
+      <td>Menu bar should be in this order: 1.Employee details, 2.Job details, 3.Assigned jobs, 4.Mark Attendance, 5.Attendance details, 6.Group selfie, 7.Upload documents, 8.Settings</td>
+      <td>menubar is not in order,not showing dashboard,mark attendence,group selfie,upload docs and settings</td>
+      <td class="fail">FAIL</td>
+      <td>The menu is not arranged as expected and important options such as Dashboard, Mark Attendance, Group Selfie, Upload Documents, and Settings are not displayed correctly.</td>
+    </tr>
+    <tr>
+      <td class="num">138</td>
+      <td><strong>Employee Details</strong></td>
+      <td>employee view</td>
+      <td>All employee view should display Based on manager work_place</td>
+      <td>Employee details are displayed according to the manager's workplace.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">139</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Place: filter according to place selected</td>
+      <td>Employee list is filtered according to the selected place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">140</td>
+      <td></td>
+      <td></td>
+      <td>Filter - employee id / name: filter according to employee id / name selected</td>
+      <td>Employee list is filtered correctly based on the selected employee ID/name</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">141</td>
+      <td></td>
+      <td></td>
+      <td>All employee view should display</td>
+      <td>All employee details are not displayed correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">142</td>
+      <td></td>
+      <td></td>
+      <td>export the employee details accroding to place selected</td>
+      <td>Employee details are exported according to the selected place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">143</td>
+      <td></td>
+      <td></td>
+      <td>export - if data is not present for selected employee message should populate</td>
+      <td>A message is be displayed if no data is available.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">144</td>
+      <td></td>
+      <td>Add employee</td>
+      <td>If aadhaar and phone number same as existing one show error alert</td>
+      <td>If Aadhaar and phone number are same as existing one show pop-up message.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">145</td>
+      <td></td>
+      <td></td>
+      <td>Validate all fields empty (except photo) should not sumbit the form</td>
+      <td>The form is not submitted when the required fields are left empty.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">146</td>
+      <td></td>
+      <td></td>
+      <td>After submiting pop-up message for status - redirect to employee details view on success</td>
+      <td>pop-up message is displayed and the user is redirected to the Employee Details view successfully.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">147</td>
+      <td></td>
+      <td>Edit employee Details</td>
+      <td>Validate the perticular employee details is populating in screen</td>
+      <td>The selected employee's details are populated correctly on the Edit Employee screen.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">148</td>
+      <td></td>
+      <td></td>
+      <td>Validate all fields empty should not sumbit the form</td>
+      <td>The form is not submitted when the required fields are left empty</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">149</td>
+      <td></td>
+      <td></td>
+      <td>If aadhaar and phone number same as existing one show error alert</td>
+      <td>-</td>
+      <td class="pending">PENDING</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">150</td>
+      <td></td>
+      <td></td>
+      <td>After submiting pop-up message for status - redirect to employee details view on success</td>
+      <td>pop-up message is displayed and the user is redirected to the Employee Details view after successful submission.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">151</td>
+      <td><strong>Job Details</strong></td>
+      <td>Job details view</td>
+      <td>display all job details order by date wise, work place Based on manager work_place</td>
+      <td>Job details are displayed correctly based on date and manager workplace.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">152</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Job details are filtered according to the selected center name.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">153</td>
+      <td></td>
+      <td></td>
+      <td>Filter - job name: filter according to job name selected</td>
+      <td>Job details are filtered according to the selected job name.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">154</td>
+      <td><strong>Assigned Jobs</strong></td>
+      <td>Employee assigned Jobs view</td>
+      <td>display all job details order by date wise, work place Based on manager work_place</td>
+      <td>Assigned job details are displayed correctly based on date and manager workplace.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">155</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Job details are filtered according to the selected center name.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">156</td>
+      <td></td>
+      <td></td>
+      <td>Filter - emp name/id: filter according to employee name or emp id selected</td>
+      <td>Job details are filtered correctly based on the selected employee name or employee ID.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">157</td>
+      <td></td>
+      <td></td>
+      <td>export the employee job details accroding to date wise</td>
+      <td>Employee job details are exported correctly according to the selected date.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">158</td>
+      <td></td>
+      <td></td>
+      <td>export - if data is not present for selected date message should populate</td>
+      <td>Appropriate message is displayed when employee job data is not available for the selected date.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">159</td>
+      <td><strong>Mark attendance</strong></td>
+      <td>Employee assigned job</td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>filters according to center name selected.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">160</td>
+      <td></td>
+      <td></td>
+      <td>Filter - employee id / name: filter according to employee id / name selected</td>
+      <td>it filters according to empid and name selected.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">161</td>
+      <td></td>
+      <td></td>
+      <td>manager can mark the employee attendance</td>
+      <td>Manager is not able to mark the employee's attendance.</td>
+      <td class="fail">FAIL</td>
+      <td>The manager cannot mark attendance for the assigned employee because the attendance-marking functionality is not available/working.</td>
+    </tr>
+    <tr>
+      <td class="num">162</td>
+      <td><strong>Attendanace details</strong></td>
+      <td>employee attendace view</td>
+      <td>All employee attendace view should display Based on manager work_place</td>
+      <td>Employee attendance details are successfully displayed based on the manager's workplace.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">163</td>
+      <td></td>
+      <td></td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Employee attendance details are successfully filtered according to the selected center name</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">164</td>
+      <td></td>
+      <td></td>
+      <td>Filter - employee id / name: filter according to employee id / name selected</td>
+      <td>Employee attendance details are successfully filtered according to the selected employee ID or name.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">165</td>
+      <td></td>
+      <td></td>
+      <td>export the employee attendace details accroding to date &amp; place wise</td>
+      <td>Employee attendance details are successfully exported according to the selected date and place.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">166</td>
+      <td></td>
+      <td></td>
+      <td>export - if data is not present for selected date message should populate</td>
+      <td>When no attendance data is available for the selected date, an appropriate message is successfully displayed.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">167</td>
+      <td><strong>Upload documents</strong></td>
+      <td>Annexure file upload</td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Documents are successfully filtered according to the selected center name.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">168</td>
+      <td></td>
+      <td></td>
+      <td>Filter - duty name / project name: filter according to duty name / project selected</td>
+      <td>Documents are successfully filtered according to the selected duty name/project name</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">169</td>
+      <td></td>
+      <td></td>
+      <td>once document uploaded,it should be disabled</td>
+      <td>After the document is uploaded successfully, the upload option is disabled.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">170</td>
+      <td><strong>Group selfie</strong></td>
+      <td>Upload group photo</td>
+      <td>Filter - Center: filter according to center name selected</td>
+      <td>Center name is not available as a filter option. Only the Duty Name option is displayed.</td>
+      <td class="fail">FAIL</td>
+      <td>The Center filter is missing from the assigned job  employee View, so employees cannot be filtered according to Center.</td>
+    </tr>
+    <tr>
+      <td class="num">171</td>
+      <td></td>
+      <td></td>
+      <td>Filter - duty name / project name: filter according to duty name / project selected</td>
+      <td>cannot be filtered according to duty name.</td>
+      <td class="fail">FAIL</td>
+      <td>The system shows that no duty is available for the selected date.</td>
+    </tr>
+    <tr>
+      <td class="num">172</td>
+      <td></td>
+      <td></td>
+      <td>once photo uploaded,it should be disabled</td>
+      <td>Group Photo upload functionality is not available, so this validation cannot be performed.</td>
+      <td class="fail">FAIL</td>
+      <td>The Group Photo upload functionality is unavailable, so the system cannot be verified for disabling the option after a photo is uploaded.</td>
+    </tr>
+    <tr>
+      <td class="num">170</td>
+      <td></td>
+      <td></td>
+      <td>After submitting, it should redirect to upload group photo view</td>
+      <td>Upload Group Photo view is not available, so redirection cannot be performed.</td>
+      <td class="fail">FAIL</td>
+      <td>The Upload Group Photo view is unavailable, so the redirection after submitting a group photo cannot be tested.</td>
+    </tr>
+    <tr>
+      <td class="num">171</td>
+      <td></td>
+      <td></td>
+      <td>Verify unsupported document format</td>
+      <td>unsupported documents are not supported.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">172</td>
+      <td></td>
+      <td></td>
+      <td>Verify document exceeding maximum file size</td>
+      <td>System rejected the document because it exceeded the maximum allowed file size.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">173</td>
+      <td></td>
+      <td></td>
+      <td>Verify uploaded document can be viewed/downloaded</td>
+      <td>Uploaded document was successfully viewed and downloaded.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">174</td>
+      <td></td>
+      <td></td>
+      <td>Verify document upload after page refresh</td>
+      <td>Uploaded document remained available after refreshing the page.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">175</td>
+      <td></td>
+      <td></td>
+      <td>Verify manager cannot view employees outside assigned workplace</td>
+      <td>Manager was unable to view employees from workplaces outside the assigned workplace.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">176</td>
+      <td></td>
+      <td></td>
+      <td>Verify manager cannot edit unauthorized employee details</td>
+      <td>Manager was unable to edit details of unauthorized employees.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">177</td>
+      <td></td>
+      <td></td>
+      <td>Verify manager cannot access admin-only functions</td>
+      <td>Manager was restricted from accessing admin-only functions.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">178</td>
+      <td></td>
+      <td></td>
+      <td>Verify manager session expires after logout</td>
+      <td>Manager session was successfully terminated after logout.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">179</td>
+      <td></td>
+      <td></td>
+      <td>Verify direct URL access to unauthorized page</td>
+      <td>Direct access to the unauthorized page was denied and the user was redirected/restricted.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">180</td>
+      <td></td>
+      <td></td>
+      <td>Verify password visibility toggle</td>
+      <td>Password visibility toggle successfully showed and hid the password.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">181</td>
+      <td></td>
+      <td></td>
+      <td>Verify login button during multiple clicks</td>
+      <td>Multiple clicks on the login button did not create duplicate login requests/actions.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">182</td>
+      <td></td>
+      <td></td>
+      <td>Verify session after browser refresh</td>
+      <td>User session remained active after browser refresh.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">183</td>
+      <td></td>
+      <td></td>
+      <td>Verify session timeout</td>
+      <td>User session does not expire after the configured timeout period.</td>
+      <td class="fail">FAIL</td>
+      <td>there is no timeout for user session</td>
+    </tr>
+    <tr>
+      <td class="num">184</td>
+      <td></td>
+      <td></td>
+      <td>Verify employee ID generation</td>
+      <td>Employee ID was generated successfully and uniquely for the employee.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">185</td>
+      <td></td>
+      <td></td>
+      <td>Verify employee ID cannot be modified</td>
+      <td>employee ID cannot be modified.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">186</td>
+      <td></td>
+      <td></td>
+      <td>Verify employee list pagination</td>
+      <td>Employee list was successfully displayed across multiple pages, and pagination worked correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">187</td>
+      <td></td>
+      <td></td>
+      <td>Verify unique Manager ID generation</td>
+      <td>A unique Manager ID was generated successfully for each manager.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">188</td>
+      <td></td>
+      <td></td>
+      <td>Verify manager deletion cancellation</td>
+      <td>Manager deletion was not cancelled and manager record was succesfully deleted.</td>
+      <td class="fail">FAIL</td>
+      <td>The manager deletion cancellation option is not working as expected, as the manager record was deleted successfully instead of cancelling the deletion.</td>
+    </tr>
+    <tr>
+      <td class="num">189</td>
+      <td></td>
+      <td></td>
+      <td>Verify manager list pagination</td>
+      <td>Manager list was successfully displayed across multiple pages, and pagination worked correctly.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">190</td>
+      <td></td>
+      <td></td>
+      <td>Verify job ID uniqueness</td>
+      <td>A unique Job ID was generated successfully for each job.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="num">191</td>
+      <td></td>
+      <td></td>
+      <td>check trackclock application is responsive</td>
+      <td>Tracklock application is responsive and displays correctly across different screen sizes and devices without layout issues.</td>
+      <td class="pass">PASS</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>

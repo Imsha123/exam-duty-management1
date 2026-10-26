@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink, CheckCircle } from 'lucide-react';
-import { EmployeeItem } from '../services/master.service';
+import masterService, { EmployeeItem } from '../services/master.service';
 import { exportEmployeesToExcel } from '../utils/excelExport';
 
 interface ExportEmployeesCardProps {
@@ -18,6 +18,26 @@ export const ExportEmployeesCard: React.FC<ExportEmployeesCardProps> = ({
 }) => {
   const [internalCity, setInternalCity] = useState<string>('ALL');
   const [exportNotice, setExportNotice] = useState<string | null>(null);
+  const [citiesList, setCitiesList] = useState<string[]>([
+    'Mysore',
+    'Bengaluru',
+    'Mangalore',
+    'Shivamogga',
+    'Mandya',
+    'Davanagere',
+    'Dharwad',
+  ]);
+
+  useEffect(() => {
+    masterService.getCities().then((cts) => {
+      if (Array.isArray(cts) && cts.length > 0) {
+        const names = Array.from(new Set(cts.map((c) => c.name).filter(Boolean)));
+        setCitiesList(names);
+      }
+    }).catch(() => {
+      // Keep defaults
+    });
+  }, []);
 
   // If a controlled value and handler are provided, use them; otherwise use local state
   const activeCity = (propSelectedCity !== undefined && onCityChange) ? propSelectedCity : internalCity;
@@ -73,13 +93,11 @@ export const ExportEmployeesCard: React.FC<ExportEmployeesCardProps> = ({
               title="Filter workforce by workplace city for Excel export"
             >
               <option value="ALL">All Places</option>
-              <option value="Mysore">Mysore</option>
-              <option value="Bengaluru">Bengaluru</option>
-              <option value="Mangalore">Mangalore</option>
-              <option value="Shivamogga">Shivamogga</option>
-              <option value="Mandya">Mandya</option>
-              <option value="Davanagere">Davanagere</option>
-              <option value="Dharwad">Dharwad</option>
+              {citiesList.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
             </select>
           </div>
         </div>

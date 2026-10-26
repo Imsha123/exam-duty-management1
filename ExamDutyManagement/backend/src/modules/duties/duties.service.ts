@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Duty, Employee } from '../../entities';
+import { Duty, Employee, City, Center, Exam, Role, Shift } from '../../entities';
 import { CreateDutyDto, UpdateDutyDto } from './duties.dto';
 
 @Injectable()
@@ -16,6 +16,16 @@ export class DutiesService {
     private readonly dutyRepo: Repository<Duty>,
     @InjectRepository(Employee)
     private readonly employeeRepo: Repository<Employee>,
+    @InjectRepository(City)
+    private readonly cityRepo: Repository<City>,
+    @InjectRepository(Center)
+    private readonly centerRepo: Repository<Center>,
+    @InjectRepository(Exam)
+    private readonly examRepo: Repository<Exam>,
+    @InjectRepository(Role)
+    private readonly roleRepo: Repository<Role>,
+    @InjectRepository(Shift)
+    private readonly shiftRepo: Repository<Shift>,
   ) {}
 
   private async resolveOrCreateEmployee(dto: CreateDutyDto): Promise<string> {
@@ -34,6 +44,18 @@ export class DutiesService {
           where: { resourceId: resId },
         })
       : null;
+
+    if (!emp && resId) {
+      // Case-insensitive lookup
+      const allEmps = await this.employeeRepo.find();
+      emp =
+        allEmps.find(
+          (e) =>
+            e.resourceId.trim().toLowerCase() === resId.toLowerCase() ||
+            e.mobile.trim() === resId ||
+            e.name.trim().toLowerCase() === resId.toLowerCase(),
+        ) || null;
+    }
 
     if (emp) {
       let updated = false;
@@ -69,16 +91,82 @@ export class DutiesService {
     return saved.id;
   }
 
+  private async resolveMasterIds(dto: CreateDutyDto): Promise<{
+    cityId: string;
+    centerId: string;
+    examId: string;
+    roleId: string;
+    shiftId: string;
+  }> {
+    // 1. City
+    let city = dto.cityId ? await this.cityRepo.findOne({ where: { id: dto.cityId } }) : null;
+    if (!city) {
+      const allCities = await this.cityRepo.find();
+      city = allCities[0] || null;
+    }
+
+    // 2. Center
+    let center = dto.centerId ? await this.centerRepo.findOne({ where: { id: dto.centerId } }) : null;
+    if (!center && city) {
+      center = await this.centerRepo.findOne({ where: { cityId: city.id } });
+    }
+    if (!center) {
+      const allCenters = await this.centerRepo.find();
+      center = allCenters[0] || null;
+    }
+
+    // 3. Exam
+    let exam = dto.examId ? await this.examRepo.findOne({ where: { id: dto.examId } }) : null;
+    if (!exam && dto.dutyType) {
+      exam = await this.examRepo.findOne({ where: { type: dto.dutyType } });
+    }
+    if (!exam) {
+      const allExams = await this.examRepo.find();
+      exam = allExams[0] || null;
+    }
+
+    // 4. Role
+    let role = dto.roleId ? await this.roleRepo.findOne({ where: { id: dto.roleId } }) : null;
+    if (!role && dto.roleId) {
+      const cleanCode = dto.roleId.replace(/^role-/, '').toUpperCase();
+      role = await this.roleRepo.findOne({ where: { code: cleanCode } });
+    }
+    if (!role) {
+      const allRoles = await this.roleRepo.find();
+      role = allRoles[0] || null;
+    }
+
+    // 5. Shift
+    let shift = dto.shiftId ? await this.shiftRepo.findOne({ where: { id: dto.shiftId } }) : null;
+    if (!shift && dto.shiftId) {
+      const shiftNum = dto.shiftId.replace(/[^0-9]/g, '');
+      shift = await this.shiftRepo.findOne({ where: { name: `Shift ${shiftNum || '1'}` } });
+    }
+    if (!shift) {
+      const allShifts = await this.shiftRepo.find();
+      shift = allShifts[0] || null;
+    }
+
+    return {
+      cityId: city?.id || dto.cityId,
+      centerId: center?.id || dto.centerId,
+      examId: exam?.id || dto.examId,
+      roleId: role?.id || dto.roleId,
+      shiftId: shift?.id || dto.shiftId,
+    };
+  }
+
   async createDuty(dto: CreateDutyDto): Promise<Duty> {
     const employeeId = await this.resolveOrCreateEmployee(dto);
+    const resolved = await this.resolveMasterIds(dto);
 
     // 1. Prevent duplicate using Employee + Duty Date + Center + Shift
     const existing = await this.dutyRepo.findOne({
       where: {
         employeeId,
         dutyDate: dto.dutyDate.trim(),
-        centerId: dto.centerId,
-        shiftId: dto.shiftId,
+        centerId: resolved.centerId,
+        shiftId: resolved.shiftId,
       },
     });
 
@@ -92,19 +180,27 @@ export class DutiesService {
     const newDuty = this.dutyRepo.create({
       employeeId,
       dutyDate: dto.dutyDate.trim(),
-      cityId: dto.cityId,
-      centerId: dto.centerId,
+      cityId: resolved.cityId,
+      centerId: resolved.centerId,
       dutyType: dto.dutyType || 'Exam',
-      examId: dto.examId,
-      roleId: dto.roleId,
-      shiftId: dto.shiftId,
+      examId: resolved.examId,
+      roleId: resolved.roleId,
+      shiftId: resolved.shiftId,
       reportingTime: dto.reportingTime || '07:30 AM',
       shiftEndTime: dto.shiftEndTime || '01:30 PM',
       status: 'Pending',
       attendanceFileId: dto.attendanceFileId || null,
     });
 
-    return this.dutyRepo.save(newDuty);
+    const saved = await this.dutyRepo.save(newDuty);
+
+    // Return populated duty
+    return (
+      (await this.dutyRepo.findOne({
+        where: { id: saved.id },
+        relations: ['employee', 'exam', 'center', 'city', 'role', 'shift', 'attendanceFile'],
+      })) || saved
+    );
   }
 
   async getMyDuties(
@@ -126,9 +222,11 @@ export class DutiesService {
     const resId = (resourceId || '').trim();
     if (resId && resId.toUpperCase() !== 'ALL') {
       const emp = await this.employeeRepo.findOne({ where: { resourceId: resId } });
-      if (emp) {
-        query.where('duty.employeeId = :employeeId', { employeeId: emp.id });
-      }
+      const empId = emp ? emp.id : resId;
+      query.where(
+        '(duty.employeeId = :empId OR duty.employeeId = :resId OR employee.resourceId = :resId OR employee.id = :empId)',
+        { empId, resId },
+      );
     }
 
     // Status filter: All / Pending / Approved / Rejected

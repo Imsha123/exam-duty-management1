@@ -90,16 +90,15 @@ export const AddEmployeeScreen: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [createdEmp, setCreatedEmp] = useState<{ id: string; resourceId: string; name: string } | null>(null);
-
-
+  const [lastRegistered, setLastRegistered] = useState<EmployeeItem | null>(null);
 
   // Load existing employees
   const loadEmployees = async () => {
     setLoadingList(true);
     try {
       const emps = await masterService.getEmployees();
-      // Exclude temporary admin Sanjeev Kumar (17655)
-      const realStaff = emps.filter((e) => e.resourceId !== '17655' && !e.isAdmin);
+      // Exclude temporary admin Sanjeev Kumar (17655) and admin account
+      const realStaff = emps.filter((e) => e.resourceId !== '17655' && e.resourceId?.toLowerCase() !== 'admin' && !e.isAdmin);
       setRegisteredEmployees(realStaff.length > 0 ? realStaff : emps);
     } catch (err) {
       console.error('Failed to load employees', err);
@@ -125,16 +124,8 @@ export const AddEmployeeScreen: React.FC = () => {
       setSubmitError('Please enter a Staff / Resource ID.');
       return;
     }
-    if (!/^\d+$/.test(resourceId.trim())) {
-      setSubmitError('Staff / Resource ID must contain numbers only (no letters or symbols).');
-      return;
-    }
     if (!name.trim()) {
       setSubmitError('Please enter Member Full Name.');
-      return;
-    }
-    if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
-      setSubmitError('Member Full Name can only contain letters and spaces (no digits or symbols).');
       return;
     }
     if (!mobile.trim()) {
@@ -142,7 +133,7 @@ export const AddEmployeeScreen: React.FC = () => {
       return;
     }
     if (!/^\d{10}$/.test(mobile.trim())) {
-      setSubmitError('Contact / Mobile Number must be exactly 10 digits (numbers only, no letters or symbols).');
+      setSubmitError('Contact / Mobile Number must be exactly 10 digits.');
       return;
     }
     if (hasContinuousSequence(mobile.trim(), 6)) {
@@ -153,17 +144,12 @@ export const AddEmployeeScreen: React.FC = () => {
       setSubmitError('Please enter an Email Address.');
       return;
     }
-    const emailLower = email.trim().toLowerCase();
-    if (!emailLower.endsWith('@gmail.com') || !/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(emailLower)) {
-      setSubmitError('Email Address must be a valid Gmail address ending with @gmail.com (e.g. user@gmail.com).');
-      return;
-    }
     if (!aadhaarNumber.trim()) {
       setSubmitError('Please enter Aadhaar Card Number.');
       return;
     }
     if (!/^\d{12}$/.test(aadhaarNumber.trim())) {
-      setSubmitError('Aadhaar Card Number must be exactly 12 digits (numbers only, no letters or symbols).');
+      setSubmitError('Aadhaar Card Number must be exactly 12 digits.');
       return;
     }
     if (hasContinuousSequence(aadhaarNumber.trim(), 6)) {
@@ -197,8 +183,12 @@ export const AddEmployeeScreen: React.FC = () => {
         resourceId: newEmp.resourceId,
         name: newEmp.name,
       });
-      console.log('%c✔ Database connected successfully', 'color: #16a34a; font-weight: bold; font-size: 14px;');
-      setSubmitSuccess(`Employee "${newEmp.name}" (ID: ${newEmp.resourceId}) registered successfully in MSSQL!`);
+      setLastRegistered(newEmp);
+      setSubmitSuccess(`Employee "${newEmp.name}" (ID: ${newEmp.resourceId}) registered successfully! Details displayed below.`);
+
+      // Immediately display new employee at the very top of the table below
+      setRegisteredEmployees((prev) => [newEmp, ...prev.filter((e) => e.resourceId !== newEmp.resourceId)]);
+      setCurrentPage(1);
 
       // Clear input fields
       setResourceId('');
@@ -211,7 +201,7 @@ export const AddEmployeeScreen: React.FC = () => {
       setAadhaarWarning(null);
       setSelectedCities(['Mysore']);
 
-      // Refresh list
+      // Refresh list from database
       loadEmployees();
     } catch (err: any) {
       const msg =
@@ -318,29 +308,11 @@ export const AddEmployeeScreen: React.FC = () => {
 
             {/* Notification Banners */}
             {submitSuccess && (
-              <div className="alert-banner alert-success" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="alert-banner alert-success">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle2 size={18} />
                   <span>{submitSuccess}</span>
                 </div>
-                {createdEmp && (
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/add-duty?resourceId=${createdEmp.resourceId}`)}
-                    style={{
-                      padding: '6px 14px',
-                      background: '#15803D',
-                      color: '#FFFFFF',
-                      borderRadius: '6px',
-                      border: 'none',
-                      fontSize: '14px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Assign Duty Now &rarr;
-                  </button>
-                )}
               </div>
             )}
             {submitError && (
@@ -561,7 +533,110 @@ export const AddEmployeeScreen: React.FC = () => {
               </form>
             </div>
 
+            {/* Newly Registered Employee Details Card (Directly Below Form) */}
+            {lastRegistered && (
+              <div
+                style={{
+                  background: '#F0FDF4',
+                  border: '1.5px solid #86EFAC',
+                  borderRadius: '12px',
+                  padding: '18px 22px',
+                  marginBottom: '22px',
+                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.08)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '14px',
+                    borderBottom: '1px solid #DCFCE7',
+                    paddingBottom: '10px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#15803D' }}>
+                    <CheckCircle2 size={20} color="#16A34A" />
+                    <span style={{ fontWeight: 700, fontSize: '16px' }}>
+                      Newly Registered Employee Details
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      background: '#16A34A',
+                      color: '#FFFFFF',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      padding: '3px 9px',
+                      borderRadius: '12px',
+                      letterSpacing: '0.4px',
+                    }}
+                  >
+                    SAVED &amp; REGISTERED
+                  </span>
+                </div>
 
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                    gap: '12px',
+                    background: '#FFFFFF',
+                    padding: '16px',
+                    borderRadius: '10px',
+                    border: '1px solid #BBF7D0',
+                    fontSize: '13.5px',
+                  }}
+                >
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '12px', fontWeight: 600 }}>
+                      STAFF / RESOURCE ID
+                    </span>
+                    <strong style={{ color: '#2563EB', fontSize: '15px' }}>{lastRegistered.resourceId}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '12px', fontWeight: 600 }}>
+                      MEMBER FULL NAME
+                    </span>
+                    <strong style={{ color: '#1E293B', fontSize: '14.5px' }}>{lastRegistered.name}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '12px', fontWeight: 600 }}>
+                      CONTACT / MOBILE NUMBER
+                    </span>
+                    <strong style={{ color: '#1E293B' }}>{lastRegistered.mobile}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '12px', fontWeight: 600 }}>
+                      EMAIL ADDRESS
+                    </span>
+                    <strong style={{ color: '#1E293B' }}>{lastRegistered.email || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '12px', fontWeight: 600 }}>
+                      ASSIGNED CITY
+                    </span>
+                    <strong style={{ color: '#0F766E' }}>{lastRegistered.city || 'Mysore'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '12px', fontWeight: 600 }}>
+                      AADHAAR CARD NUMBER
+                    </span>
+                    <strong style={{ color: '#334155', fontFamily: 'monospace' }}>
+                      {lastRegistered.aadhaarNumber || '—'}
+                    </strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block', fontSize: '12px', fontWeight: 600 }}>
+                      PAN CARD NUMBER
+                    </span>
+                    <strong style={{ color: '#334155', fontFamily: 'monospace' }}>
+                      {lastRegistered.panNumber || '—'}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Registered Staff Reference Table */}
             <div className="recent-duties-card">
@@ -599,9 +674,35 @@ export const AddEmployeeScreen: React.FC = () => {
                         </td>
                       </tr>
                     ) : (
-                      displayedEmployees.map((emp, idx) => (
-                        <tr key={emp.id || idx}>
-                          <td className="col-num">{(currentPage - 1) * pageSize + idx + 1}</td>
+                      displayedEmployees.map((emp, idx) => {
+                        const isNew = emp.resourceId === lastRegistered?.resourceId;
+                        return (
+                          <tr
+                            key={emp.id || idx}
+                            style={{
+                              backgroundColor: isNew ? '#F0FDF4' : undefined,
+                              transition: 'background-color 0.3s ease',
+                            }}
+                          >
+                            <td className="col-num">
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                {(currentPage - 1) * pageSize + idx + 1}
+                                {isNew && (
+                                  <span
+                                    style={{
+                                      background: '#16A34A',
+                                      color: '#FFFFFF',
+                                      fontSize: '9px',
+                                      fontWeight: 800,
+                                      padding: '1px 5px',
+                                      borderRadius: '4px',
+                                    }}
+                                  >
+                                    NEW
+                                  </span>
+                                )}
+                              </span>
+                            </td>
                           <td>
                             <button
                               type="button"
@@ -677,8 +778,9 @@ export const AddEmployeeScreen: React.FC = () => {
                             </div>
                           </td>
                         </tr>
-                      ))
-                    )}
+                      );
+                    })
+                  )}
                   </tbody>
                 </table>
               </div>
