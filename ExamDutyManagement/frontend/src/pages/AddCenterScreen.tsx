@@ -15,9 +15,11 @@ import {
   MapPin,
   X,
   Save,
+  Upload,
 } from 'lucide-react';
 import masterService, { Center, City } from '../services/master.service';
 import authService from '../services/auth.service';
+import { BulkUploadCenterModal } from '../components/BulkUploadCenterModal';
 
 export const AddCenterScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -44,6 +46,7 @@ export const AddCenterScreen: React.FC = () => {
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showBulkModal, setShowBulkModal] = useState<boolean>(false);
 
   // Edit Modal State
   const [editingCenter, setEditingCenter] = useState<Center | null>(null);
@@ -211,7 +214,7 @@ export const AddCenterScreen: React.FC = () => {
 
           <main className="desktop-content-panel">
             {/* Page Header */}
-            <div className="page-section-header">
+            <div className="page-section-header" style={{ justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div className="page-header-icon-box">
                   <School size={24} color="#2563EB" />
@@ -221,6 +224,27 @@ export const AddCenterScreen: React.FC = () => {
                   <p className="page-sub-heading">Configure examination centers across cities</p>
                 </div>
               </div>
+
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setShowBulkModal(true)}
+                style={{
+                  padding: '10px 18px',
+                  fontSize: '15px',
+                  background: '#2563EB',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  borderRadius: '8px',
+                }}
+              >
+                <Upload size={16} />
+                <span>Bulk Upload Exam Center</span>
+              </button>
             </div>
 
             {/* Notification Banners */}
@@ -251,13 +275,15 @@ export const AddCenterScreen: React.FC = () => {
               </div>
 
               <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px', marginBottom: '16px' }}>
-                  <div className="form-group-item">
-                    <label className="input-title-label">CENTER CODE *</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <School size={15} color="#2563EB" />
+                      <span>CENTER CODE *</span>
+                    </label>
                     <input
                       type="text"
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px' }}
+                      className="form-input-control"
                       placeholder="e.g. 8412, IDZ-01, VVCE-03"
                       value={centerCode}
                       onChange={(e) => setCenterCode(e.target.value)}
@@ -266,12 +292,14 @@ export const AddCenterScreen: React.FC = () => {
                     />
                   </div>
 
-                  <div className="form-group-item">
-                    <label className="input-title-label">CENTER NAME *</label>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <School size={15} color="#2563EB" />
+                      <span>CENTER NAME *</span>
+                    </label>
                     <input
                       type="text"
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px' }}
+                      className="form-input-control"
                       placeholder="e.g. iDZ Whitefield Bengaluru, SJB Institute"
                       value={centerName}
                       onChange={(e) => setCenterName(e.target.value)}
@@ -279,14 +307,14 @@ export const AddCenterScreen: React.FC = () => {
                       required
                     />
                   </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px', marginBottom: '20px' }}>
-                  <div className="form-group-item">
-                    <label className="input-title-label">CITY *</label>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <MapPin size={15} color="#2563EB" />
+                      <span>CITY *</span>
+                    </label>
                     <select
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', background: '#FFF' }}
+                      className="form-select-control"
                       value={selectedCityId}
                       onChange={(e) => setSelectedCityId(e.target.value)}
                       disabled={submitting}
@@ -300,12 +328,14 @@ export const AddCenterScreen: React.FC = () => {
                     </select>
                   </div>
 
-                  <div className="form-group-item">
-                    <label className="input-title-label">CENTER ADDRESS / LOCATION</label>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <MapPin size={15} color="#2563EB" />
+                      <span>CENTER ADDRESS / LOCATION</span>
+                    </label>
                     <input
                       type="text"
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px' }}
+                      className="form-input-control"
                       placeholder="e.g. Campus Road, Electronic City, Bengaluru"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
@@ -545,44 +575,44 @@ export const AddCenterScreen: React.FC = () => {
             </div>
 
             <form onSubmit={handleUpdate} style={{ padding: '20px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '14px', marginBottom: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                    CODE *
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div className="form-field-wrapper">
+                  <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                    <School size={15} color="#2563EB" />
+                    <span>CODE *</span>
                   </label>
                   <input
                     type="text"
-                    className="clean-input"
+                    className="form-input-control"
                     value={editCenterCode}
                     onChange={(e) => setEditCenterCode(e.target.value)}
-                    style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', boxSizing: 'border-box' }}
                     required
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                    CENTER NAME *
+                <div className="form-field-wrapper">
+                  <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                    <School size={15} color="#2563EB" />
+                    <span>CENTER NAME *</span>
                   </label>
                   <input
                     type="text"
-                    className="clean-input"
+                    className="form-input-control"
                     value={editCenterName}
                     onChange={(e) => setEditCenterName(e.target.value)}
-                    style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', boxSizing: 'border-box' }}
                     required
                   />
                 </div>
               </div>
 
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                  CITY *
+              <div className="form-field-wrapper" style={{ marginBottom: '16px' }}>
+                <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <MapPin size={15} color="#2563EB" />
+                  <span>CITY *</span>
                 </label>
                 <select
-                  className="clean-input"
+                  className="form-select-control"
                   value={editCityId}
                   onChange={(e) => setEditCityId(e.target.value)}
-                  style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', background: '#FFF', boxSizing: 'border-box' }}
                   required
                 >
                   {cities.map((ct) => (
@@ -593,16 +623,16 @@ export const AddCenterScreen: React.FC = () => {
                 </select>
               </div>
 
-              <div style={{ marginBottom: '22px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                  ADDRESS / LOCATION
+              <div className="form-field-wrapper" style={{ marginBottom: '22px' }}>
+                <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <MapPin size={15} color="#2563EB" />
+                  <span>ADDRESS / LOCATION</span>
                 </label>
                 <input
                   type="text"
-                  className="clean-input"
+                  className="form-input-control"
                   value={editAddress}
                   onChange={(e) => setEditAddress(e.target.value)}
-                  style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', boxSizing: 'border-box' }}
                 />
               </div>
 
@@ -653,37 +683,65 @@ export const AddCenterScreen: React.FC = () => {
       <div className="mobile-layout-wrapper">
         <MobileHeader />
         <main className="mobile-content-body" style={{ padding: '16px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1E293B', marginBottom: '12px' }}>Add Exam Center</h2>
-          <form onSubmit={handleSubmit} style={{ background: '#FFFFFF', padding: '14px', borderRadius: '10px', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
-            <div style={{ marginBottom: '10px' }}>
-              <label className="input-title-label">CODE *</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1E293B', margin: 0 }}>Add Exam Center</h2>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => setShowBulkModal(true)}
+              style={{
+                padding: '6px 12px',
+                fontSize: '13px',
+                background: '#2563EB',
+                color: '#FFFFFF',
+                border: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                borderRadius: '6px',
+              }}
+            >
+              <Upload size={14} />
+              <span>Bulk Upload</span>
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
+            <div className="form-field-wrapper" style={{ marginBottom: '12px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <School size={15} color="#2563EB" />
+                <span>CENTER CODE *</span>
+              </label>
               <input
                 type="text"
-                className="clean-input"
-                style={{ width: '100%', height: '40px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', boxSizing: 'border-box' }}
+                className="form-input-control"
                 placeholder="e.g. 8412"
                 value={centerCode}
                 onChange={(e) => setCenterCode(e.target.value)}
                 required
               />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label className="input-title-label">CENTER NAME *</label>
+            <div className="form-field-wrapper" style={{ marginBottom: '12px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <School size={15} color="#2563EB" />
+                <span>CENTER NAME *</span>
+              </label>
               <input
                 type="text"
-                className="clean-input"
-                style={{ width: '100%', height: '40px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', boxSizing: 'border-box' }}
+                className="form-input-control"
                 placeholder="e.g. iDZ Whitefield"
                 value={centerName}
                 onChange={(e) => setCenterName(e.target.value)}
                 required
               />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label className="input-title-label">CITY *</label>
+            <div className="form-field-wrapper" style={{ marginBottom: '12px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <MapPin size={15} color="#2563EB" />
+                <span>CITY *</span>
+              </label>
               <select
-                className="clean-input"
-                style={{ width: '100%', height: '40px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', background: '#FFF', boxSizing: 'border-box' }}
+                className="form-select-control"
                 value={selectedCityId}
                 onChange={(e) => setSelectedCityId(e.target.value)}
                 required
@@ -693,13 +751,26 @@ export const AddCenterScreen: React.FC = () => {
                 ))}
               </select>
             </div>
+            <div className="form-field-wrapper" style={{ marginBottom: '16px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <MapPin size={15} color="#2563EB" />
+                <span>CENTER ADDRESS / LOCATION</span>
+              </label>
+              <input
+                type="text"
+                className="form-input-control"
+                placeholder="e.g. Campus Road, Bengaluru"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
             <button
               type="submit"
               className="btn-primary"
               disabled={submitting}
-              style={{ width: '100%', height: '42px', background: '#2563EB', color: '#FFF', borderRadius: '8px', border: 'none', fontWeight: 600 }}
+              style={{ width: '100%', height: '48px', background: '#2563EB', color: '#FFF', borderRadius: '10px', border: 'none', fontWeight: 600, fontSize: '15px' }}
             >
-              {submitting ? 'Adding...' : 'Add Exam Center'}
+              {submitting ? 'Adding...' : '+ Add Exam Center'}
             </button>
           </form>
 
@@ -724,6 +795,18 @@ export const AddCenterScreen: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Bulk Upload Modal */}
+      <BulkUploadCenterModal
+        isOpen={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        onSuccess={() => {
+          loadData();
+          setSubmitSuccess('Exam centers registered successfully via bulk upload!');
+        }}
+        existingCenters={centers}
+        existingCities={cities}
+      />
     </div>
   );
 };

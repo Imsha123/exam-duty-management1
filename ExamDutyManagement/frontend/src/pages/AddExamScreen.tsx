@@ -15,9 +15,11 @@ import {
   GraduationCap,
   X,
   Save,
+  Upload,
 } from 'lucide-react';
 import masterService, { Exam } from '../services/master.service';
 import authService from '../services/auth.service';
+import { BulkUploadExamModal } from '../components/BulkUploadExamModal';
 
 export const AddExamScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +44,7 @@ export const AddExamScreen: React.FC = () => {
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showBulkModal, setShowBulkModal] = useState<boolean>(false);
 
   // Edit Modal State
   const [editingExam, setEditingExam] = useState<Exam | null>(null);
@@ -188,7 +191,7 @@ export const AddExamScreen: React.FC = () => {
 
           <main className="desktop-content-panel">
             {/* Page Header */}
-            <div className="page-section-header">
+            <div className="page-section-header" style={{ justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div className="page-header-icon-box">
                   <GraduationCap size={24} color="#2563EB" />
@@ -198,6 +201,27 @@ export const AddExamScreen: React.FC = () => {
                   <p className="page-sub-heading">Configure examinations and test programs</p>
                 </div>
               </div>
+
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setShowBulkModal(true)}
+                style={{
+                  padding: '10px 18px',
+                  fontSize: '15px',
+                  background: '#2563EB',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  borderRadius: '8px',
+                }}
+              >
+                <Upload size={16} />
+                <span>Bulk Upload Exam</span>
+              </button>
             </div>
 
             {/* Notification Banners */}
@@ -229,12 +253,14 @@ export const AddExamScreen: React.FC = () => {
 
               <form onSubmit={handleSubmit}>
                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div className="form-group-item">
-                    <label className="input-title-label">EXAM NAME *</label>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <FileText size={15} color="#2563EB" />
+                      <span>EXAM NAME *</span>
+                    </label>
                     <input
                       type="text"
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px' }}
+                      className="form-input-control"
                       placeholder="e.g. JEE Advanced 2026, NEET UG, UGC NET"
                       value={examName}
                       onChange={(e) => setExamName(e.target.value)}
@@ -243,12 +269,14 @@ export const AddExamScreen: React.FC = () => {
                     />
                   </div>
 
-                  <div className="form-group-item">
-                    <label className="input-title-label">EXAM CODE</label>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <FileText size={15} color="#2563EB" />
+                      <span>EXAM CODE</span>
+                    </label>
                     <input
                       type="text"
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px' }}
+                      className="form-input-control"
                       placeholder="e.g. JEE-ADV-26, NEET"
                       value={examCode}
                       onChange={(e) => setExamCode(e.target.value)}
@@ -256,20 +284,24 @@ export const AddExamScreen: React.FC = () => {
                     />
                   </div>
 
-                  <div className="form-group-item">
-                    <label className="input-title-label">TYPE *</label>
-                    <div style={{ display: 'flex', gap: '8px', height: '44px' }}>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <FileText size={15} color="#2563EB" />
+                      <span>TYPE *</span>
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px', height: '48px' }}>
                       <button
                         type="button"
                         onClick={() => setExamType('Exam')}
                         style={{
                           flex: 1,
+                          height: '100%',
                           borderRadius: '8px',
                           border: '2px solid ' + (examType === 'Exam' ? '#2563EB' : '#CBD5E1'),
                           background: examType === 'Exam' ? '#EFF6FF' : '#FFF',
                           color: examType === 'Exam' ? '#1D4ED8' : '#64748B',
                           fontWeight: 700,
-                          fontSize: '13px',
+                          fontSize: '14px',
                           cursor: 'pointer',
                         }}
                       >
@@ -280,12 +312,13 @@ export const AddExamScreen: React.FC = () => {
                         onClick={() => setExamType('Mock')}
                         style={{
                           flex: 1,
+                          height: '100%',
                           borderRadius: '8px',
                           border: '2px solid ' + (examType === 'Mock' ? '#D97706' : '#CBD5E1'),
                           background: examType === 'Mock' ? '#FEF3C7' : '#FFF',
                           color: examType === 'Mock' ? '#B45309' : '#64748B',
                           fontWeight: 700,
-                          fontSize: '13px',
+                          fontSize: '14px',
                           cursor: 'pointer',
                         }}
                       >
@@ -536,50 +569,52 @@ export const AddExamScreen: React.FC = () => {
             </div>
 
             <form onSubmit={handleUpdate} style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                  EXAM NAME *
+              <div className="form-field-wrapper" style={{ marginBottom: '16px' }}>
+                <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <FileText size={15} color="#2563EB" />
+                  <span>EXAM NAME *</span>
                 </label>
                 <input
                   type="text"
-                  className="clean-input"
+                  className="form-input-control"
                   value={editExamName}
                   onChange={(e) => setEditExamName(e.target.value)}
-                  style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', boxSizing: 'border-box' }}
                   required
                   autoFocus
                 />
               </div>
 
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                  EXAM CODE
+              <div className="form-field-wrapper" style={{ marginBottom: '16px' }}>
+                <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <FileText size={15} color="#2563EB" />
+                  <span>EXAM CODE</span>
                 </label>
                 <input
                   type="text"
-                  className="clean-input"
+                  className="form-input-control"
                   value={editExamCode}
                   onChange={(e) => setEditExamCode(e.target.value)}
-                  style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', boxSizing: 'border-box' }}
                 />
               </div>
 
-              <div style={{ marginBottom: '22px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                  TYPE *
+              <div className="form-field-wrapper" style={{ marginBottom: '22px' }}>
+                <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <FileText size={15} color="#2563EB" />
+                  <span>TYPE *</span>
                 </label>
-                <div style={{ display: 'flex', gap: '10px', height: '40px' }}>
+                <div style={{ display: 'flex', gap: '10px', height: '48px' }}>
                   <button
                     type="button"
                     onClick={() => setEditExamType('Exam')}
                     style={{
                       flex: 1,
+                      height: '100%',
                       borderRadius: '8px',
                       border: '2px solid ' + (editExamType === 'Exam' ? '#2563EB' : '#CBD5E1'),
                       background: editExamType === 'Exam' ? '#EFF6FF' : '#FFF',
                       color: editExamType === 'Exam' ? '#1D4ED8' : '#64748B',
                       fontWeight: 700,
-                      fontSize: '13px',
+                      fontSize: '14px',
                       cursor: 'pointer',
                     }}
                   >
@@ -590,12 +625,13 @@ export const AddExamScreen: React.FC = () => {
                     onClick={() => setEditExamType('Mock')}
                     style={{
                       flex: 1,
+                      height: '100%',
                       borderRadius: '8px',
                       border: '2px solid ' + (editExamType === 'Mock' ? '#D97706' : '#CBD5E1'),
                       background: editExamType === 'Mock' ? '#FEF3C7' : '#FFF',
                       color: editExamType === 'Mock' ? '#B45309' : '#64748B',
                       fontWeight: 700,
-                      fontSize: '13px',
+                      fontSize: '14px',
                       cursor: 'pointer',
                     }}
                   >
@@ -651,38 +687,106 @@ export const AddExamScreen: React.FC = () => {
       <div className="mobile-layout-wrapper">
         <MobileHeader />
         <main className="mobile-content-body" style={{ padding: '16px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1E293B', marginBottom: '12px' }}>Add Exam Name</h2>
-          <form onSubmit={handleSubmit} style={{ background: '#FFFFFF', padding: '14px', borderRadius: '10px', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
-            <div style={{ marginBottom: '10px' }}>
-              <label className="input-title-label">EXAM NAME *</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1E293B', margin: 0 }}>Add Exam Name</h2>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => setShowBulkModal(true)}
+              style={{
+                padding: '6px 12px',
+                fontSize: '13px',
+                background: '#2563EB',
+                color: '#FFFFFF',
+                border: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+                borderRadius: '6px',
+              }}
+            >
+              <Upload size={14} />
+              <span>Bulk Upload</span>
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
+            <div className="form-field-wrapper" style={{ marginBottom: '12px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <FileText size={15} color="#2563EB" />
+                <span>EXAM NAME *</span>
+              </label>
               <input
                 type="text"
-                className="clean-input"
-                style={{ width: '100%', height: '40px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', boxSizing: 'border-box' }}
+                className="form-input-control"
                 placeholder="e.g. JEE Main"
                 value={examName}
                 onChange={(e) => setExamName(e.target.value)}
                 required
               />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label className="input-title-label">CODE</label>
+            <div className="form-field-wrapper" style={{ marginBottom: '12px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <FileText size={15} color="#2563EB" />
+                <span>CODE</span>
+              </label>
               <input
                 type="text"
-                className="clean-input"
-                style={{ width: '100%', height: '40px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', boxSizing: 'border-box' }}
+                className="form-input-control"
                 placeholder="e.g. JEE"
                 value={examCode}
                 onChange={(e) => setExamCode(e.target.value)}
               />
             </div>
+            <div className="form-field-wrapper" style={{ marginBottom: '16px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <FileText size={15} color="#2563EB" />
+                <span>TYPE *</span>
+              </label>
+              <div style={{ display: 'flex', gap: '8px', height: '44px' }}>
+                <button
+                  type="button"
+                  onClick={() => setExamType('Exam')}
+                  style={{
+                    flex: 1,
+                    height: '100%',
+                    borderRadius: '8px',
+                    border: '2px solid ' + (examType === 'Exam' ? '#2563EB' : '#CBD5E1'),
+                    background: examType === 'Exam' ? '#EFF6FF' : '#FFF',
+                    color: examType === 'Exam' ? '#1D4ED8' : '#64748B',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Exam
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExamType('Mock')}
+                  style={{
+                    flex: 1,
+                    height: '100%',
+                    borderRadius: '8px',
+                    border: '2px solid ' + (examType === 'Mock' ? '#D97706' : '#CBD5E1'),
+                    background: examType === 'Mock' ? '#FEF3C7' : '#FFF',
+                    color: examType === 'Mock' ? '#B45309' : '#64748B',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Mock
+                </button>
+              </div>
+            </div>
             <button
               type="submit"
               className="btn-primary"
               disabled={submitting}
-              style={{ width: '100%', height: '42px', background: '#2563EB', color: '#FFF', borderRadius: '8px', border: 'none', fontWeight: 600 }}
+              style={{ width: '100%', height: '48px', background: '#2563EB', color: '#FFF', borderRadius: '10px', border: 'none', fontWeight: 600, fontSize: '15px' }}
             >
-              {submitting ? 'Adding...' : 'Add Exam'}
+              {submitting ? 'Adding...' : '+ Add Exam'}
             </button>
           </form>
 
@@ -707,6 +811,17 @@ export const AddExamScreen: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Bulk Upload Modal */}
+      <BulkUploadExamModal
+        isOpen={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        onSuccess={() => {
+          loadExams();
+          setSubmitSuccess('Exams registered successfully via bulk upload!');
+        }}
+        existingExams={exams}
+      />
     </div>
   );
 };

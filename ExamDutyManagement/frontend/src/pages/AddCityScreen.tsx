@@ -198,13 +198,15 @@ export const AddCityScreen: React.FC = () => {
               </div>
 
               <form onSubmit={handleSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div className="form-group-item">
-                    <label className="input-title-label">CITY NAME *</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '20px', marginBottom: '20px' }}>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <MapPin size={15} color="#2563EB" />
+                      <span>CITY NAME *</span>
+                    </label>
                     <input
                       type="text"
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px' }}
+                      className="form-input-control"
                       placeholder="e.g. Mysuru, Bengaluru, Hubballi"
                       value={cityName}
                       onChange={(e) => setCityName(e.target.value)}
@@ -213,12 +215,14 @@ export const AddCityScreen: React.FC = () => {
                     />
                   </div>
 
-                  <div className="form-group-item">
-                    <label className="input-title-label">STATE *</label>
+                  <div className="form-field-wrapper">
+                    <label className="field-label" style={{ fontSize: '13.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <Building size={15} color="#2563EB" />
+                      <span>STATE *</span>
+                    </label>
                     <input
                       type="text"
-                      className="clean-input"
-                      style={{ height: '44px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px' }}
+                      className="form-input-control"
                       placeholder="e.g. Karnataka"
                       value={stateName}
                       onChange={(e) => setStateName(e.target.value)}
@@ -416,31 +420,31 @@ export const AddCityScreen: React.FC = () => {
             </div>
 
             <form onSubmit={handleUpdate} style={{ padding: '20px' }}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                  CITY NAME *
+              <div className="form-field-wrapper" style={{ marginBottom: '16px' }}>
+                <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <MapPin size={15} color="#2563EB" />
+                  <span>CITY NAME *</span>
                 </label>
                 <input
                   type="text"
-                  className="clean-input"
+                  className="form-input-control"
                   value={editCityName}
                   onChange={(e) => setEditCityName(e.target.value)}
-                  style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', boxSizing: 'border-box' }}
                   required
                   autoFocus
                 />
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                  STATE *
+              <div className="form-field-wrapper" style={{ marginBottom: '24px' }}>
+                <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                  <Building size={15} color="#2563EB" />
+                  <span>STATE *</span>
                 </label>
                 <input
                   type="text"
-                  className="clean-input"
+                  className="form-input-control"
                   value={editStateName}
                   onChange={(e) => setEditStateName(e.target.value)}
-                  style={{ width: '100%', height: '42px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 12px', fontSize: '14px', boxSizing: 'border-box' }}
                   required
                 />
               </div>
@@ -493,25 +497,29 @@ export const AddCityScreen: React.FC = () => {
         <MobileHeader />
         <main className="mobile-content-body" style={{ padding: '16px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1E293B', marginBottom: '12px' }}>Add City</h2>
-          <form onSubmit={handleSubmit} style={{ background: '#FFFFFF', padding: '14px', borderRadius: '10px', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
-            <div style={{ marginBottom: '12px' }}>
-              <label className="input-title-label">CITY NAME *</label>
+          <form onSubmit={handleSubmit} style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
+            <div className="form-field-wrapper" style={{ marginBottom: '14px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <MapPin size={15} color="#2563EB" />
+                <span>CITY NAME *</span>
+              </label>
               <input
                 type="text"
-                className="clean-input"
-                style={{ width: '100%', height: '40px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', boxSizing: 'border-box' }}
+                className="form-input-control"
                 placeholder="e.g. Mysuru"
                 value={cityName}
                 onChange={(e) => setCityName(e.target.value)}
                 required
               />
             </div>
-            <div style={{ marginBottom: '12px' }}>
-              <label className="input-title-label">STATE</label>
+            <div className="form-field-wrapper" style={{ marginBottom: '16px' }}>
+              <label className="field-label" style={{ fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                <Building size={15} color="#2563EB" />
+                <span>STATE *</span>
+              </label>
               <input
                 type="text"
-                className="clean-input"
-                style={{ width: '100%', height: '40px', border: '1.5px solid #CBD5E1', borderRadius: '8px', padding: '0 10px', boxSizing: 'border-box' }}
+                className="form-input-control"
                 placeholder="Karnataka"
                 value={stateName}
                 onChange={(e) => setStateName(e.target.value)}
@@ -522,9 +530,9 @@ export const AddCityScreen: React.FC = () => {
               type="submit"
               className="btn-primary"
               disabled={submitting}
-              style={{ width: '100%', height: '42px', background: '#2563EB', color: '#FFF', borderRadius: '8px', border: 'none', fontWeight: 600 }}
+              style={{ width: '100%', height: '48px', background: '#2563EB', color: '#FFF', borderRadius: '10px', border: 'none', fontWeight: 600, fontSize: '15px' }}
             >
-              {submitting ? 'Adding...' : 'Add City'}
+              {submitting ? 'Adding...' : '+ Add City'}
             </button>
           </form>
 

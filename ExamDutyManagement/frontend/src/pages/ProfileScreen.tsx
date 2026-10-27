@@ -122,7 +122,6 @@ export const ProfileScreen: React.FC = () => {
                   </div>
                 </div>
               </div>
-
             </div>
 
             {/* Profile Info Grid */}

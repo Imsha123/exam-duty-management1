@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Menu,
@@ -57,7 +58,7 @@ export const MobileHeader: React.FC = () => {
     ...(isAdmin
       ? [
           {
-            label: 'Register Workforce',
+            label: 'Add Employee',
             path: '/add-employee',
             icon: <UserPlus size={20} />,
           },
@@ -89,18 +90,18 @@ export const MobileHeader: React.FC = () => {
         ]
       : [
           {
-            label: 'Add Duty & Attendance',
+            label: 'Add Duty',
             path: '/add-duty',
             icon: <CalendarPlus size={20} />,
           },
           {
-            label: 'My Examination Duties',
+            label: 'My Duties',
             path: '/my-duties',
             icon: <ClipboardList size={20} />,
           },
         ]),
     {
-      label: 'My Profile & Account',
+      label: isAdmin ? 'My Profile & Account' : 'Profile',
       path: '/profile',
       icon: <User size={20} />,
     },
@@ -141,7 +142,7 @@ export const MobileHeader: React.FC = () => {
 
       {/* Blue Banner with Welcome & Backend Status */}
       <div className="mobile-blue-banner">
-        {/* Row 1: Greeting on left, Backend Status on right (Properly balanced & aligned) */}
+        {/* Row 1: Greeting on left, Backend Status on right */}
         <div className="mobile-banner-header-row">
           <span className="welcome-label">Welcome</span>
           <div className="mobile-banner-badge">
@@ -149,10 +150,7 @@ export const MobileHeader: React.FC = () => {
           </div>
         </div>
 
-        {/* Row 2: Full-width User Name (Never squeezed by badges) */}
-        {!isAdmin && <h1 className="user-name">{displayName}</h1>}
-
-        {/* Row 3: Resource ID Pill & Role Badge */}
+        {/* Row 2: Resource ID Pill & Role Badge side-by-side */}
         <div className="mobile-banner-pills-row">
           <button
             type="button"
@@ -171,96 +169,98 @@ export const MobileHeader: React.FC = () => {
         </div>
       </div>
 
-      {/* Slide-out Mobile Navigation Drawer */}
-      {drawerOpen && (
-        <div className="mobile-drawer-overlay" onClick={() => setDrawerOpen(false)}>
-          <aside className="mobile-drawer-panel" onClick={(e) => e.stopPropagation()}>
-            {/* Drawer Header */}
-            <div className="drawer-header-bar">
-              <div className="drawer-brand">
-                <div className="drawer-brand-logo">
-                  <Shield size={22} color="#FFFFFF" strokeWidth={2.4} />
+      {/* Slide-out Mobile Navigation Drawer - Portaled directly to document.body */}
+      {drawerOpen &&
+        createPortal(
+          <div className="mobile-drawer-overlay" onClick={() => setDrawerOpen(false)}>
+            <aside className={`mobile-drawer-panel ${!isAdmin ? 'employee-compact' : ''}`} onClick={(e) => e.stopPropagation()}>
+              {/* Drawer Header */}
+              <div className="drawer-header-bar">
+                <div className="drawer-brand">
+                  <div className="drawer-brand-logo">
+                    <Shield size={22} color="#FFFFFF" strokeWidth={2.4} />
+                  </div>
+                  <div>
+                    <span className="drawer-app-title">Exam Duty</span>
+                    <span className="drawer-app-sub">Management Portal</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="drawer-app-title">Exam Duty</span>
-                  <span className="drawer-app-sub">Management Portal</span>
-                </div>
+                <button
+                  type="button"
+                  className="drawer-close-btn"
+                  onClick={() => setDrawerOpen(false)}
+                  aria-label="Close navigation drawer"
+                >
+                  <X size={20} />
+                </button>
               </div>
-              <button
-                type="button"
-                className="drawer-close-btn"
-                onClick={() => setDrawerOpen(false)}
-                aria-label="Close navigation drawer"
+
+              {/* User Card */}
+              <div
+                className="drawer-user-card"
+                onClick={() => {
+                  setDrawerOpen(false);
+                  setShowDetailsModal(true);
+                }}
+                title="Click to view full profile details"
               >
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* User Card */}
-            <div
-              className="drawer-user-card"
-              onClick={() => {
-                setDrawerOpen(false);
-                setShowDetailsModal(true);
-              }}
-              title="Click to view full profile details"
-            >
-              <div className="drawer-user-avatar">
-                <span>{initials}</span>
-              </div>
-              <div className="drawer-user-info">
-                <div className="drawer-user-name">{displayName}</div>
-                <div className="drawer-user-role-row">
-                  <span className="drawer-id-badge">ID: {resourceId}</span>
-                  <span className={`drawer-role-pill ${isAdmin ? 'admin' : 'staff'}`}>
-                    {isAdmin ? 'ADMIN' : 'STAFF'}
-                  </span>
+                <div className="drawer-user-avatar">
+                  <span>{initials}</span>
+                </div>
+                <div className="drawer-user-info">
+                  <div className="drawer-user-name">{displayName}</div>
+                  <div className="drawer-user-role-row">
+                    <span className="drawer-id-badge">ID: {resourceId}</span>
+                    <span className={`drawer-role-pill ${isAdmin ? 'admin' : 'staff'}`}>
+                      {isAdmin ? 'ADMIN' : 'STAFF'}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Quick Navigation Links */}
-            <div className="drawer-nav-section">
-              <span className="drawer-section-label">QUICK NAVIGATION</span>
-              <nav className="drawer-nav-list">
-                {menuItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <button
-                      key={item.path}
-                      type="button"
-                      className={`drawer-nav-item ${isActive ? 'active' : ''}`}
-                      onClick={() => {
-                        setDrawerOpen(false);
-                        navigate(item.path);
-                      }}
-                    >
-                      <div className="drawer-item-left">
-                        <span className="drawer-item-icon">{item.icon}</span>
-                        <span className="drawer-item-label">{item.label}</span>
-                      </div>
-                      <ChevronRight size={16} className="drawer-chevron" />
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
+              {/* Quick Navigation Links */}
+              <div className="drawer-nav-section">
+                <span className="drawer-section-label">QUICK NAVIGATION</span>
+                <nav className="drawer-nav-list">
+                  {menuItems.map((item) => {
+                    const isActive = location.pathname === item.path;
+                    return (
+                      <button
+                        key={item.path}
+                        type="button"
+                        className={`drawer-nav-item ${isActive ? 'active' : ''}`}
+                        onClick={() => {
+                          setDrawerOpen(false);
+                          navigate(item.path);
+                        }}
+                      >
+                        <div className="drawer-item-left">
+                          <span className="drawer-item-icon">{item.icon}</span>
+                          <span className="drawer-item-label">{item.label}</span>
+                        </div>
+                        <ChevronRight size={16} className="drawer-chevron" />
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
 
-            {/* Drawer Footer with Sign Out */}
-            <div className="drawer-footer">
-              <button
-                type="button"
-                className="drawer-logout-btn"
-                onClick={handleLogout}
-              >
-                <LogOut size={17} />
-                <span>Sign Out Session</span>
-              </button>
-              <div className="drawer-version-tag">Exam Duty Management • KEA</div>
-            </div>
-          </aside>
-        </div>
-      )}
+              {/* Drawer Footer with Sign Out */}
+              <div className="drawer-footer">
+                <button
+                  type="button"
+                  className="drawer-logout-btn"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={17} />
+                  <span>Logout</span>
+                </button>
+                <div className="drawer-version-tag">Exam Duty Management • KEA</div>
+              </div>
+            </aside>
+          </div>,
+          document.body
+        )}
 
       {/* Employee Personal Details Modal */}
       <EmployeeDetailsModal

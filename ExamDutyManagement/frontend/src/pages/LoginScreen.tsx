@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, User, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Loader2, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { Shield, User, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 import authService from '../services/auth.service';
 
 export const LoginScreen: React.FC = () => {
@@ -9,7 +9,6 @@ export const LoginScreen: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showDemoCredentials, setShowDemoCredentials] = useState<boolean>(false);
   const [errors, setErrors] = useState<{ username?: string; password?: string; server?: string }>({});
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -51,12 +50,6 @@ export const LoginScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleQuickFill = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
-    setErrors({});
   };
 
   return (
@@ -185,133 +178,6 @@ export const LoginScreen: React.FC = () => {
                   <AlertCircle size={14} />
                   {errors.password}
                 </span>
-              )}
-            </div>
-
-            {/* Quick Demo Credentials Info / Fill (Hidden by default) */}
-            <div style={{ marginBottom: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowDemoCredentials(!showDemoCredentials)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#64748B',
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '2px 0',
-                    transition: 'color 0.2s',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = '#2563EB')}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = '#64748B')}
-                >
-                  <Sparkles size={13} color="#2563EB" />
-                  <span>{showDemoCredentials ? 'Hide Demo Credentials' : 'Demo Credentials'}</span>
-                  {showDemoCredentials ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                </button>
-              </div>
-
-              {showDemoCredentials && (
-                <div
-                  style={{
-                    marginTop: '8px',
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '10px 12px',
-                    fontSize: '12.5px',
-                    color: '#475569',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '5px',
-                      marginBottom: '8px',
-                      color: '#334155',
-                    }}
-                  >
-                    <Sparkles size={14} color="#2563EB" />
-                    <span>Demo Quick Login Credentials:</span>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {/* Admin 1: devsupport */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span>
-                        <strong>Admin 1:</strong> devsupport / dev@support123
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleQuickFill('devsupport', 'dev@support123')}
-                        style={{
-                          background: '#EFF6FF',
-                          color: '#2563EB',
-                          border: '1px solid #BFDBFE',
-                          borderRadius: '4px',
-                          padding: '2px 8px',
-                          fontSize: '11.5px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Use devsupport
-                      </button>
-                    </div>
-
-                    {/* Admin 2: Mohan */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span>
-                        <strong>Admin 2:</strong> Mohan / Mohan@123
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleQuickFill('Mohan', 'Mohan@123')}
-                        style={{
-                          background: '#EFF6FF',
-                          color: '#2563EB',
-                          border: '1px solid #BFDBFE',
-                          borderRadius: '4px',
-                          padding: '2px 8px',
-                          fontSize: '11.5px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Use Mohan
-                      </button>
-                    </div>
-
-                    {/* Employee */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span>
-                        <strong>Employee:</strong> 597305 / 9886915446
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleQuickFill('597305', '9886915446')}
-                        style={{
-                          background: '#F0FDF4',
-                          color: '#16A34A',
-                          border: '1px solid #BBF7D0',
-                          borderRadius: '4px',
-                          padding: '2px 8px',
-                          fontSize: '11.5px',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Use Employee
-                      </button>
-                    </div>
-                  </div>
-                </div>
               )}
             </div>
 
