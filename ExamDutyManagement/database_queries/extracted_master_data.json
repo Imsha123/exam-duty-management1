@@ -1,0 +1,596 @@
+{
+  "cities": [
+    "Bagalkot",
+    "Ballari(Bellary)",
+    "Belagavi(Belgaum)",
+    "Bengaluru",
+    "Bidar",
+    "Chikballapur",
+    "Chikkamagaluru",
+    "Davanagere",
+    "Dharwad",
+    "Gadag",
+    "HOSPET",
+    "Hassan",
+    "Haveri",
+    "Hubballi(Hubli)",
+    "Kalaburagi(Gulbarga)",
+    "Kolar",
+    "Mandya",
+    "Mangaluru(Mangalore)",
+    "Mysuru(Mysore)",
+    "Puttur",
+    "Shivamogga(Shimoga)",
+    "Tumkur",
+    "Udupi",
+    "Uttara Kannada",
+    "Vijayapura(Bijapur)"
+  ],
+  "centers": [
+    {
+      "city": "Bagalkot",
+      "centerCode": "963",
+      "centerName": "Basaveshwar Engineering College"
+    },
+    {
+      "city": "Bagalkot",
+      "centerCode": "42236",
+      "centerName": "Biluru Gurubasava Mahaswamiji Institute of Technology"
+    },
+    {
+      "city": "Ballari(Bellary)",
+      "centerCode": "1435",
+      "centerName": "Ballari Institute of Technology & Management"
+    },
+    {
+      "city": "Ballari(Bellary)",
+      "centerCode": "294",
+      "centerName": "Rao Bahadur Y.Mahabaleshwarappa Engineering College"
+    },
+    {
+      "city": "Belagavi(Belgaum)",
+      "centerCode": "11398",
+      "centerName": "iON Digital Zone iDZ Airport Road"
+    },
+    {
+      "city": "Belagavi(Belgaum)",
+      "centerCode": "37505",
+      "centerName": "Infojiva IT Services LLP"
+    },
+    {
+      "city": "Belagavi(Belgaum)",
+      "centerCode": "9090",
+      "centerName": "SJPN Trusts BCA College"
+    },
+    {
+      "city": "Belagavi(Belgaum)",
+      "centerCode": "979",
+      "centerName": "Jain College of Engineering"
+    },
+    {
+      "city": "Belagavi(Belgaum)",
+      "centerCode": "42238",
+      "centerName": "Anuvartik Mirji Bharatesh Institute of Technology"
+    },
+    {
+      "city": "Belagavi(Belgaum)",
+      "centerCode": "1417",
+      "centerName": "K.L.E. Dr. M.S. Sheshgiri College of Engineering and Technology"
+    },
+    {
+      "city": "Belagavi(Belgaum)",
+      "centerCode": "2450",
+      "centerName": "Hirasugar Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "42057",
+      "centerName": "iON Digital Zone iDZ Harohalli"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "7974",
+      "centerName": "iON Digital Zone iDZ Rajarajeswari Medical College and Hospital"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "37272",
+      "centerName": "eMerit"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "163",
+      "centerName": "HKBK College of Engineering"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "40086",
+      "centerName": "eTalent"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "40071",
+      "centerName": "Techxcellence Digital Solutions"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "9345",
+      "centerName": "Rain Cloud Technologies"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "7814",
+      "centerName": "Reverend Technologies"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "40168",
+      "centerName": "Digimetrics"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "33958",
+      "centerName": "Milestone Technologies"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "8210",
+      "centerName": "Dayananda Sagar University"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "8349",
+      "centerName": "M.S.Ramaiah University of Applied Sciences"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "35699",
+      "centerName": "BITBYTECH Solutions"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "3015",
+      "centerName": "K S School of Engineering and Management Bengaluru"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "8361",
+      "centerName": "BMS College of Engineering"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "772",
+      "centerName": "Cambridge Institute Of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "250",
+      "centerName": "M S Engineering College"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "632",
+      "centerName": "ACS College of Engineering"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "531",
+      "centerName": "Vemana Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "2744",
+      "centerName": "AMC Engineering College"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "41880",
+      "centerName": "Four Tune Tech Solutions"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "532",
+      "centerName": "B.N.M Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "150",
+      "centerName": "Reva University"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "714",
+      "centerName": "Dayananda Sagar Academy of Technology and Management"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "8261",
+      "centerName": "RNS Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "8218",
+      "centerName": "Gopalan College of Engineering & Management"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "2945",
+      "centerName": "SJB Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "533",
+      "centerName": "BMS Institute of Technology and Management"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "646",
+      "centerName": "Rajarajeswari College of Engineering"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "42240",
+      "centerName": "Harsha Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "193",
+      "centerName": "Amruta Institute of Engineering and Management Sciences"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "2180",
+      "centerName": "Don Bosco Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "972",
+      "centerName": "Jyothy Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "506",
+      "centerName": "Global Academy of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "3424",
+      "centerName": "Dayananda Sagar Institutions"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "42241",
+      "centerName": "Akash Institute of Engineering and Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "755",
+      "centerName": "JSS Academy of Technical Education"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "596",
+      "centerName": "K S Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "986",
+      "centerName": "R.L.Jalappa Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "4553",
+      "centerName": "Alliance University"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "42242",
+      "centerName": "Aditya College of Engineering and Technology Bengaluru"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "2035",
+      "centerName": "Nagarjuna College of Engineering & Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "3620",
+      "centerName": "M S Ramaiah Institute of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "7856",
+      "centerName": "Sir M Visvesvaraya Institute Of Technology"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "29030",
+      "centerName": "RV Institute of Technology and Management"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "1577",
+      "centerName": "Sri Sairam College of Engineering"
+    },
+    {
+      "city": "Bengaluru",
+      "centerCode": "42239",
+      "centerName": "Dr. H N National College of Engineering"
+    },
+    {
+      "city": "Bidar",
+      "centerCode": "40800",
+      "centerName": "Lingarajappa Engineering College"
+    },
+    {
+      "city": "Chikballapur",
+      "centerCode": "195",
+      "centerName": "Sri Jagadguru Chandrashekaranatha Swamiji Institute of Technology"
+    },
+    {
+      "city": "Chikkamagaluru",
+      "centerCode": "1074",
+      "centerName": "Adichunchanagiri Institute of Technology"
+    },
+    {
+      "city": "Davanagere",
+      "centerCode": "201",
+      "centerName": "Bapuji Institute of Engineering & Technology"
+    },
+    {
+      "city": "Davanagere",
+      "centerCode": "7844",
+      "centerName": "Jain Institute of Technology"
+    },
+    {
+      "city": "Davanagere",
+      "centerCode": "974",
+      "centerName": "GM Institute of Technology"
+    },
+    {
+      "city": "Dharwad",
+      "centerCode": "1575",
+      "centerName": "Global Business School"
+    },
+    {
+      "city": "Dharwad",
+      "centerCode": "1208",
+      "centerName": "Sri Dharmasthala Manjunatheshwara College of Engineering and Technology"
+    },
+    {
+      "city": "Gadag",
+      "centerCode": "985",
+      "centerName": "Smt. Kamala and Sri Venkappa M. Agadi College of Engineering and Technology"
+    },
+    {
+      "city": "Hassan",
+      "centerCode": "8152",
+      "centerName": "Rajeev Polytechnic"
+    },
+    {
+      "city": "Hassan",
+      "centerCode": "1026",
+      "centerName": "Malnad College of Engineering"
+    },
+    {
+      "city": "Hassan",
+      "centerCode": "2670",
+      "centerName": "NAVKIS College of Engineering"
+    },
+    {
+      "city": "Haveri",
+      "centerCode": "950",
+      "centerName": "Sri Taralabalu Jagadguru Institute of Technology"
+    },
+    {
+      "city": "HOSPET",
+      "centerCode": "2630",
+      "centerName": "Proudadevaraya Institute of Technology"
+    },
+    {
+      "city": "Hubballi(Hubli)",
+      "centerCode": "8030",
+      "centerName": "iON Digital Zone iDZ Akshay Colony"
+    },
+    {
+      "city": "Hubballi(Hubli)",
+      "centerCode": "9687",
+      "centerName": "Chetan Business School"
+    },
+    {
+      "city": "Hubballi(Hubli)",
+      "centerCode": "4521",
+      "centerName": "AGMR College of Engineering and Technology"
+    },
+    {
+      "city": "Hubballi(Hubli)",
+      "centerCode": "9558",
+      "centerName": "Jain College Of Engineering And Technology Hubballi"
+    },
+    {
+      "city": "Kalaburagi(Gulbarga)",
+      "centerCode": "40041",
+      "centerName": "Sharanabasaweshwar Vidya Vardhak Sangha"
+    },
+    {
+      "city": "Kalaburagi(Gulbarga)",
+      "centerCode": "26845",
+      "centerName": "Godutai Engineering College For Women"
+    },
+    {
+      "city": "Kalaburagi(Gulbarga)",
+      "centerCode": "3194",
+      "centerName": "Appa Institute Of Engineering & Technology"
+    },
+    {
+      "city": "Kolar",
+      "centerCode": "920",
+      "centerName": "Dr T Thimmaiah Institute of Technology"
+    },
+    {
+      "city": "Kolar",
+      "centerCode": "3348",
+      "centerName": "C Byre Gowda Institute of Technology"
+    },
+    {
+      "city": "Mandya",
+      "centerCode": "973",
+      "centerName": "P.E.S College of Engineering"
+    },
+    {
+      "city": "Mandya",
+      "centerCode": "1045",
+      "centerName": "BGS Institute of Technology"
+    },
+    {
+      "city": "Mandya",
+      "centerCode": "8972",
+      "centerName": "Cauvery Institute and Technology"
+    },
+    {
+      "city": "Mandya",
+      "centerCode": "1013",
+      "centerName": "Maharaja Institute of Technology"
+    },
+    {
+      "city": "Mandya",
+      "centerCode": "8154",
+      "centerName": "G.Madegowda Institute of Technology"
+    },
+    {
+      "city": "Mangaluru(Mangalore)",
+      "centerCode": "8594",
+      "centerName": "iON Digital Zone Bondel"
+    },
+    {
+      "city": "Mangaluru(Mangalore)",
+      "centerCode": "37202",
+      "centerName": "Shri Sharada Niketana Exam and Training Institute"
+    },
+    {
+      "city": "Mangaluru(Mangalore)",
+      "centerCode": "192",
+      "centerName": "St Joseph Engineering College"
+    },
+    {
+      "city": "Mangaluru(Mangalore)",
+      "centerCode": "841",
+      "centerName": "Sahyadri College of Engineering and Management"
+    },
+    {
+      "city": "Mangaluru(Mangalore)",
+      "centerCode": "784",
+      "centerName": "Mangalore Institute of Technology and Engineering"
+    },
+    {
+      "city": "Mangaluru(Mangalore)",
+      "centerCode": "8975",
+      "centerName": "Yenepoya Institute of Technology"
+    },
+    {
+      "city": "Mangaluru(Mangalore)",
+      "centerCode": "8362",
+      "centerName": "Shree Devi Institue of Technology"
+    },
+    {
+      "city": "Mysuru(Mysore)",
+      "centerCode": "8743",
+      "centerName": "iON Digital Zone iDZ Hebbal"
+    },
+    {
+      "city": "Mysuru(Mysore)",
+      "centerCode": "11674",
+      "centerName": "Chandana Resource Centre"
+    },
+    {
+      "city": "Mysuru(Mysore)",
+      "centerCode": "984",
+      "centerName": "Vidya Vardhaka College Of Engineering"
+    },
+    {
+      "city": "Mysuru(Mysore)",
+      "centerCode": "42237",
+      "centerName": "Cauvery College of Engineering"
+    },
+    {
+      "city": "Mysuru(Mysore)",
+      "centerCode": "2678",
+      "centerName": "GSSS Institute of Engineering and Technology for Women"
+    },
+    {
+      "city": "Mysuru(Mysore)",
+      "centerCode": "16702",
+      "centerName": "MIT Thandavapura"
+    },
+    {
+      "city": "Puttur",
+      "centerCode": "1465",
+      "centerName": "Vivekananda College of Engineering & Technology"
+    },
+    {
+      "city": "Shivamogga(Shimoga)",
+      "centerCode": "8560",
+      "centerName": "iON Digital Zone iDZ Machenahalli"
+    },
+    {
+      "city": "Shivamogga(Shimoga)",
+      "centerCode": "971",
+      "centerName": "PES Institute of Technology and Management"
+    },
+    {
+      "city": "Shivamogga(Shimoga)",
+      "centerCode": "356",
+      "centerName": "Jawaharlal Nehru National College of Engineering"
+    },
+    {
+      "city": "Tumkur",
+      "centerCode": "207",
+      "centerName": "Siddaganga Institute of Technology"
+    },
+    {
+      "city": "Tumkur",
+      "centerCode": "1014",
+      "centerName": "Channabasaveshwara Institute of Technology"
+    },
+    {
+      "city": "Tumkur",
+      "centerCode": "2077",
+      "centerName": "Shridevi Institute of Engineering & Technology"
+    },
+    {
+      "city": "Udupi",
+      "centerCode": "7975",
+      "centerName": "iON Digital Zone iDZ Milk Diary Road"
+    },
+    {
+      "city": "Udupi",
+      "centerCode": "1449",
+      "centerName": "Shri Madhwa Vadiraja Institute of Technology & Management"
+    },
+    {
+      "city": "Udupi",
+      "centerCode": "15832",
+      "centerName": "Sri Bhuvanendra College"
+    },
+    {
+      "city": "Udupi",
+      "centerCode": "1655",
+      "centerName": "Mahatma Gandhi Memorial College"
+    },
+    {
+      "city": "Udupi",
+      "centerCode": "15019",
+      "centerName": "Manipal Institute Of Technology"
+    },
+    {
+      "city": "Uttara Kannada",
+      "centerCode": "2548",
+      "centerName": "K L S Vishwanathrao Deshpande Rural Institute of Technology"
+    },
+    {
+      "city": "Vijayapura(Bijapur)",
+      "centerCode": "970",
+      "centerName": "Dr P G Halakatti College of Engineering and Technology"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import apiClient from './api';
+import { INITIAL_CITIES, INITIAL_CENTERS, INITIAL_EXAMS } from '../data/masterData';
 
 export interface City {
   id: string;
@@ -84,17 +85,30 @@ export const masterService = {
     const customCities = getStoredList<City>('custom_cities');
     const deletedCityIds = new Set(getStoredList<string>('deleted_city_ids'));
 
-    // Merge: backend cities + custom cities not yet in backend, minus deleted
+    // Merge: initial master cities (25 from Excel) + backend cities + custom cities, minus deleted
     const map = new Map<string, City>();
-    apiCities.forEach((c) => {
+    INITIAL_CITIES.forEach((c) => {
       if (!deletedCityIds.has(c.id)) {
         map.set(c.id, c);
       }
     });
 
+    apiCities.forEach((c) => {
+      if (!deletedCityIds.has(c.id)) {
+        // match existing by id or name
+        const existing = Array.from(map.values()).find(
+          (item) => item.id === c.id || item.name.toLowerCase() === c.name.toLowerCase(),
+        );
+        if (existing) {
+          map.set(existing.id, { ...existing, ...c });
+        } else {
+          map.set(c.id, c);
+        }
+      }
+    });
+
     customCities.forEach((c) => {
       if (!deletedCityIds.has(c.id)) {
-        // Find existing by id or name
         const existingId = Array.from(map.values()).find(
           (item) => item.id === c.id || item.name.toLowerCase() === c.name.toLowerCase(),
         );
@@ -203,10 +217,24 @@ export const masterService = {
     const customCenters = getStoredList<Center>('custom_centers');
     const deletedCenterIds = new Set(getStoredList<string>('deleted_center_ids'));
 
+    // Merge: initial master centers (113 from Excel) + backend centers + custom centers, minus deleted
     const map = new Map<string, Center>();
-    apiCenters.forEach((c) => {
+    INITIAL_CENTERS.forEach((c) => {
       if (!deletedCenterIds.has(c.id)) {
         map.set(c.id, c);
+      }
+    });
+
+    apiCenters.forEach((c) => {
+      if (!deletedCenterIds.has(c.id)) {
+        const existing = Array.from(map.values()).find(
+          (item) => item.id === c.id || item.centerCode.toLowerCase() === c.centerCode.toLowerCase(),
+        );
+        if (existing) {
+          map.set(existing.id, { ...existing, ...c });
+        } else {
+          map.set(c.id, c);
+        }
       }
     });
 
@@ -225,7 +253,26 @@ export const masterService = {
 
     let results = Array.from(map.values());
     if (cityId) {
-      results = results.filter((c) => String(c.cityId || '').toLowerCase() === String(cityId).toLowerCase());
+      const allCities = await this.getCities();
+      const targetCity = allCities.find(
+        (ct) => ct.id.toLowerCase() === cityId.toLowerCase() || ct.name.toLowerCase() === cityId.toLowerCase(),
+      );
+      const targetCityClean = targetCity
+        ? targetCity.name.toLowerCase().replace(/[^a-z]/g, '')
+        : cityId.toLowerCase().replace(/[^a-z]/g, '');
+
+      results = results.filter((c) => {
+        if (!c.cityId) return true;
+        if (String(c.cityId).toLowerCase() === String(cityId).toLowerCase()) return true;
+        if (targetCity && String(c.cityId).toLowerCase() === String(targetCity.id).toLowerCase()) return true;
+        const centerCityClean = String(c.cityId).toLowerCase().replace(/[^a-z]/g, '');
+        if (targetCityClean && (centerCityClean.includes(targetCityClean) || targetCityClean.includes(centerCityClean))) return true;
+        if (c.city?.name) {
+          const cNameClean = c.city.name.toLowerCase().replace(/[^a-z]/g, '');
+          if (targetCityClean && (cNameClean.includes(targetCityClean) || targetCityClean.includes(cNameClean))) return true;
+        }
+        return false;
+      });
     }
     return results;
   },
@@ -331,10 +378,24 @@ export const masterService = {
     const customExams = getStoredList<Exam>('custom_exams');
     const deletedExamIds = new Set(getStoredList<string>('deleted_exam_ids'));
 
+    // Merge: initial master exams + backend exams + custom exams, minus deleted
     const map = new Map<string, Exam>();
-    apiExams.forEach((x) => {
+    INITIAL_EXAMS.forEach((x) => {
       if (!deletedExamIds.has(x.id)) {
         map.set(x.id, x);
+      }
+    });
+
+    apiExams.forEach((x) => {
+      if (!deletedExamIds.has(x.id)) {
+        const existing = Array.from(map.values()).find(
+          (item) => item.id === x.id || item.name.toLowerCase() === x.name.toLowerCase(),
+        );
+        if (existing) {
+          map.set(existing.id, { ...existing, ...x });
+        } else {
+          map.set(x.id, x);
+        }
       }
     });
 

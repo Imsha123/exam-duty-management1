@@ -38,7 +38,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
   // Close when clicking outside
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
         setSearchQuery('');
@@ -47,14 +47,19 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      // Auto-focus the search input when opened
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 50);
+      document.addEventListener('touchstart', handleClickOutside, { passive: true });
+      // Only auto-focus on desktop devices (non-touch) so virtual keyboard doesn't cover options on mobile
+      const isTouch = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+      if (!isTouch) {
+        setTimeout(() => {
+          searchInputRef.current?.focus();
+        }, 50);
+      }
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [isOpen]);
 
@@ -240,11 +245,13 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
           {/* Options List */}
           <div
             style={{
-              maxHeight: '220px',
+              maxHeight: '240px',
               overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
               display: 'flex',
               flexDirection: 'column',
-              gap: '2px',
+              gap: '3px',
+              overscrollBehavior: 'contain',
             }}
           >
             {filteredOptions.length === 0 ? (
@@ -263,19 +270,34 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                 const isSelected =
                   String(opt.value).toLowerCase() === String(value).toLowerCase();
                 return (
-                  <div
+                  <button
                     key={opt.value}
-                    onClick={() => handleSelect(opt.value)}
+                    type="button"
+                    onMouseDown={(e) => {
+                      // Prevent input blur which causes mobile keyboards to dismiss and cancel click
+                      e.preventDefault();
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSelect(opt.value);
+                    }}
                     style={{
-                      padding: '8px 10px',
-                      borderRadius: '6px',
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
                       cursor: 'pointer',
                       background: isSelected ? '#EFF6FF' : 'transparent',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       gap: '8px',
+                      border: isSelected ? '1px solid #BFDBFE' : '1px solid transparent',
+                      textAlign: 'left',
+                      fontFamily: 'inherit',
                       transition: 'background-color 0.1s ease',
+                      WebkitTapHighlightColor: 'rgba(37, 99, 235, 0.1)',
+                      touchAction: 'manipulation',
                     }}
                     onMouseEnter={(e) => {
                       if (!isSelected) e.currentTarget.style.backgroundColor = '#F8FAFC';
@@ -284,12 +306,13 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                       if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
                     }}
                   >
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
                       <span
                         style={{
                           fontSize: '14px',
                           fontWeight: isSelected ? 700 : 500,
                           color: isSelected ? '#1D4ED8' : '#1E293B',
+                          lineHeight: 1.3,
                         }}
                       >
                         {opt.label}
@@ -300,6 +323,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                             fontSize: '12px',
                             color: '#64748B',
                             marginTop: '2px',
+                            lineHeight: 1.2,
                           }}
                         >
                           {opt.subLabel}
@@ -309,7 +333,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                     {isSelected && (
                       <Check size={16} color="#2563EB" strokeWidth={2.5} style={{ flexShrink: 0 }} />
                     )}
-                  </div>
+                  </button>
                 );
               })
             )}

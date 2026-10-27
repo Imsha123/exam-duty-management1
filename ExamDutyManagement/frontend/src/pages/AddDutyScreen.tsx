@@ -26,6 +26,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import masterService, { City, Center, Exam, Role, Shift, EmployeeItem } from '../services/master.service';
+import { INITIAL_CITIES, INITIAL_CENTERS, INITIAL_EXAMS } from '../data/masterData';
 import attendanceService from '../services/attendance.service';
 import dutyService, { CreateDutyPayload } from '../services/duty.service';
 import authService from '../services/auth.service';
@@ -129,78 +130,20 @@ export const AddDutyScreen: React.FC = () => {
       .then(([ctsRes, cntsRes, exsRes, rlsRes, shftsRes, empsRes, dutiesRes]) => {
         if (!isMounted) return;
 
-        const cts =
+        const cts: City[] =
           ctsRes.status === 'fulfilled' && ctsRes.value?.length > 0
             ? ctsRes.value
-            : [
-                { id: '682C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'Mysore' },
-                { id: '0E3128A1-9211-4919-9B2F-390A5B0A3EFD', name: 'Bengaluru' },
-                { id: '2C62EEB3-5F51-45D0-AD88-7A07A3E063CA', name: 'Mangalore' },
-                { id: '58DEB09C-B6B1-F111-9FC6-00F9B20AAF9C', name: 'Shivmogga' },
-                { id: '692C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'Mandya' },
-                { id: '59DEB09C-B6B1-F111-9FC6-00F9B20AAF9C', name: 'Davanagere' },
-                { id: '5ADEB09C-B6B1-F111-9FC6-00F9B20AAF9C', name: 'Dharwad' },
-              ];
+            : (INITIAL_CITIES as City[]);
 
-        const cnts =
+        const cnts: Center[] =
           cntsRes.status === 'fulfilled' && cntsRes.value?.length > 0
             ? cntsRes.value
-            : [
-                {
-                  id: '6D2C2EBD-F1B0-F111-9FC5-00F9B20AAF9C',
-                  centerCode: 'IDZ-01',
-                  centerName: 'IDZ Hebbal',
-                  cityId: '682C2EBD-F1B0-F111-9FC5-00F9B20AAF9C',
-                },
-                {
-                  id: '712C2EBD-F1B0-F111-9FC5-00F9B20AAF9C',
-                  centerCode: 'SJB-05',
-                  centerName: 'SJB Institute',
-                  cityId: '682C2EBD-F1B0-F111-9FC5-00F9B20AAF9C',
-                },
-                {
-                  id: '6F2C2EBD-F1B0-F111-9FC5-00F9B20AAF9C',
-                  centerCode: 'VVCE-03',
-                  centerName: 'Vidyavardhaka CE',
-                  cityId: '682C2EBD-F1B0-F111-9FC5-00F9B20AAF9C',
-                },
-                {
-                  id: '1A44A389-089C-47DD-A281-69773F788515',
-                  centerCode: '8412',
-                  centerName: 'iDZ Whitefield Bengaluru',
-                  cityId: '0E3128A1-9211-4919-9B2F-390A5B0A3EFD',
-                },
-                {
-                  id: '771F90BB-801C-4C55-B596-5F46CE37B2EA',
-                  centerCode: '8411',
-                  centerName: 'iDZ Electronics City Bengaluru',
-                  cityId: '0E3128A1-9211-4919-9B2F-390A5B0A3EFD',
-                },
-                {
-                  id: '9247E5E4-DBCB-432A-98DC-7059CA793533',
-                  centerCode: '7701',
-                  centerName: 'PES University Campus Center',
-                  cityId: '0E3128A1-9211-4919-9B2F-390A5B0A3EFD',
-                },
-              ];
+            : (INITIAL_CENTERS as Center[]);
 
-        const exs =
+        const exs: Exam[] =
           exsRes.status === 'fulfilled' && exsRes.value?.length > 0
             ? exsRes.value
-            : [
-                { id: '722C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'NEET', code: 'NEET', type: 'Exam' },
-                { id: '732C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'JEE Main', code: 'JEE', type: 'Exam' },
-                { id: 'C9734B2F-1D84-42DA-AC41-594DF7F58C9C', name: 'JEE Main 2026 Session 2', code: 'JEE-M-S2', type: 'Exam' },
-                { id: '742C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'UGC NET', code: 'NET', type: 'Exam' },
-                { id: '752C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'TCS', code: 'TCS', type: 'Exam' },
-                { id: '6AB00977-D8D9-4C23-ABF2-28B5DFEFD681', name: 'IBPS PO Mains 2026', code: 'IBPS-PO-M', type: 'Exam' },
-                { id: 'B543EADA-B695-44E4-8A77-D6230E1E6799', name: 'SSC CGL Tier 1 2026', code: 'SSC-CGL-26', type: 'Exam' },
-                { id: '3F76E647-27D4-4419-8FB8-1C0C97FFF9BF', name: 'RRB NTPC Phase 1', code: 'RRB-NTPC-01', type: 'Exam' },
-                { id: '35B927A8-09D0-4670-99DF-FF17F656DA31', name: 'UPSC NDA 2026', code: 'UPSC-NDA', type: 'Exam' },
-                { id: '762C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'AIIMS Mock', code: 'AIIMS', type: 'Mock' },
-                { id: '772C2EBD-F1B0-F111-9FC5-00F9B20AAF9C', name: 'GATE Mock', code: 'GATE', type: 'Mock' },
-                { id: 'DEC0FF6B-88EC-47EC-BDE9-D74582371709', name: 'Mock Drill 2026', code: 'MOCK-DR-26', type: 'Mock' },
-              ];
+            : (INITIAL_EXAMS as Exam[]);
 
         const rls = rlsRes.status === 'fulfilled' && rlsRes.value ? rlsRes.value : [];
         const shfts = shftsRes.status === 'fulfilled' && shftsRes.value ? shftsRes.value : [];
@@ -415,7 +358,17 @@ export const AddDutyScreen: React.FC = () => {
     setSelectedCenterId(centerId);
     const chosen = centers.find((c) => String(c.id).toLowerCase() === String(centerId).toLowerCase());
     if (chosen?.cityId) {
-      setSelectedCityId(chosen.cityId);
+      const match = cities.find((ct) => String(ct.id).toLowerCase() === String(chosen.cityId).toLowerCase());
+      if (match) {
+        setSelectedCityId(match.id);
+      } else {
+        const centerCityClean = String(chosen.cityId).toLowerCase().replace(/[^a-z]/g, '');
+        const matchedByName = cities.find((ct) => {
+          const cNameClean = ct.name.toLowerCase().replace(/[^a-z]/g, '');
+          return cNameClean.includes(centerCityClean) || centerCityClean.includes(cNameClean);
+        });
+        if (matchedByName) setSelectedCityId(matchedByName.id);
+      }
     }
   };
 
@@ -742,9 +695,26 @@ export const AddDutyScreen: React.FC = () => {
   };
 
   // Filtered dropdown lists based on user selections
-  const filteredCenters = selectedCityId
-    ? centers.filter((c) => String(c.cityId || '').toLowerCase() === String(selectedCityId).toLowerCase())
-    : centers;
+  const filteredCenters = useMemo(() => {
+    if (!selectedCityId) return centers;
+    const selectedCity = cities.find((ct) => String(ct.id).toLowerCase() === String(selectedCityId).toLowerCase());
+    const selCityNameClean = selectedCity ? selectedCity.name.toLowerCase().replace(/[^a-z]/g, '') : '';
+
+    const matched = centers.filter((c) => {
+      if (!c.cityId) return true;
+      if (String(c.cityId).toLowerCase() === String(selectedCityId).toLowerCase()) return true;
+      if (selCityNameClean) {
+        const centerCityClean = String(c.cityId).toLowerCase().replace(/[^a-z]/g, '');
+        if (centerCityClean.includes(selCityNameClean) || selCityNameClean.includes(centerCityClean)) return true;
+        if (c.city?.name) {
+          const cNameClean = c.city.name.toLowerCase().replace(/[^a-z]/g, '');
+          if (cNameClean.includes(selCityNameClean) || selCityNameClean.includes(cNameClean)) return true;
+        }
+      }
+      return false;
+    });
+    return matched.length > 0 ? matched : centers;
+  }, [centers, selectedCityId, cities]);
   const activeCenters = filteredCenters;
 
   // All exams are always available for search and selection
@@ -1057,22 +1027,19 @@ export const AddDutyScreen: React.FC = () => {
                       <MapPin size={15} color="#2563EB" />
                       <span>3. City *</span>
                     </label>
-                    <select
-                      className="form-select-control"
+                    <SearchableSelect
+                      options={cities.map((city) => ({
+                        value: city.id,
+                        label: city.name,
+                        subLabel: city.state || 'Karnataka',
+                      }))}
                       value={selectedCityId}
-                      onChange={(e) => handleCityChange(e.target.value)}
-                      required
-                      style={{ marginTop: '4px' }}
-                    >
-                      <option value="" disabled>
-                        {loadingMaster ? 'Loading cities...' : '-- Select City --'}
-                      </option>
-                      {cities.map((city) => (
-                        <option key={city.id} value={city.id}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={handleCityChange}
+                      placeholder={loadingMaster ? 'Loading cities...' : '-- Type to Search City --'}
+                      searchPlaceholder="Type city name (e.g. Mysore, Bengaluru, Belagavi, Mangalore)..."
+                      className="form-select-control"
+                      disabled={loadingMaster || cities.length === 0}
+                    />
                   </div>
 
                   {/* 4. Center (Filtered by selected City) */}
@@ -1634,17 +1601,19 @@ export const AddDutyScreen: React.FC = () => {
                 {/* 3. City */}
                 <div className="mobile-form-group">
                   <label className="mobile-input-label">3. CITY *</label>
-                  <select
-                    className="mobile-form-select"
+                  <SearchableSelect
+                    options={cities.map((city) => ({
+                      value: city.id,
+                      label: city.name,
+                      subLabel: city.state || 'Karnataka',
+                    }))}
                     value={selectedCityId}
-                    onChange={(e) => handleCityChange(e.target.value)}
-                    required
-                  >
-                    <option value="" disabled>-- Select City --</option>
-                    {cities.map((city) => (
-                      <option key={city.id} value={city.id}>{city.name}</option>
-                    ))}
-                  </select>
+                    onChange={handleCityChange}
+                    placeholder="-- Type to Search City --"
+                    searchPlaceholder="Type city name..."
+                    className="mobile-form-select"
+                    disabled={loadingMaster || cities.length === 0}
+                  />
                 </div>
 
                 {/* 4. Examination Center */}
