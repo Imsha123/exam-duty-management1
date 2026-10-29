@@ -15,6 +15,7 @@ import {
   Save,
   Shield,
   MapPin,
+  LogOut,
 } from 'lucide-react';
 import { CityMultiSelectDropdown } from './CityMultiSelectDropdown';
 import masterService, { EmployeeItem } from '../services/master.service';
@@ -773,6 +774,31 @@ export const EmployeeDetailsModal: React.FC<EmployeeDetailsModalProps> = ({
                 style={{ padding: '10px 20px', fontSize: '15px' }}
               >
                 Close
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  localStorage.removeItem('exam_duty_user');
+                  sessionStorage.clear();
+                  window.location.href = '/login';
+                }}
+                style={{
+                  padding: '10px 18px',
+                  fontSize: '15px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  backgroundColor: '#FEF2F2',
+                  color: '#DC2626',
+                  border: '1.5px solid #FECACA',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                <LogOut size={16} />
+                <span>Logout</span>
               </button>
             </div>
           </div>

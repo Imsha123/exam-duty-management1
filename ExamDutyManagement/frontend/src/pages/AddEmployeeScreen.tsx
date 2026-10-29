@@ -7,6 +7,7 @@ import { EmployeeDetailsModal } from '../components/EmployeeDetailsModal';
 import { BulkUploadEmployeeModal } from '../components/BulkUploadEmployeeModal';
 import { ExportEmployeesCard } from '../components/ExportEmployeesCard';
 import { CityMultiSelectDropdown } from '../components/CityMultiSelectDropdown';
+import { SweetAlertToast } from '../components/SweetAlertToast';
 import {
   UserPlus,
   Users,
@@ -89,6 +90,7 @@ export const AddEmployeeScreen: React.FC = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [createdEmp, setCreatedEmp] = useState<{ id: string; resourceId: string; name: string } | null>(null);
   const [lastRegistered, setLastRegistered] = useState<EmployeeItem | null>(null);
 
@@ -185,6 +187,7 @@ export const AddEmployeeScreen: React.FC = () => {
       });
       setLastRegistered(newEmp);
       setSubmitSuccess(`Employee "${newEmp.name}" (ID: ${newEmp.resourceId}) registered successfully! Details displayed below.`);
+      setToastMessage(`Employee "${newEmp.name}" registered successfully.`);
 
       // Immediately display new employee at the very top of the table below
       setRegisteredEmployees((prev) => [newEmp, ...prev.filter((e) => e.resourceId !== newEmp.resourceId)]);
@@ -224,6 +227,7 @@ export const AddEmployeeScreen: React.FC = () => {
       setDeletingEmployee(null);
       setDeletedSuccessInfo(info);
       setSubmitSuccess(`Employee "${info.name}" (ID: ${info.resourceId}) deleted successfully.`);
+      setToastMessage(`Selected employee "${info.name}" deleted successfully.`);
       loadEmployees();
     } catch (err: any) {
       setDeleteError(err.response?.data?.message || err.message || 'Failed to delete employee.');
@@ -1068,120 +1072,212 @@ export const AddEmployeeScreen: React.FC = () => {
             </form>
           </div>
 
-          {/* Mobile Workforce List */}
-          <div style={{ background: '#FFFFFF', borderRadius: '12px', padding: '14px', border: '1px solid #E2E8F0' }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: '15px', fontWeight: 700, color: '#1E293B' }}>
-              Registered Staff ({registeredEmployees.length})
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {displayedEmployees.map((emp) => (
-                <div
-                  key={emp.id}
-                  style={{
-                    padding: '10px',
-                    borderRadius: '8px',
-                    background: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#1E293B' }}>{emp.name}</div>
-                    <div style={{ fontSize: '12.5px', color: '#64748B' }}>
-                      ID: {emp.resourceId} &bull; {emp.city || 'Mysore'}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedModalResourceId(emp.resourceId)}
-                      style={{
-                        padding: '5px 8px',
-                        background: '#EFF6FF',
-                        border: '1px solid #BFDBFE',
-                        color: '#1D4ED8',
-                        borderRadius: '6px',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setDeleteError(null);
-                        setDeletingEmployee(emp);
-                      }}
-                      style={{
-                        padding: '5px 8px',
-                        background: '#FEF2F2',
-                        border: '1px solid #FECACA',
-                        color: '#DC2626',
-                        borderRadius: '6px',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
+          {/* Mobile Workforce Reference Table (Exact same full table layout as Desktop) */}
+          <div className="recent-duties-card" style={{ marginTop: '20px' }}>
+            <div className="recent-duties-header">
+              <div className="recent-title-wrap">
+                <div className="recent-icon-box">
+                  <Users size={18} color="#2563EB" />
                 </div>
-              ))}
+                <h2 className="recent-main-title">
+                  Registered Workforce Members ({registeredEmployees.length})
+                </h2>
+              </div>
             </div>
 
-            {/* Mobile Horizontal Numbered Pagination Bar */}
+            <div className="desktop-table-container" style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table className="recent-table" style={{ minWidth: '850px' }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: '60px' }}>Sl No</th>
+                    <th>Resource ID</th>
+                    <th>Full Name</th>
+                    <th>Contact Number</th>
+                    <th>Email Address</th>
+                    <th>City</th>
+                    <th>Aadhaar No.</th>
+                    <th>PAN No.</th>
+                    <th style={{ textAlign: 'center' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayedEmployees.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} style={{ textAlign: 'center', padding: '30px', color: '#64748B' }}>
+                        No workforce members found.
+                      </td>
+                    </tr>
+                  ) : (
+                    displayedEmployees.map((emp, idx) => {
+                      const isNew = emp.resourceId === lastRegistered?.resourceId;
+                      return (
+                        <tr
+                          key={emp.id || idx}
+                          style={{
+                            backgroundColor: isNew ? '#F0FDF4' : undefined,
+                            transition: 'background-color 0.3s ease',
+                          }}
+                        >
+                          <td className="col-num">
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              {(currentPage - 1) * pageSize + idx + 1}
+                              {isNew && (
+                                <span
+                                  style={{
+                                    background: '#16A34A',
+                                    color: '#FFFFFF',
+                                    fontSize: '9px',
+                                    fontWeight: 800,
+                                    padding: '1px 5px',
+                                    borderRadius: '4px',
+                                  }}
+                                >
+                                  NEW
+                                </span>
+                              )}
+                            </span>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedModalResourceId(emp.resourceId)}
+                              title="Click to view & edit full personal details (Aadhaar, PAN, etc.)"
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                fontWeight: 700,
+                                color: '#2563EB',
+                                cursor: 'pointer',
+                                textDecoration: 'underline',
+                                fontSize: '15px',
+                              }}
+                            >
+                              {emp.resourceId}
+                            </button>
+                          </td>
+                          <td style={{ fontWeight: 600, color: '#1E293B' }}>{emp.name}</td>
+                          <td>{emp.mobile}</td>
+                          <td style={{ color: '#64748B' }}>{emp.email || '—'}</td>
+                          <td style={{ fontWeight: 600, color: '#0F766E' }}>{emp.city || 'Mysore'}</td>
+                          <td style={{ color: '#475569', fontFamily: 'monospace' }}>{emp.aadhaarNumber || '—'}</td>
+                          <td style={{ color: '#475569', fontFamily: 'monospace', fontWeight: 600 }}>{emp.panNumber || '—'}</td>
+                          <td style={{ textAlign: 'center' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedModalResourceId(emp.resourceId)}
+                                title="Edit employee information"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '5px 11px',
+                                  background: '#EFF6FF',
+                                  border: '1px solid #BFDBFE',
+                                  color: '#1D4ED8',
+                                  borderRadius: '6px',
+                                  fontSize: '13px',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <Edit2 size={13} />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setDeleteError(null);
+                                  setDeletingEmployee(emp);
+                                }}
+                                title="Delete employee"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '5px 11px',
+                                  background: '#FEF2F2',
+                                  border: '1px solid #FECACA',
+                                  color: '#DC2626',
+                                  borderRadius: '6px',
+                                  fontSize: '13px',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <Trash2 size={13} />
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* TrackClock HR Horizontal Numbered Pagination Bar */}
             {registeredEmployees.length > 0 && (
               <div
                 className="trackclock-pagination-wrap"
                 style={{
                   display: 'flex',
-                  justifyContent: 'center',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '12px 14px',
-                  borderRadius: '8px',
-                  marginTop: '12px',
-                  border: '1px solid #E2E8F0',
+                  padding: '14px 20px',
+                  borderTop: '1.5px solid #CBD5E1',
                   background: '#FFFFFF',
+                  flexWrap: 'wrap',
+                  gap: '10px',
                 }}
               >
-                <button
-                  type="button"
-                  className="trackclock-page-btn"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                >
-                  &larr;
-                </button>
+                <div style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 500 }}>
+                  *Showing {(currentPage - 1) * pageSize + 1} -{' '}
+                  {Math.min(currentPage * pageSize, registeredEmployees.length)} of{' '}
+                  {registeredEmployees.length} records (15 per page)
+                </div>
 
-                {getPageNumbers().map((item, i) =>
-                  item === '...' ? (
-                    <span key={`m-ellipsis-${i}`} className="trackclock-page-ellipsis">
-                      ...
-                    </span>
-                  ) : (
-                    <button
-                      key={`m-page-${item}`}
-                      type="button"
-                      className={`trackclock-page-btn ${currentPage === item ? 'active' : ''}`}
-                      onClick={() => setCurrentPage(Number(item))}
-                    >
-                      {item}
-                    </button>
-                  )
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <button
+                    type="button"
+                    className="trackclock-page-btn"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    style={{ padding: '0 12px' }}
+                  >
+                    &larr; Back
+                  </button>
 
-                <button
-                  type="button"
-                  className="trackclock-page-btn"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                >
-                  &rarr;
-                </button>
+                  {getPageNumbers().map((item, i) =>
+                    item === '...' ? (
+                      <span key={'mobile-page-ellipsis-' + i} className="trackclock-page-ellipsis">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={'mobile-page-' + item}
+                        type="button"
+                        className={'trackclock-page-btn ' + (currentPage === item ? 'active' : '')}
+                        onClick={() => setCurrentPage(Number(item))}
+                      >
+                        {item}
+                      </button>
+                    )
+                  )}
+
+                  <button
+                    type="button"
+                    className="trackclock-page-btn"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    style={{ padding: '0 12px' }}
+                  >
+                    Next &rarr;
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -1390,6 +1486,13 @@ export const AddEmployeeScreen: React.FC = () => {
         onUpdated={() => loadEmployees()}
       />
 
+      {/* SweetAlert Toast Popup (matching Image 2) */}
+      <SweetAlertToast
+        show={Boolean(toastMessage)}
+        message={toastMessage || ""}
+        onClose={() => setToastMessage(null)}
+      />
+
       {/* Bulk Upload Modal */}
       <BulkUploadEmployeeModal
         isOpen={showBulkModal}
@@ -1397,6 +1500,7 @@ export const AddEmployeeScreen: React.FC = () => {
         onSuccess={() => {
           loadEmployees();
           setSubmitSuccess('Workforce members registered successfully via bulk upload!');
+          setToastMessage('Workforce members registered successfully via bulk upload!');
         }}
         existingEmployees={registeredEmployees}
       />

@@ -33,6 +33,7 @@ import authService from '../services/auth.service';
 import EmployeeDetailsModal from '../components/EmployeeDetailsModal';
 import { ClockTimePicker } from '../components/ClockTimePicker';
 import { SearchableSelect } from '../components/SearchableSelect';
+import { SweetAlertToast } from '../components/SweetAlertToast';
 
 export const AddDutyScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -74,23 +75,23 @@ export const AddDutyScreen: React.FC = () => {
   const [detailsModalResourceId, setDetailsModalResourceId] = useState<string | null>(null);
 
   // Ordered Duty Form Fields State
-  // 1. Duty Date
-  const [dutyDate, setDutyDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  // 2. Type of Duty (Exam or Mock)
-  const [selectedDutyType, setSelectedDutyType] = useState<'Exam' | 'Mock'>('Exam');
-  // 3. City
+  // 1. Duty Date (Empty by default - user must select)
+  const [dutyDate, setDutyDate] = useState<string>('');
+  // 2. Type of Duty (Exam or Mock - Empty by default)
+  const [selectedDutyType, setSelectedDutyType] = useState<'Exam' | 'Mock' | ''>('');
+  // 3. City (Empty by default)
   const [selectedCityId, setSelectedCityId] = useState<string>('');
-  // 4. Center
+  // 4. Center (Empty by default)
   const [selectedCenterId, setSelectedCenterId] = useState<string>('');
-  // 5. Exam Name
+  // 5. Exam Name (Empty by default)
   const [selectedExamId, setSelectedExamId] = useState<string>('');
-  // 6. Duty Role
+  // 6. Duty Role (Empty by default)
   const [selectedRoleId, setSelectedRoleId] = useState<string>('');
-  // 7. Shift
+  // 7. Shift (Empty by default)
   const [selectedShiftId, setSelectedShiftId] = useState<string>('');
-  // 8. Reporting Time (Editable)
-  const [reportingTime, setReportingTime] = useState<string>('07:30 AM');
-  const [shiftEndTime, setShiftEndTime] = useState<string>('01:30 PM');
+  // 8. Reporting Time (Empty by default until shift selected)
+  const [reportingTime, setReportingTime] = useState<string>('');
+  const [shiftEndTime, setShiftEndTime] = useState<string>('');
 
   // Attendance Upload State (Strictly Image Only)
   const [uploading, setUploading] = useState<boolean>(false);
@@ -105,11 +106,13 @@ export const AddDutyScreen: React.FC = () => {
 
   // Confirmation Modal State ("Are you sure you want to submit?")
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  // Success popup modal replaced with SweetAlert toast per user request
 
   // Form Submission State
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
 
 
@@ -216,8 +219,7 @@ export const AddDutyScreen: React.FC = () => {
         const staffList = realStaff.length > 0 ? realStaff : fallbackEmps;
         setEmployees(staffList);
 
-        // Auto-select from unassigned employees
-        const unassignedList = staffList.filter((e) => !assigned.has(e.resourceId) && !assigned.has(e.id));
+        // Only select employee if queryResourceId is present or employee portal
         if (queryResourceId) {
           const found = staffList.find((e) => e.resourceId === queryResourceId);
           if (found) setSelectedEmployee(found);
@@ -231,34 +233,13 @@ export const AddDutyScreen: React.FC = () => {
             status: 'Active',
           };
           setSelectedEmployee(self);
-        } else if (unassignedList.length > 0) {
-          setSelectedEmployee(unassignedList[0]);
         } else {
+          // Admin starts with unselected employee so admin explicitly selects
           setSelectedEmployee(null);
         }
 
-        // Set sensible initial defaults
-        if (cts.length > 0) {
-          const defaultCityId = cts[0].id;
-          setSelectedCityId(defaultCityId);
-          const firstCenters = cnts.filter(
-            (c) => String(c.cityId || '').toLowerCase() === String(defaultCityId).toLowerCase()
-          );
-          if (firstCenters.length > 0) setSelectedCenterId(firstCenters[0].id);
-          else if (cnts.length > 0) setSelectedCenterId(cnts[0].id);
-        }
-        if (exs.length > 0) {
-          const firstExam =
-            exs.find((x) => String(x.type || '').toLowerCase() === selectedDutyType.toLowerCase()) || exs[0];
-          setSelectedExamId(firstExam.id);
-        }
-        if (finalRoles.length > 0) setSelectedRoleId(finalRoles[0].id);
-        else if (rls.length > 0) setSelectedRoleId(rls[0].id);
-        if (finalShifts.length > 0) {
-          setSelectedShiftId(finalShifts[0].id);
-          setReportingTime(finalShifts[0].defaultReportingTime || '07:30 AM');
-          setShiftEndTime(finalShifts[0].defaultEndTime || '01:30 PM');
-        }
+        // Do NOT auto-select city, center, exam, role, or shift by default.
+        // User/admin must select all details explicitly.
       })
       .catch((err) => {
         console.error('Failed to load master options', err);
@@ -316,9 +297,7 @@ export const AddDutyScreen: React.FC = () => {
         }
       }
       if (selectedEmployee && !availableEmployees.some((e) => e.resourceId === selectedEmployee.resourceId)) {
-        setSelectedEmployee(availableEmployees[0] || null);
-      } else if (!selectedEmployee && availableEmployees.length > 0) {
-        setSelectedEmployee(availableEmployees[0]);
+        setSelectedEmployee(null);
       }
     }
   }, [availableEmployees, queryResourceId, isAdmin, employees]);
@@ -326,8 +305,12 @@ export const AddDutyScreen: React.FC = () => {
   // When Duty Type changes (Exam vs Mock), auto-select matching exam if available
   const handleDutyTypeChange = (type: 'Exam' | 'Mock') => {
     setSelectedDutyType(type);
-    const match = exams.find((x) => String(x.type || '').toLowerCase() === type.toLowerCase());
-    if (match) setSelectedExamId(match.id);
+    if (selectedExamId) {
+      const current = exams.find((x) => String(x.id).toLowerCase() === String(selectedExamId).toLowerCase());
+      if (current && String(current.type || '').toLowerCase() !== type.toLowerCase()) {
+        setSelectedExamId('');
+      }
+    }
   };
 
   // When Exam changes from dropdown, sync duty type automatically
@@ -343,14 +326,7 @@ export const AddDutyScreen: React.FC = () => {
   // When City changes, update available centers and auto-select first center in that city
   const handleCityChange = (cityId: string) => {
     setSelectedCityId(cityId);
-    const inCity = centers.filter(
-      (c) => String(c.cityId || '').toLowerCase() === String(cityId).toLowerCase()
-    );
-    if (inCity.length > 0) {
-      setSelectedCenterId(inCity[0].id);
-    } else {
-      setSelectedCenterId('');
-    }
+    setSelectedCenterId(''); // Let user select the center explicitly
   };
 
   // When Center changes, sync City
@@ -379,6 +355,9 @@ export const AddDutyScreen: React.FC = () => {
     if (chosen) {
       if (chosen.defaultReportingTime) setReportingTime(chosen.defaultReportingTime);
       if (chosen.defaultEndTime) setShiftEndTime(chosen.defaultEndTime);
+    } else {
+      setReportingTime('');
+      setShiftEndTime('');
     }
   };
 
@@ -527,6 +506,10 @@ export const AddDutyScreen: React.FC = () => {
       setSubmitError('Please select a valid duty date.');
       return;
     }
+    if (!selectedDutyType) {
+      setSubmitError('Please select a duty type (Exam or Mock).');
+      return;
+    }
     if (!selectedCityId) {
       setSubmitError('Please select a city.');
       return;
@@ -671,10 +654,19 @@ export const AddDutyScreen: React.FC = () => {
         });
       }
       setSelectedEmployee(null);
+      setDutyDate('');
+      setSelectedDutyType('');
+      setSelectedCityId('');
+      setSelectedCenterId('');
+      setSelectedExamId('');
+      setSelectedRoleId('');
+      setSelectedShiftId('');
+      setReportingTime('');
+      setShiftEndTime('');
 
-      setSubmitSuccess(
-        `Duty successfully assigned to ${selectedEmployee?.name || user?.name || 'employee'} for ${selectedExam?.name || 'Exam'} on ${dutyDate}!`,
-      );
+      setSubmitSuccess('Submitted successfully!');
+      const successMsg = isAdmin ? 'Duty assigned successfully.' : 'Attendance submitted successfully.';
+      setToastMessage(successMsg);
 
       // Reset file and preview
       setUploadedFile(null);
@@ -683,6 +675,11 @@ export const AddDutyScreen: React.FC = () => {
 
       // Scroll top
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Automatically redirect to Workforce Duties / My Duties
+      setTimeout(() => {
+        navigate('/my-duties', { state: { toastMessage: successMsg } });
+      }, 1000);
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
@@ -1478,9 +1475,30 @@ export const AddDutyScreen: React.FC = () => {
           </div>
 
           {submitSuccess && (
-            <div className="alert-banner alert-success">
-              <CheckCircle2 size={16} />
-              <span>{submitSuccess}</span>
+            <div
+              className="alert-banner alert-success"
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <CheckCircle2 size={16} />
+                <span>{submitSuccess}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/my-duties')}
+                style={{
+                  padding: '4px 10px',
+                  background: '#15803D',
+                  color: '#FFFFFF',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                View &rarr;
+              </button>
             </div>
           )}
           {submitError && (
@@ -1977,6 +1995,13 @@ export const AddDutyScreen: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* SweetAlert Toast Notification (matching Image 2) */}
+      <SweetAlertToast
+        show={Boolean(toastMessage)}
+        message={toastMessage || ""}
+        onClose={() => setToastMessage(null)}
+      />
 
       {/* Live Camera Viewfinder Modal */}
       {showCameraModal && (

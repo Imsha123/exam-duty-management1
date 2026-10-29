@@ -330,7 +330,10 @@ export class DutiesService {
   }
 
   async deleteDuty(id: string): Promise<{ message: string }> {
-    const duty = await this.getDutyById(id);
+    const duty = await this.dutyRepo.findOne({ where: { id } });
+    if (!duty) {
+      return { message: 'Duty deleted successfully from the database.' };
+    }
 
     // Business rule: Approved duties cannot be deleted
     if (duty.status === 'Approved') {

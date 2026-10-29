@@ -2863,7 +2863,7 @@ select.form-select-control {
 }
 
 .mobile-form-input,
-.mobile-form-select {
+select.mobile-form-select {
   display: block !important;
   width: 100% !important;
   box-sizing: border-box !important;
@@ -2877,6 +2877,58 @@ select.form-select-control {
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Ensure SearchableSelect button trigger stays flex layout in both mobile & desktop */
+button.mobile-form-select,
+button.form-select-control,
+.searchable-select-trigger {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-direction: row !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 12px !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: 10px !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  color: #0F172A !important;
+  font-family: inherit;
+  outline: none;
+  text-align: left !important;
+  cursor: pointer;
+  overflow: hidden !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+button.mobile-form-select:focus,
+button.form-select-control:focus,
+.searchable-select-trigger:focus,
+.searchable-select-trigger.is-open {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+.searchable-select-label {
+  display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  line-height: 1.25 !important;
+}
+
+.searchable-select-icons {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
 }
 
 .mobile-form-input:focus,
@@ -4571,4 +4623,17 @@ select.mobile-form-input {
   color: #94A3B8;
   text-align: center;
   font-weight: 500;
+}
+
+
+/* SweetAlert Toast Slide Animation */
+@keyframes sweetAlertSlideDown {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }

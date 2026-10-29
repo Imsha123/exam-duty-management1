@@ -17,3 +17,6 @@ Thumbs.db
 *.tsbuildinfo
 **/uploads/
 *.zip
+
+~$*
+*.tmp

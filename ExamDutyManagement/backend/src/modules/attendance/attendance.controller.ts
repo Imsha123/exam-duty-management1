@@ -37,7 +37,7 @@ export class AttendanceController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(pdf|png|jpg|jpeg)$/i)) {
+        if (!file.originalname.match(/\.(pdf|png|jpg|jpeg|webp)$/i)) {
           return callback(
             new BadRequestException('Only PDF and image files (PNG, JPG) are allowed.'),
             false,
@@ -81,6 +81,15 @@ export class AttendanceController {
           callback(null, `duty-${req.params.id}-${uniqueSuffix}${ext}`);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        if (!file.originalname.match(/\.(pdf|png|jpg|jpeg|webp)$/i)) {
+          return callback(
+            new BadRequestException('Only PDF and image files (PNG, JPG, JPEG, WEBP) are allowed.'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
       limits: {
         fileSize: 10 * 1024 * 1024,
       },

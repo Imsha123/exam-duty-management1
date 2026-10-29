@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, ChevronUp, Check, X } from 'lucide-react';
 
+// Dynamic font size adjuster for responsive fit on mobile & desktop screens
+export const getAdjustableFontSize = (text: string): string => {
+  const len = (text || '').trim().length;
+  if (len > 42) return 'clamp(10px, 2.7vw, 11.5px)';
+  if (len > 32) return 'clamp(11px, 3.0vw, 12.5px)';
+  if (len > 22) return 'clamp(12px, 3.3vw, 13.5px)';
+  return 'clamp(13px, 3.7vw, 14.5px)';
+};
+
 export interface SearchableOption {
   value: string;
   label: string;
@@ -106,41 +115,51 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
             if (!isOpen) setSearchQuery('');
           }
         }}
-        className={className}
+        className={`searchable-select-trigger ${isOpen ? 'is-open' : ''} ${className || ''}`}
         style={{
           width: '100%',
-          minHeight: '42px',
-          padding: '8px 12px',
+          height: '48px',
+          minHeight: '48px',
+          padding: '0 12px',
           background: disabled ? '#F1F5F9' : '#FFFFFF',
           border: isOpen ? '1.5px solid #2563EB' : '1.5px solid #CBD5E1',
-          borderRadius: '8px',
+          borderRadius: '10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          flexDirection: 'row',
           gap: '8px',
           cursor: disabled ? 'not-allowed' : 'pointer',
           boxShadow: isOpen ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none',
           transition: 'all 0.15s ease',
           textAlign: 'left',
-          marginTop: '4px',
+          boxSizing: 'border-box',
+          overflow: 'hidden',
+          marginTop: '0px',
         }}
-        title="Click to search and select"
+        title={selectedOption ? selectedOption.label : 'Click to search and select'}
       >
         <span
+          className="searchable-select-label"
           style={{
-            fontSize: '14.5px',
+            fontSize: getAdjustableFontSize(selectedOption ? selectedOption.label : placeholder),
             fontWeight: selectedOption ? 600 : 400,
             color: selectedOption ? '#1E293B' : '#94A3B8',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            flex: 1,
+            flex: '1 1 auto',
+            minWidth: 0,
+            maxWidth: '100%',
+            lineHeight: 1.25,
+            letterSpacing: '-0.1px',
           }}
+          title={selectedOption ? selectedOption.label : placeholder}
         >
           {selectedOption ? selectedOption.label : placeholder}
         </span>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+        <div className="searchable-select-icons" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
           {selectedOption && !disabled && (
             <span
               onClick={handleClear}
@@ -309,10 +328,12 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
                       <span
                         style={{
-                          fontSize: '14px',
+                          fontSize: getAdjustableFontSize(opt.label),
                           fontWeight: isSelected ? 700 : 500,
                           color: isSelected ? '#1D4ED8' : '#1E293B',
-                          lineHeight: 1.3,
+                          lineHeight: 1.35,
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
                         }}
                       >
                         {opt.label}

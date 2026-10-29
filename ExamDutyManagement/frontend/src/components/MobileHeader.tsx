@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -40,6 +40,8 @@ export const MobileHeader: React.FC = () => {
 
   const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState<boolean>(false);
+  const mobileAvatarRef = useRef<HTMLDivElement>(null);
 
   const initials = displayName
     .split(' ')
@@ -47,7 +49,21 @@ export const MobileHeader: React.FC = () => {
     .map((n) => n[0])
     .join('')
     .slice(0, 2)
-    .toUpperCase() || 'SK';
+    .toUpperCase() || (isAdmin ? 'M' : 'SK');
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileAvatarRef.current && !mobileAvatarRef.current.contains(event.target as Node)) {
+        setAvatarMenuOpen(false);
+      }
+    };
+    if (avatarMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [avatarMenuOpen]);
 
   const menuItems = [
     {
@@ -109,8 +125,10 @@ export const MobileHeader: React.FC = () => {
 
   const handleLogout = () => {
     setDrawerOpen(false);
+    setAvatarMenuOpen(false);
     authService.logout();
     sessionStorage.clear();
+    localStorage.removeItem('exam_duty_user');
     navigate('/login');
   };
 
@@ -128,15 +146,140 @@ export const MobileHeader: React.FC = () => {
           <Menu size={20} color="#0F172A" strokeWidth={2.2} />
         </button>
 
-        <div className="mobile-top-right">
+        {/* Top Right User Avatar (M Symbol) with Dropdown */}
+        <div className="mobile-top-right" ref={mobileAvatarRef} style={{ position: 'relative' }}>
           <div
             className="user-avatar-circle small"
-            onClick={() => setShowDetailsModal(true)}
-            style={{ cursor: 'pointer' }}
-            title="Click to view details"
+            onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+            style={{ cursor: 'pointer', userSelect: 'none' }}
+            title="Account options & Logout"
           >
             <span>{initials}</span>
           </div>
+
+          {/* Avatar Dropdown on Mobile */}
+          {avatarMenuOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                width: '230px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '12px',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                border: '1px solid #E2E8F0',
+                padding: '8px',
+                zIndex: 3000,
+                animation: 'fadeIn 0.15s ease-out',
+              }}
+            >
+              <div style={{ padding: '8px 10px 10px', borderBottom: '1px solid #F1F5F9' }}>
+                <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>{displayName}</span>
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      padding: '1px 6px',
+                      borderRadius: '4px',
+                      background: isAdmin ? '#FEF3C7' : '#EFF6FF',
+                      color: isAdmin ? '#92400E' : '#1D4ED8',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {isAdmin ? 'ADMIN' : 'STAFF'}
+                  </span>
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+                  Resource ID: {resourceId}
+                </div>
+              </div>
+
+              <div style={{ padding: '4px 0' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAvatarMenuOpen(false);
+                    navigate('/profile');
+                  }}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: '#334155',
+                    fontSize: '13.5px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  <User size={16} color="#2563EB" />
+                  <span>My Profile</span>
+                </button>
+
+                {!isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvatarMenuOpen(false);
+                      setShowDetailsModal(true);
+                    }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '9px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#334155',
+                      fontSize: '13.5px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <Shield size={16} color="#0D9488" />
+                    <span>Personal Details</span>
+                  </button>
+                )}
+              </div>
+
+              <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '4px', marginTop: '4px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAvatarMenuOpen(false);
+                    handleLogout();
+                  }}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#FEF2F2',
+                    color: '#DC2626',
+                    fontSize: '13.5px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  <LogOut size={16} color="#DC2626" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -273,4 +416,3 @@ export const MobileHeader: React.FC = () => {
 };
 
 export default MobileHeader;
-

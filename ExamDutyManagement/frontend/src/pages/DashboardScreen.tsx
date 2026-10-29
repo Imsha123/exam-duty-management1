@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { DesktopTopNav } from '../components/DesktopTopNav';
 import { DesktopSidebar } from '../components/DesktopSidebar';
 import { MobileHeader } from '../components/MobileHeader';
@@ -13,6 +13,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import dashboardService, { EmployeeDashboardData } from '../services/dashboard.service';
+import dutyService, { DutyItem } from '../services/duty.service';
 import authService from '../services/auth.service';
 
 export const DashboardScreen: React.FC = () => {
@@ -27,18 +28,63 @@ export const DashboardScreen: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(2026);
 
   const [dashboardData, setDashboardData] = useState<EmployeeDashboardData | null>(null);
+  const [dutiesList, setDutiesList] = useState<DutyItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch fresh dashboard data whenever filterResourceId or selectedYear changes
+  // Fetch fresh dashboard data and duties list whenever filterResourceId or selectedYear changes
   useEffect(() => {
     let isMounted = true;
 
     const fetchDashboard = async () => {
       setLoading(true);
       try {
-        const data = await dashboardService.getEmployeeDashboard(filterResourceId, selectedYear);
+        const resourceParam = isAdmin ? 'ALL' : (user?.resourceId || '');
+        const [data, backendDuties] = await Promise.all([
+          dashboardService.getEmployeeDashboard(filterResourceId, selectedYear).catch(() => null),
+          dutyService.getMyDuties(undefined, undefined, resourceParam).catch(() => []),
+        ]);
+
+        // Load cached locally assigned duties to match MyDutiesScreen 100%
+        let localItems: DutyItem[] = [];
+        try {
+          const raw = localStorage.getItem('cached_assigned_duties');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              localItems = isAdmin
+                ? parsed
+                : parsed.filter(
+                    (d: any) =>
+                      d.employee?.resourceId === user?.resourceId ||
+                      d.employeeResourceId === user?.resourceId ||
+                      d.employeeId === user?.id ||
+                      d.resourceId === user?.resourceId
+                  );
+            }
+          }
+        } catch (e) {
+          console.error('Failed to read local cached duties', e);
+        }
+
+        // Merge backend items and local items (deduplicating by id or Date+Center+Shift+Employee)
+        const combined = [...(backendDuties || [])];
+        for (const loc of localItems) {
+          const exists = combined.some(
+            (b) =>
+              b.id === loc.id ||
+              (b.dutyDate === loc.dutyDate &&
+                (b.centerId === loc.centerId || b.center?.centerName === loc.center?.centerName) &&
+                (b.shiftId === loc.shiftId || b.shift?.name === loc.shift?.name) &&
+                (b.employee?.resourceId === loc.employee?.resourceId || b.employeeId === loc.employeeId))
+          );
+          if (!exists) {
+            combined.push(loc);
+          }
+        }
+
         if (isMounted) {
-          setDashboardData(data);
+          if (data) setDashboardData(data);
+          setDutiesList(combined);
         }
       } catch (err) {
         console.warn('Dashboard live fetch failed or offline, using fallback state', err);
@@ -55,14 +101,35 @@ export const DashboardScreen: React.FC = () => {
     };
   }, [filterResourceId, selectedYear]);
 
-  // Derived statistics (Live from MSSQL)
+  // Derived statistics unified with MyDutiesScreen
   const isAll = filterResourceId === 'ALL';
-  const totalDuties = isAll
-    ? (dashboardData?.stats?.systemTotalDuties ?? dashboardData?.stats?.totalDuties ?? 0)
-    : (dashboardData?.stats?.totalDuties ?? 0);
-  const thisMonth = dashboardData?.stats?.thisMonth ?? 0;
-  const examsCount = dashboardData?.stats?.exams ?? 0;
-  const mocksCount = dashboardData?.stats?.mocks ?? 0;
+  const totalDuties = dutiesList.length > 0
+    ? dutiesList.length
+    : (isAll
+      ? (dashboardData?.stats?.systemTotalDuties ?? dashboardData?.stats?.totalDuties ?? 0)
+      : (dashboardData?.stats?.totalDuties ?? 0));
+
+  const mocksCount = dutiesList.length > 0
+    ? dutiesList.filter((d) => (d.dutyType || d.exam?.type || '').toLowerCase().includes('mock')).length
+    : (dashboardData?.stats?.mocks ?? 0);
+
+  const examsCount = dutiesList.length > 0
+    ? (totalDuties - mocksCount)
+    : (dashboardData?.stats?.exams ?? 0);
+
+  const now = new Date();
+  const currentMonthIndex = now.getMonth();
+  const currentYear = now.getFullYear();
+  const thisMonth = dutiesList.length > 0
+    ? dutiesList.filter((d) => {
+        const str = (d.dutyDate || '').trim();
+        const ymd = str.match(/^(\d{4})[-/](\d{1,2})/);
+        if (ymd) {
+          return parseInt(ymd[1], 10) === currentYear && parseInt(ymd[2], 10) - 1 === currentMonthIndex;
+        }
+        return true;
+      }).length
+    : (dashboardData?.stats?.thisMonth ?? 0);
 
   const displayName = isAdmin
     ? (isAll ? 'Administrator (System Overview)' : (dashboardData?.employee?.name || 'Staff Member'))
@@ -71,8 +138,61 @@ export const DashboardScreen: React.FC = () => {
     ? (isAll ? 'ADMIN' : (dashboardData?.employee?.resourceId || filterResourceId))
     : (user?.resourceId || dashboardData?.employee?.resourceId || '');
 
-  const recentDuties: RecentDutySummary[] | undefined = dashboardData?.recentDuties;
-  const monthlyChartData = dashboardData?.monthlyOverview;
+  // Recent duties derived from unified dutiesList
+  const recentDuties: RecentDutySummary[] = dutiesList.length > 0
+    ? dutiesList.slice(0, 5).map((d, index) => ({
+        num: index + 1,
+        id: d.id,
+        exam: d.exam?.name || d.dutyType || 'Exam',
+        date: d.dutyDate,
+        center: d.center?.centerName || 'Assigned Center',
+        city: d.city?.name || 'Assigned City',
+        role: d.role?.name || 'Invigilator',
+        shift: d.shift?.name || 'Shift 1',
+        status: d.status || 'Pending',
+        reportingTime: d.reportingTime,
+        shiftEndTime: d.shiftEndTime,
+        employeeName: d.employee?.name || (isAdmin ? 'Assigned Staff' : 'Mohan'),
+        resourceId: d.employee?.resourceId || d.employeeId,
+      }))
+    : (dashboardData?.recentDuties || []);
+
+  const monthlyChartData = useMemo(() => {
+    if (dutiesList.length === 0 && dashboardData?.monthlyOverview) {
+      return dashboardData.monthlyOverview;
+    }
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const cMonthIdx = new Date().getMonth();
+    const monthsData = monthNames.map((name, idx) => ({
+      month: name,
+      exams: 0,
+      mocks: 0,
+      total: 0,
+      isCurrent: idx === cMonthIdx,
+    }));
+
+    dutiesList.forEach((d) => {
+      const dStr = (d.dutyDate || '').trim();
+      let mIdx = cMonthIdx;
+      let yr = 2026;
+      const ymd = dStr.match(/^(\d{4})[-/](\d{1,2})/);
+      if (ymd) {
+        yr = parseInt(ymd[1], 10);
+        mIdx = parseInt(ymd[2], 10) - 1;
+      }
+      if (yr === selectedYear && mIdx >= 0 && mIdx < 12) {
+        const isM = (d.dutyType || d.exam?.type || '').toLowerCase().includes('mock');
+        if (isM) {
+          monthsData[mIdx].mocks += 1;
+        } else {
+          monthsData[mIdx].exams += 1;
+        }
+        monthsData[mIdx].total += 1;
+      }
+    });
+
+    return monthsData;
+  }, [dutiesList, selectedYear, dashboardData]);
 
   return (
     <div className="unified-dashboard-root animate-fade-in">
@@ -166,7 +286,7 @@ export const DashboardScreen: React.FC = () => {
                 &copy; 2026 Exam Duty Management. All rights reserved.
               </span>
               <span className="footer-credits">
-                Chandana IT Solutions | Powered by Technology for a Better Tomorrow
+                Chandana IT Solutions
               </span>
             </footer>
           </main>

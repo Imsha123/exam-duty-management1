@@ -10,6 +10,7 @@ import {
   MapPin,
   Shield,
   CheckCircle2,
+  LogOut,
 } from 'lucide-react';
 import authService, { EmployeeProfile } from '../services/auth.service';
 
@@ -38,6 +39,7 @@ export const ProfileScreen: React.FC = () => {
   const handleLogout = () => {
     authService.logout();
     sessionStorage.clear();
+    localStorage.removeItem('exam_duty_user');
     navigate('/login');
   };
 
@@ -104,7 +106,7 @@ export const ProfileScreen: React.FC = () => {
               </div>
             </div>
 
-            {/* Profile Card */}
+            {/* Profile Card with Logout Option */}
             <div className="profile-hero-card">
               <div className="profile-hero-left">
                 <div className="profile-avatar-large">
@@ -121,6 +123,19 @@ export const ProfileScreen: React.FC = () => {
                     </span>
                   </div>
                 </div>
+              </div>
+
+              {/* Logout Option on Desktop Hero Card */}
+              <div className="profile-hero-actions">
+                <button
+                  type="button"
+                  className="profile-desktop-logout-btn"
+                  onClick={handleLogout}
+                  title="Logout from system"
+                >
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
               </div>
             </div>
 
@@ -201,6 +216,19 @@ export const ProfileScreen: React.FC = () => {
                 <MapPin size={16} />
                 <span>{city}</span>
               </div>
+            </div>
+
+            {/* Mobile Logout Button in Profile */}
+            <div className="mobile-profile-btn-stack" style={{ marginTop: '20px' }}>
+              <button
+                type="button"
+                className="mobile-btn-logout"
+                onClick={handleLogout}
+                title="Logout from system"
+              >
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
             </div>
           </div>
         </main>

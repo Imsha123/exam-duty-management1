@@ -39,7 +39,7 @@ export const RecentDutiesTable: React.FC<RecentDutiesTableProps> = ({
           <div className="recent-icon-box">
             <Calendar size={18} color="#2563EB" />
           </div>
-          <h2 className="recent-main-title">Recent Duties</h2>
+          <h2 className="recent-main-title">Mark Duties</h2>
         </div>
 
         <button

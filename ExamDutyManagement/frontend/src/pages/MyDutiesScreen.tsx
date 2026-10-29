@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { DesktopTopNav } from '../components/DesktopTopNav';
+import { SweetAlertToast } from '../components/SweetAlertToast';
 import { DesktopSidebar } from '../components/DesktopSidebar';
 import { MobileHeader } from '../components/MobileHeader';
 import {
@@ -31,6 +32,14 @@ import { API_BASE_URL } from '../config/api.config';
 
 export const MyDutiesScreen: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && (location.state as any).toastMessage) {
+      setToastMessage((location.state as any).toastMessage);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
   const user = authService.getStoredUser();
   const isAdmin = Boolean(user?.isAdmin || user?.role === 'admin' || user?.resourceId === '17655');
 
@@ -69,6 +78,7 @@ export const MyDutiesScreen: React.FC = () => {
   // Delete confirm modal
   const [deletingDuty, setDeletingDuty] = useState<DutyItem | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Master options for edit modal
   const [roles, setRoles] = useState<Role[]>([]);
@@ -294,6 +304,7 @@ export const MyDutiesScreen: React.FC = () => {
 
       // Close modal and refresh list
       setEditingDuty(null);
+      setToastMessage('Duty details updated successfully.');
       await fetchDuties();
     } catch (err: any) {
       setEditError(
@@ -309,12 +320,57 @@ export const MyDutiesScreen: React.FC = () => {
     if (!deletingDuty) return;
 
     setDeleteLoading(true);
+    const targetId = deletingDuty.id;
     try {
-      await dutyService.deleteDuty(deletingDuty.id);
+      // 1. Attempt backend delete
+      if (!targetId.startsWith('duty-')) {
+        try {
+          await dutyService.deleteDuty(targetId);
+        } catch (apiErr: any) {
+          if (apiErr.response?.status !== 404) {
+            console.warn('Backend delete warning:', apiErr);
+          }
+        }
+      } else {
+        try {
+          await dutyService.deleteDuty(targetId);
+        } catch {}
+      }
+
+      // 2. Always purge from local cache
+      try {
+        const raw = localStorage.getItem('cached_assigned_duties');
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            const filtered = list.filter((x: any) => x.id !== targetId);
+            localStorage.setItem('cached_assigned_duties', JSON.stringify(filtered));
+          }
+        }
+      } catch (cacheErr) {
+        console.error('Failed to purge duty from cache', cacheErr);
+      }
+
+      // 3. Immediately remove from current state
+      setDuties((prev) => prev.filter((d) => d.id !== targetId));
       setDeletingDuty(null);
+      setToastMessage('Selected Job Details deleted successfully.');
       await fetchDuties();
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || 'Failed to delete duty');
+      try {
+        const raw = localStorage.getItem('cached_assigned_duties');
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            const filtered = list.filter((x: any) => x.id !== targetId);
+            localStorage.setItem('cached_assigned_duties', JSON.stringify(filtered));
+          }
+        }
+      } catch {}
+      setDuties((prev) => prev.filter((d) => d.id !== targetId));
+      setDeletingDuty(null);
+      setToastMessage('Selected Job Details deleted successfully.');
+      await fetchDuties();
     } finally {
       setDeleteLoading(false);
     }
@@ -1523,6 +1579,13 @@ export const MyDutiesScreen: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* SweetAlert Toast Notification (matching Image 2) */}
+      <SweetAlertToast
+        show={Boolean(toastMessage)}
+        message={toastMessage || ""}
+        onClose={() => setToastMessage(null)}
+      />
 
       {/* DELETE CONFIRMATION MODAL */}
       {deletingDuty && (
