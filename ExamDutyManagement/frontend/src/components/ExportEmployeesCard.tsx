@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, CheckCircle } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import masterService, { EmployeeItem } from '../services/master.service';
 import { exportEmployeesToExcel } from '../utils/excelExport';
+import { SweetAlertToast } from './SweetAlertToast';
 
 interface ExportEmployeesCardProps {
   employees: EmployeeItem[];
@@ -17,7 +18,7 @@ export const ExportEmployeesCard: React.FC<ExportEmployeesCardProps> = ({
   className = '',
 }) => {
   const [internalCity, setInternalCity] = useState<string>('ALL');
-  const [exportNotice, setExportNotice] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [citiesList, setCitiesList] = useState<string[]>([
     'Mysore',
     'Bengaluru',
@@ -55,17 +56,14 @@ export const ExportEmployeesCard: React.FC<ExportEmployeesCardProps> = ({
       ? 'All Places' 
       : activeCity;
     if (result.count === 0) {
-      setExportNotice(
+      setToastMessage(
         `No workforce members found for ${placeName}. An empty spreadsheet template was downloaded.`
       );
     } else {
-      setExportNotice(
+      setToastMessage(
         `Successfully exported ${result.count} workforce record(s) for ${placeName} into ${result.filename}! Opening in Excel...`
       );
     }
-    setTimeout(() => {
-      setExportNotice(null);
-    }, 6000);
   };
 
   return (
@@ -73,13 +71,6 @@ export const ExportEmployeesCard: React.FC<ExportEmployeesCardProps> = ({
       <div className="export-jobs-title">
         Export Workforce Members Details:
       </div>
-
-      {exportNotice && (
-        <div className="export-success-notice">
-          <CheckCircle size={16} />
-          <span>{exportNotice}</span>
-        </div>
-      )}
 
       <div className="export-jobs-controls-row">
         {/* Option 1: Work Place Dropdown */}
@@ -115,6 +106,13 @@ export const ExportEmployeesCard: React.FC<ExportEmployeesCardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* SweetAlert Toast Notification */}
+      <SweetAlertToast
+        show={Boolean(toastMessage)}
+        message={toastMessage || ''}
+        onClose={() => setToastMessage(null)}
+      />
     </div>
   );
 };

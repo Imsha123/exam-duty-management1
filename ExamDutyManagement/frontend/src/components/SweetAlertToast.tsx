@@ -46,7 +46,7 @@ export const SweetAlertToast: React.FC<SweetAlertToastProps> = ({
           alignItems: 'center',
           gap: '14px',
           minWidth: '320px',
-          maxWidth: '520px',
+          maxWidth: 'min(92vw, 640px)',
         }}
       >
         {/* Circular Green Check Badge (Matching reference image) */}

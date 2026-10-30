@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, CheckCircle } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { DutyItem } from '../services/duty.service';
 import masterService, { EmployeeItem } from '../services/master.service';
 import { exportDutiesToExcel, ExportFilters } from '../utils/excelExport';
+import { SweetAlertToast } from './SweetAlertToast';
 
 interface ExportJobsCardProps {
   duties: DutyItem[];
@@ -19,7 +20,7 @@ export const ExportJobsCard: React.FC<ExportJobsCardProps> = ({
 }) => {
   const [date, setDate] = useState<string>('');
   const [workPlace, setWorkPlace] = useState<string>('All Places');
-  const [exportNotice, setExportNotice] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [citiesList, setCitiesList] = useState<string[]>([
     'Mysore',
     'Bengaluru',
@@ -61,17 +62,14 @@ export const ExportJobsCard: React.FC<ExportJobsCardProps> = ({
       : workPlace;
     const dateDesc = date ? ` (${date})` : '';
     if (result.count === 0) {
-      setExportNotice(
+      setToastMessage(
         `No assigned duty record(s) found for ${placeName}${dateDesc}. An empty spreadsheet template was downloaded.`
       );
     } else {
-      setExportNotice(
+      setToastMessage(
         `Successfully exported ${result.count} assigned duty record(s) for ${placeName}${dateDesc} into ${result.filename}! Opening in Excel...`
       );
     }
-    setTimeout(() => {
-      setExportNotice(null);
-    }, 6000);
   };
 
   return (
@@ -79,13 +77,6 @@ export const ExportJobsCard: React.FC<ExportJobsCardProps> = ({
       <div className="export-jobs-title">
         Export the Employee Assigned Jobs Details:
       </div>
-
-      {exportNotice && (
-        <div className="export-success-notice">
-          <CheckCircle size={16} />
-          <span>{exportNotice}</span>
-        </div>
-      )}
 
       <div className="export-jobs-controls-row">
         {/* Date */}
@@ -135,6 +126,13 @@ export const ExportJobsCard: React.FC<ExportJobsCardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* SweetAlert Toast Notification */}
+      <SweetAlertToast
+        show={Boolean(toastMessage)}
+        message={toastMessage || ''}
+        onClose={() => setToastMessage(null)}
+      />
     </div>
   );
 };
