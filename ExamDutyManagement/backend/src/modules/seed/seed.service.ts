@@ -10,7 +10,7 @@ import {
   Shift,
   Duty,
 } from '../../entities';
-import { MASTER_CITIES, MASTER_CENTERS } from './master-dataset';
+import { MASTER_CITIES, MASTER_CENTERS, MASTER_EMPLOYEES } from './master-dataset';
 
 @Injectable()
 export class SeedService implements OnModuleInit {
@@ -178,6 +178,26 @@ export class SeedService implements OnModuleInit {
         city: 'Mysore',
         status: 'Active',
       });
+    }
+
+    // Ensure all 47 master employees exist
+    for (const me of MASTER_EMPLOYEES) {
+      const existing = await this.employeeRepo.findOne({
+        where: [{ resourceId: me.resourceId }, { mobile: me.mobile }],
+      });
+      if (!existing) {
+        await this.employeeRepo.save({
+          resourceId: me.resourceId,
+          name: me.name,
+          mobile: me.mobile,
+          email: me.email || undefined,
+          city: me.city || undefined,
+          aadhaarNumber: me.aadhaarNumber || undefined,
+          panNumber: me.panNumber || undefined,
+          isIdentityVerified: true,
+          status: 'Active',
+        });
+      }
     }
 
     // Ensure rajesh has assigned duty with all details
