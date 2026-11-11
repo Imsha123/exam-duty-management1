@@ -11,12 +11,26 @@ import AddCityScreen from './pages/AddCityScreen';
 import AddCenterScreen from './pages/AddCenterScreen';
 import AddExamScreen from './pages/AddExamScreen';
 import IdentityVerificationScreen from './pages/IdentityVerificationScreen';
+import ExportWorkforceDutiesScreen from './pages/ExportWorkforceDutiesScreen';
 import BottomNav from './components/BottomNav';
 import './styles/App.css';
 
 // Layout wrapper that controls the presence of BottomNav on mobile
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
+
+  // Scroll to top immediately whenever route changes
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    const contentPanel = document.querySelector('.desktop-content-panel');
+    if (contentPanel) {
+      contentPanel.scrollTop = 0;
+    }
+    const appContent = document.querySelector('.app-content');
+    if (appContent) {
+      appContent.scrollTop = 0;
+    }
+  }, [location.pathname]);
 
   // Hide bottom nav on splash, login, and identity verification screens
   const isSplash = location.pathname === '/';
@@ -53,6 +67,8 @@ export const App: React.FC = () => {
           <Route path="/add-exam" element={<AddExamScreen />} />
           <Route path="/add-duty" element={<AddDutyScreen />} />
           <Route path="/my-duties" element={<MyDutiesScreen />} />
+          <Route path="/export-workforce-duties" element={<ExportWorkforceDutiesScreen />} />
+          <Route path="/export-duties" element={<Navigate to="/export-workforce-duties" replace />} />
           <Route path="/profile" element={<ProfileScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

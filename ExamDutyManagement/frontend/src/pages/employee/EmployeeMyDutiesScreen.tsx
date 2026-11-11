@@ -17,6 +17,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import dutyService, { DutyItem } from '../../services/duty.service';
+import masterService, { EmployeeItem } from '../../services/master.service';
 import authService from '../../services/auth.service';
 import { normalizeDateToYMD } from '../../utils/excelExport';
 import { API_BASE_URL } from '../../config/api.config';
@@ -34,6 +35,7 @@ export const EmployeeMyDutiesScreen: React.FC = () => {
   }, [location.state]);
 
   const [duties, setDuties] = useState<DutyItem[]>([]);
+  const [employees, setEmployees] = useState<EmployeeItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [examTypeFilter, setExamTypeFilter] = useState<'All' | 'Exam' | 'Mock'>('All');
   const [dateFilter, setDateFilter] = useState<string>('');
@@ -112,6 +114,7 @@ export const EmployeeMyDutiesScreen: React.FC = () => {
 
   useEffect(() => {
     fetchDuties();
+    masterService.getEmployees().then(setEmployees).catch(() => {});
   }, [examTypeFilter]);
 
   const filteredDuties = duties.filter((d) => {

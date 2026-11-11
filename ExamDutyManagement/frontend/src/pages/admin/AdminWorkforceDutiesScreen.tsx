@@ -16,13 +16,14 @@ import {
   AlertTriangle,
   Loader2,
   CheckCircle2,
+  FileText,
 } from 'lucide-react';
 import dutyService, { DutyItem } from '../../services/duty.service';
 import masterService, { Center, Exam, Role, Shift, EmployeeItem, City } from '../../services/master.service';
 import authService from '../../services/auth.service';
 import EmployeeDetailsModal from '../../components/EmployeeDetailsModal';
-import { ExportJobsCard } from '../../components/ExportJobsCard';
 import { normalizeDateToYMD } from '../../utils/excelExport';
+import { API_BASE_URL } from '../../config/api.config';
 
 export const AdminWorkforceDutiesScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -46,6 +47,25 @@ export const AdminWorkforceDutiesScreen: React.FC = () => {
 
   // Selected duty for Details Modal
   const [viewingDuty, setViewingDuty] = useState<DutyItem | null>(null);
+
+  // Attendance document preview lightbox modal
+  const [previewDocDuty, setPreviewDocDuty] = useState<DutyItem | null>(null);
+
+  const getProofUrl = (duty: DutyItem | null): string => {
+    if (!duty) return '';
+    const fileId = duty.attendanceFile?.id || duty.attendanceFileId;
+    if (fileId) {
+      return `${API_BASE_URL}/attendance/file/${encodeURIComponent(fileId)}`;
+    }
+    if (duty.attendanceFile?.filePath) {
+      if (duty.attendanceFile.filePath.startsWith('blob:') || duty.attendanceFile.filePath.startsWith('data:')) {
+        return duty.attendanceFile.filePath;
+      }
+      const fileName = duty.attendanceFile.filePath.replace(/^.*[\\\/]/, '');
+      return `${API_BASE_URL}/attendance/view-by-name/${encodeURIComponent(fileName)}`;
+    }
+    return '';
+  };
 
   // Employee details modal state
   const [detailsModalResourceId, setDetailsModalResourceId] = useState<string | null>(null);
@@ -486,6 +506,7 @@ export const AdminWorkforceDutiesScreen: React.FC = () => {
                         <th style={{ minWidth: '190px' }}>Exam Center</th>
                         <th style={{ minWidth: '120px' }}>Role</th>
                         <th style={{ minWidth: '160px' }}>Shift &amp; Hours</th>
+                        <th style={{ minWidth: '130px', textAlign: 'center' }}>Attendance Proof</th>
                         <th style={{ textAlign: 'center', width: '130px' }}>Actions</th>
                       </tr>
                     </thead>
@@ -571,6 +592,32 @@ export const AdminWorkforceDutiesScreen: React.FC = () => {
                                 {duty.reportingTime || duty.shift?.defaultReportingTime || '07:30 AM'} -{' '}
                                 {duty.shiftEndTime || duty.shift?.defaultEndTime || '01:30 PM'}
                               </div>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              {duty.attendanceFileId || duty.attendanceFile ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setPreviewDocDuty(duty)}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    padding: '5px 12px',
+                                    background: '#EFF6FF',
+                                    border: '1px solid #BFDBFE',
+                                    color: '#1D4ED8',
+                                    borderRadius: '6px',
+                                    fontSize: '12.5px',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  <FileText size={14} />
+                                  <span>View Proof</span>
+                                </button>
+                              ) : (
+                                <span style={{ fontSize: '12px', color: '#94A3B8' }}>Pending</span>
+                              )}
                             </td>
                             <td className="col-action" style={{ textAlign: 'center' }}>
                               <div className="action-button-group" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -700,12 +747,6 @@ export const AdminWorkforceDutiesScreen: React.FC = () => {
                 </div>
               )}
             </div>
-
-            {/* TrackClock HR Style Export Card */}
-            <ExportJobsCard
-              duties={duties}
-              employees={employees}
-            />
           </main>
         </div>
       </div>
@@ -900,6 +941,28 @@ export const AdminWorkforceDutiesScreen: React.FC = () => {
                       >
                         <Eye size={14} /> View
                       </button>
+                      {(duty.attendanceFileId || duty.attendanceFile) && (
+                        <button
+                          type="button"
+                          onClick={() => setPreviewDocDuty(duty)}
+                          style={{
+                            flex: 1,
+                            padding: '6px',
+                            background: '#F0FDF4',
+                            color: '#166534',
+                            border: '1px solid #BBF7D0',
+                            borderRadius: '6px',
+                            fontSize: '12.5px',
+                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '4px',
+                          }}
+                        >
+                          <FileText size={14} /> Proof
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleOpenEdit(duty)}
@@ -946,11 +1009,6 @@ export const AdminWorkforceDutiesScreen: React.FC = () => {
               })}
             </div>
           )}
-
-          {/* Mobile Export Card */}
-          <div style={{ marginTop: '20px' }}>
-            <ExportJobsCard duties={duties} employees={employees} />
-          </div>
         </main>
       </div>
 
@@ -1334,6 +1392,56 @@ export const AdminWorkforceDutiesScreen: React.FC = () => {
             fetchDuties();
           }}
         />
+      )}
+
+      {/* Attendance Proof Lightbox Modal */}
+      {previewDocDuty && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100060,
+            padding: '20px',
+          }}
+          onClick={() => setPreviewDocDuty(null)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
+            <img
+              src={getProofUrl(previewDocDuty)}
+              alt="Attendance Proof"
+              style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }}
+              onError={(e) => {
+                (e.target as any).src =
+                  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2364748b" font-family="sans-serif" font-size="14">Image not found on server</text></svg>';
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setPreviewDocDuty(null)}
+              style={{
+                position: 'absolute',
+                top: '-12px',
+                right: '-12px',
+                background: '#EF4444',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

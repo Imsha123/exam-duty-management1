@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, UserPlus, PlusCircle, ClipboardList, User } from 'lucide-react';
+import { LayoutDashboard, UserPlus, PlusCircle, ClipboardList, User, Download } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import authService, { isUserAdmin } from '../services/auth.service';
@@ -37,6 +37,12 @@ export const BottomNav: React.FC = () => {
             path: '/my-duties',
             icon: <ClipboardList size={20} />,
           },
+          {
+            id: 'export-duties',
+            label: 'Export',
+            path: '/export-workforce-duties',
+            icon: <Download size={20} />,
+          },
         ]
       : [
           {
@@ -50,6 +56,12 @@ export const BottomNav: React.FC = () => {
             label: 'My Duties',
             path: '/my-duties',
             icon: <ClipboardList size={20} />,
+          },
+          {
+            id: 'export-duties',
+            label: 'Export',
+            path: '/export-workforce-duties',
+            icon: <Download size={20} />,
           },
         ]),
     {

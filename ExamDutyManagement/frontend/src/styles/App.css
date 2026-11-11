@@ -3293,6 +3293,8 @@ select.mobile-form-input {
 .export-btn-col {
   display: flex;
   align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .trackclock-export-btn {
@@ -3321,6 +3323,35 @@ select.mobile-form-input {
 }
 
 .trackclock-export-btn:active {
+  transform: translateY(0);
+}
+
+.trackclock-download-btn {
+  height: 42px;
+  padding: 0 18px;
+  background-color: #FFFFFF;
+  border: 1.5px solid #2563EB;
+  border-radius: 8px;
+  color: #1D4ED8;
+  font-size: 14.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.1);
+}
+
+.trackclock-download-btn:hover {
+  background-color: #EFF6FF;
+  border-color: #1D4ED8;
+  color: #1E40AF;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.2);
+}
+
+.trackclock-download-btn:active {
   transform: translateY(0);
 }
 

@@ -10,19 +10,75 @@ export interface ExportFilters {
 }
 
 /**
- * Normalizes city/workplace names to match variations like Mangalore/Mangaluru, Bangalore/Bengaluru.
- * If city is not explicitly specified, defaults to 'Mysore' (system default).
+ * Normalizes city/workplace names to match variations like Mangalore/Mangaluru, Bangalore/Bengaluru,
+ * Mysuru(Mysore), Hubballi(Hubli), Belagavi(Belgaum), etc.
  */
-export const matchesWorkPlace = (itemCity: string | undefined, filterPlace: string): boolean => {
-  if (!filterPlace || filterPlace === 'All Places' || filterPlace === 'ALL') return true;
-  const effectiveCity = (itemCity && itemCity.trim()) ? itemCity.trim() : 'Mysore';
-  const c = effectiveCity.toLowerCase();
+export const matchesWorkPlace = (
+  itemCity: string | undefined | { name?: string },
+  filterPlace: string
+): boolean => {
+  if (!filterPlace || filterPlace === 'All Places' || filterPlace === 'ALL' || filterPlace.trim() === '') {
+    return true;
+  }
+
   const f = filterPlace.toLowerCase().trim();
-  if (f === 'mangaluru' || f === 'mangalore') return c.includes('mangal');
-  if (f === 'bangalore' || f === 'bengaluru') return c.includes('bangal') || c.includes('bengal');
-  if (f === 'shivamogga' || f === 'shimoga') return c.includes('shiva') || c.includes('shimo');
-  if (f === 'mysore' || f === 'mysuru') return c.includes('myso');
-  return c.includes(f);
+  const rawCity = typeof itemCity === 'object' && itemCity !== null ? itemCity.name : itemCity;
+  const c = (rawCity && rawCity.trim()) ? rawCity.toLowerCase().trim() : '';
+
+  if (!c) {
+    // If no city recorded, assume match only if All Places, otherwise fallback to true for Mysore
+    return f.includes('myso') || f === 'all places';
+  }
+
+  // Exact or direct inclusion check
+  if (c === f || c.includes(f) || f.includes(c)) return true;
+
+  // Extract alphanumeric tokens (e.g. "Mysuru(Mysore)" -> ["mysuru", "mysore"])
+  const filterTokens = f.split(/[\s,()\/_-]+/).map((t) => t.trim()).filter((t) => t.length >= 3);
+  const cityTokens = c.split(/[\s,()\/_-]+/).map((t) => t.trim()).filter((t) => t.length >= 3);
+
+  for (const ft of filterTokens) {
+    for (const ct of cityTokens) {
+      if (ft === ct || ft.includes(ct) || ct.includes(ft)) return true;
+    }
+  }
+
+  // Common Karnataka municipal/regional aliases
+  const aliases: Record<string, string[]> = {
+    myso: ['mysore', 'mysuru'],
+    bengal: ['bengaluru', 'bangalore'],
+    bangal: ['bengaluru', 'bangalore'],
+    mangal: ['mangaluru', 'mangalore'],
+    belga: ['belagavi', 'belgaum'],
+    hubl: ['hubballi', 'hubli'],
+    hubba: ['hubballi', 'hubli'],
+    balla: ['ballari', 'bellary'],
+    bella: ['ballari', 'bellary'],
+    shiva: ['shivamogga', 'shimoga', 'shivmogga'],
+    shimo: ['shivamogga', 'shimoga', 'shivmogga'],
+    kalab: ['kalaburagi', 'gulbarga'],
+    gulba: ['kalaburagi', 'gulbarga'],
+    vijay: ['vijayapura', 'bijapur'],
+    bija: ['vijayapura', 'bijapur'],
+    dharw: ['dharwad'],
+    davan: ['davanagere'],
+    bagal: ['bagalkot'],
+    tumk: ['tumkur', 'tumakuru'],
+    udup: ['udupi'],
+    kolar: ['kolar'],
+    mandya: ['mandya'],
+    hassan: ['hassan'],
+  };
+
+  for (const [key, aliasList] of Object.entries(aliases)) {
+    const filterMatches = aliasList.some((a) => f.includes(a)) || f.includes(key);
+    const cityMatches = aliasList.some((a) => c.includes(a)) || c.includes(key);
+    if (filterMatches && cityMatches) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 /**
@@ -78,154 +134,213 @@ export const normalizeDateToYMD = (dateStr?: string | null): string | null => {
     return `${y}-${m}-${d}`;
   }
 
-  return null;
+  return str;
 };
 
 /**
- * Exports assigned employee duty and master workforce details to a real, styled .xlsx file
+ * Exports assigned employee duty details to a real, styled .xlsx file
  * with dark colored highlighted main headings, custom column widths, and proper cell types.
+ *
+ * EXACT 10 COLUMNS REQUIRED:
+ * 1. City
+ * 2. Date
+ * 3. Center name
+ * 4. Exam type
+ * 5. Exam name
+ * 6. Shift
+ * 7. Role
+ * 8. Resource id
+ * 9. Phone number
+ * 10. Email id
  */
 export const exportDutiesToExcel = (
   duties: DutyItem[],
   employees: EmployeeItem[],
   filters: ExportFilters = {}
 ): { count: number; filename: string } => {
-  // Map of employees for complete demographic data (Aadhaar, PAN, etc.)
+  // Map of employees for complete demographic data
   const empMap = new Map<string, EmployeeItem>();
-  employees.forEach((e) => {
-    if (e.resourceId) empMap.set(e.resourceId.toLowerCase().trim(), e);
-    if (e.id) empMap.set(e.id.toLowerCase().trim(), e);
-  });
+  if (Array.isArray(employees)) {
+    employees.forEach((e) => {
+      if (e.resourceId) empMap.set(e.resourceId.toLowerCase().trim(), e);
+      if (e.id) empMap.set(e.id.toLowerCase().trim(), e);
+    });
+  }
 
   // Filter duties according to Date, From Date, To Date, and Work Place
   const filteredDuties = duties.filter((d) => {
-    // Work place filter
-    const resId = d.employee?.resourceId || '';
-    const fullEmp = empMap.get(resId.toLowerCase().trim()) || empMap.get((d.employeeId || '').toLowerCase().trim());
-    const dutyCity = d.city?.name || fullEmp?.city || d.employee?.city || '';
-    if (!matchesWorkPlace(dutyCity, filters.workPlace || 'All Places')) {
+    // 1. Work place filter
+    const resId = d.employee?.resourceId || (d as any).employeeResourceId || (d as any).resourceId || '';
+    const fullEmp =
+      empMap.get(resId.toLowerCase().trim()) ||
+      empMap.get((d.employeeId || '').toLowerCase().trim());
+
+    const dutyCity =
+      d.city?.name ||
+      (d as any).cityName ||
+      fullEmp?.city ||
+      d.employee?.city ||
+      (d.center?.address ? d.center.address.split(',').pop()?.trim() : '') ||
+      '';
+
+    const dutyCenter = d.center?.centerName || (d as any).centerName || '';
+
+    const matchesCity =
+      matchesWorkPlace(dutyCity, filters.workPlace || 'All Places') ||
+      matchesWorkPlace(dutyCenter, filters.workPlace || 'All Places') ||
+      matchesWorkPlace(d.center?.address, filters.workPlace || 'All Places');
+
+    if (!matchesCity) {
       return false;
     }
 
-    // Date filters (normalized to YYYY-MM-DD for accurate comparison)
+    // 2. Date filters (normalized to YYYY-MM-DD for accurate comparison)
     const dutyYMD = normalizeDateToYMD(d.dutyDate);
 
     // Exact Date filter
-    if (filters.date) {
+    if (filters.date && filters.date.trim()) {
       const targetYMD = normalizeDateToYMD(filters.date);
-      if (targetYMD && dutyYMD !== targetYMD) return false;
+      const isDateEqual =
+        (targetYMD && dutyYMD && dutyYMD === targetYMD) ||
+        d.dutyDate === filters.date ||
+        d.dutyDate.includes(filters.date.trim());
+
+      if (!isDateEqual) {
+        return false;
+      }
     }
 
     // From Date filter
-    if (filters.fromDate) {
+    if (filters.fromDate && filters.fromDate.trim()) {
       const fromYMD = normalizeDateToYMD(filters.fromDate);
-      if (fromYMD) {
-        if (!dutyYMD || dutyYMD < fromYMD) return false;
-      }
+      if (fromYMD && dutyYMD && dutyYMD < fromYMD) return false;
     }
 
     // To Date filter
-    if (filters.toDate) {
+    if (filters.toDate && filters.toDate.trim()) {
       const toYMD = normalizeDateToYMD(filters.toDate);
-      if (toYMD) {
-        if (!dutyYMD || dutyYMD > toYMD) return false;
-      }
+      if (toYMD && dutyYMD && dutyYMD > toYMD) return false;
     }
 
     return true;
   });
 
+  // If 0 duties match the specific filter, DO NOT download an empty file with only headings!
+  if (filteredDuties.length === 0) {
+    return { count: 0, filename: '' };
+  }
+
+  // EXACT REQUIRED 10 COLUMNS:
   const headers = [
-    'SL NO',
-    'DATE',
-    'EMPLOYEE ID',
-    'NAME',
-    'MOBILE NUMBER',
-    'EMAIL ID',
-    'WORK PLACE',
-    'AADHAAR NUMBER',
-    'PAN NUMBER',
-    'EXAM NAME',
-    'EXAM TYPE',
-    'EXAMINATION CENTER',
-    'CENTER CODE',
-    'ROLE',
-    'SHIFT',
-    'REPORTING TIME',
-    'SHIFT END TIME',
+    'City',
+    'Date',
+    'Center name',
+    'Exam type',
+    'Exam name',
+    'Shift',
+    'Role',
+    'Resource id',
+    'Phone number',
+    'Email id',
   ];
 
   const rows: (string | number)[][] = [headers];
 
-  filteredDuties.forEach((d, idx) => {
-    const resId = d.employee?.resourceId || '';
-    const fullEmp = empMap.get(resId.toLowerCase().trim()) || empMap.get((d.employeeId || '').toLowerCase().trim());
+  filteredDuties.forEach((d) => {
+    const resId = d.employee?.resourceId || (d as any).employeeResourceId || (d as any).resourceId || '';
+    const fullEmp =
+      empMap.get(resId.toLowerCase().trim()) ||
+      empMap.get((d.employeeId || '').toLowerCase().trim());
 
-    const mobileStr = String(fullEmp?.mobile || d.employee?.mobile || '—');
-    const aadhaarStr = String(fullEmp?.aadhaarNumber || '—');
-    const panStr = String(fullEmp?.panNumber || '—');
+    // 1. City
+    const cityStr = String(
+      d.city?.name ||
+      (d as any).cityName ||
+      fullEmp?.city ||
+      d.employee?.city ||
+      (d.center?.address ? d.center.address.split(',').pop()?.trim() : '') ||
+      'Mysore'
+    );
+
+    // 2. Date
     const dateStr = String(d.dutyDate || '—');
 
+    // 3. Center name
+    const centerStr = String(d.center?.centerName || (d as any).centerName || '—');
+
+    // 4. Exam type
+    const typeStr = String(d.dutyType || d.exam?.type || (d as any).examType || 'Exam');
+
+    // 5. Exam name
+    const examStr = String(d.exam?.name || (d as any).examName || '—');
+
+    // 6. Shift
+    const shiftStr = String(d.shift?.name || (d as any).shiftName || 'Shift 1');
+
+    // 7. Role
+    const roleStr = String(d.role?.name || (d as any).roleName || d.role?.code || '—');
+
+    // 8. Resource id
+    const resourceIdStr = String(resId || '—');
+
+    // 9. Phone number
+    const phoneStr = String(d.employee?.mobile || fullEmp?.mobile || (d as any).employeeMobile || (d as any).empMobile || '—');
+
+    // 10. Email id
+    const emailStr = String(
+      d.employee?.email ||
+      fullEmp?.email ||
+      (d as any).employeeEmail ||
+      (d as any).empEmail ||
+      (resId ? `${resId.toLowerCase()}@examduty.gov.in` : '—')
+    );
+
     rows.push([
-      idx + 1,
+      cityStr,
       dateStr,
-      String(resId || '—'),
-      String(d.employee?.name || fullEmp?.name || '—'),
-      mobileStr,
-      String(fullEmp?.email || d.employee?.email || '—'),
-      String(d.city?.name || fullEmp?.city || d.employee?.city || '—'),
-      aadhaarStr,
-      panStr,
-      String(d.exam?.name || '—'),
-      String(d.dutyType || d.exam?.type || 'Exam'),
-      String(d.center?.centerName || '—'),
-      String(d.center?.centerCode || '—'),
-      String(d.role?.name || d.role?.code || '—'),
-      String(d.shift?.name || '—'),
-      String(d.reportingTime || '—'),
-      String(d.shiftEndTime || '—'),
+      centerStr,
+      typeStr,
+      examStr,
+      shiftStr,
+      roleStr,
+      resourceIdStr,
+      phoneStr,
+      emailStr,
     ]);
   });
 
   // Create worksheet from Array of Arrays
   const ws = XLSX.utils.aoa_to_sheet(rows);
 
-  // Set generous column widths so Excel never truncates text or displays ########
+  // Set generous column widths matching the exact 10 columns
   ws['!cols'] = [
-    { wch: 8 },  // 1. SL NO
-    { wch: 16 }, // 2. DATE (width 16 prevents ########)
-    { wch: 16 }, // 3. EMPLOYEE ID
-    { wch: 24 }, // 4. NAME
-    { wch: 18 }, // 5. MOBILE NUMBER (prevents scientific notation 8.05E+09)
-    { wch: 28 }, // 6. EMAIL ID
-    { wch: 16 }, // 7. WORK PLACE
-    { wch: 20 }, // 8. AADHAAR NUMBER
-    { wch: 16 }, // 9. PAN NUMBER
-    { wch: 22 }, // 10. EXAM NAME
-    { wch: 14 }, // 11. EXAM TYPE
-    { wch: 32 }, // 12. EXAMINATION CENTER
-    { wch: 16 }, // 13. CENTER CODE
-    { wch: 22 }, // 14. ROLE
-    { wch: 14 }, // 15. SHIFT
-    { wch: 18 }, // 16. REPORTING TIME
-    { wch: 18 }, // 17. SHIFT END TIME
+    { wch: 22 }, // 1. City
+    { wch: 16 }, // 2. Date
+    { wch: 38 }, // 3. Center name
+    { wch: 14 }, // 4. Exam type
+    { wch: 26 }, // 5. Exam name
+    { wch: 14 }, // 6. Shift
+    { wch: 24 }, // 7. Role
+    { wch: 16 }, // 8. Resource id
+    { wch: 18 }, // 9. Phone number (prevents scientific notation 8.05E+09)
+    { wch: 32 }, // 10. Email id
   ];
 
   // Set header row height
   ws['!rows'] = [{ hpt: 28 }];
 
   // DARK COLOR HIGHLIGHT FOR MAIN HEADING
-  // Rich corporate dark navy blue (#1E3A8A) with bold white text (#FFFFFF)
+  // Deep Royal Navy Blue (#1E3A8A) with bold white text (#FFFFFF)
   const headerStyle = {
     fill: {
       patternType: 'solid',
-      fgColor: { rgb: '1E3A8A' }, // Deep Royal Navy Blue
+      fgColor: { rgb: '1E3A8A' },
     },
     font: {
       name: 'Calibri',
       sz: 11,
       bold: true,
-      color: { rgb: 'FFFFFF' }, // Pure White
+      color: { rgb: 'FFFFFF' },
     },
     alignment: {
       vertical: 'center',
@@ -240,7 +355,6 @@ export const exportDutiesToExcel = (
     },
   };
 
-  // Standard clean data cell styles
   const baseDataStyle = {
     font: {
       name: 'Calibri',
@@ -268,9 +382,9 @@ export const exportDutiesToExcel = (
   };
 
   // Apply styles across all cells
-  const range = XLSX.utils.decode_range(ws['!ref'] || 'A1:Q1');
+  const range = XLSX.utils.decode_range(ws['!ref'] || 'A1:J1');
 
-  // 1. Style Header Row (Row 0) with Dark Navy and White Text
+  // 1. Style Header Row (Row 0)
   for (let C = range.s.c; C <= range.e.c; ++C) {
     const headerRef = XLSX.utils.encode_cell({ r: 0, c: C });
     if (ws[headerRef]) {
@@ -279,22 +393,22 @@ export const exportDutiesToExcel = (
   }
 
   // 2. Style Data Rows (Row 1 onwards)
-  const centerCols = [0, 1, 2, 10, 12, 14, 15, 16]; // SL NO, DATE, ID, TYPE, CODE, SHIFT, TIMES
-  const textCols = [1, 2, 4, 7, 8, 12]; // Force string type to prevent scientific notation & date overflow
+  // Center columns: Date (1), Exam Type (3), Shift (5), Resource ID (7)
+  const centerCols = [1, 3, 5, 7];
+  // Force text string format on Date, Resource ID, Phone Number to prevent scientific notation
+  const textCols = [1, 7, 8];
 
   for (let R = 1; R <= range.e.r; ++R) {
     for (let C = range.s.c; C <= range.e.c; ++C) {
       const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
       const cell = ws[cellRef];
       if (cell && cell.v !== undefined && cell.v !== null) {
-        // Enforce string formatting on sensitive columns
         if (textCols.includes(C)) {
           cell.t = 's';
           cell.z = '@';
           cell.v = String(cell.v);
         }
 
-        // Apply visual cell styles
         if (centerCols.includes(C)) {
           cell.s = centerDataStyle;
         } else {
@@ -316,20 +430,19 @@ export const exportDutiesToExcel = (
 
 /**
  * Exports workforce employee details to a real, styled .xlsx file
- * with dark colored highlighted main headings, custom column widths, and proper cell types.
  */
 export const exportEmployeesToExcel = (
   employees: EmployeeItem[],
   workPlace: string = 'All Places'
 ): { count: number; filename: string } => {
-  // If employees are already filtered or we filter from the given list
   const filteredEmployees = employees.filter((emp) => {
     if (!workPlace || workPlace === 'All Places' || workPlace === 'ALL') return true;
     return matchesWorkPlace(emp.city, workPlace);
   });
 
-  // Use filtered employees matching selected workplace (or all if All Places selected)
-  const targetEmployees = filteredEmployees;
+  if (filteredEmployees.length === 0) {
+    return { count: 0, filename: '' };
+  }
 
   const headers = [
     'SL NO',
@@ -346,7 +459,7 @@ export const exportEmployeesToExcel = (
 
   const rows: (string | number)[][] = [headers];
 
-  targetEmployees.forEach((emp, idx) => {
+  filteredEmployees.forEach((emp, idx) => {
     rows.push([
       idx + 1,
       String(emp.resourceId || '—'),
@@ -361,43 +474,37 @@ export const exportEmployeesToExcel = (
     ]);
   });
 
-  // Create worksheet from Array of Arrays
   const ws = XLSX.utils.aoa_to_sheet(rows);
 
-  // Set column widths so text is never truncated
   ws['!cols'] = [
     { wch: 8 },  // 1. SL NO
     { wch: 16 }, // 2. RESOURCE ID
-    { wch: 26 }, // 3. FULL NAME
+    { wch: 24 }, // 3. FULL NAME
     { wch: 18 }, // 4. CONTACT NUMBER
-    { wch: 30 }, // 5. EMAIL ADDRESS
-    { wch: 16 }, // 6. CITY
-    { wch: 22 }, // 7. AADHAAR NUMBER
-    { wch: 18 }, // 8. PAN NUMBER
+    { wch: 28 }, // 5. EMAIL ADDRESS
+    { wch: 18 }, // 6. CITY
+    { wch: 20 }, // 7. AADHAAR NUMBER
+    { wch: 16 }, // 8. PAN NUMBER
     { wch: 18 }, // 9. ROLE
     { wch: 14 }, // 10. STATUS
   ];
 
-  // Set header row height
   ws['!rows'] = [{ hpt: 28 }];
 
-  // DARK COLOR HIGHLIGHT FOR MAIN HEADING
-  // Rich corporate dark navy blue (#1E3A8A) with bold white text (#FFFFFF)
   const headerStyle = {
     fill: {
       patternType: 'solid',
-      fgColor: { rgb: '1E3A8A' }, // Deep Royal Navy Blue
+      fgColor: { rgb: '1E3A8A' },
     },
     font: {
       name: 'Calibri',
       sz: 11,
       bold: true,
-      color: { rgb: 'FFFFFF' }, // Pure White
+      color: { rgb: 'FFFFFF' },
     },
     alignment: {
       vertical: 'center',
       horizontal: 'center',
-      wrapText: false,
     },
     border: {
       top: { style: 'thin', color: { rgb: '0F172A' } },
@@ -435,7 +542,6 @@ export const exportEmployeesToExcel = (
 
   const range = XLSX.utils.decode_range(ws['!ref'] || 'A1:J1');
 
-  // 1. Style Header Row
   for (let C = range.s.c; C <= range.e.c; ++C) {
     const headerRef = XLSX.utils.encode_cell({ r: 0, c: C });
     if (ws[headerRef]) {
@@ -443,9 +549,8 @@ export const exportEmployeesToExcel = (
     }
   }
 
-  // 2. Style Data Rows
-  const centerCols = [0, 1, 5, 8, 9]; // SL NO, RESOURCE ID, CITY, ROLE, STATUS
-  const textCols = [1, 3, 6, 7]; // RESOURCE ID, MOBILE, AADHAAR, PAN (force string format)
+  const centerCols = [0, 1, 9];
+  const textCols = [1, 3, 6, 7];
 
   for (let R = 1; R <= range.e.r; ++R) {
     for (let C = range.s.c; C <= range.e.c; ++C) {
@@ -468,12 +573,11 @@ export const exportEmployeesToExcel = (
   }
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Workforce Members');
+  XLSX.utils.book_append_sheet(wb, ws, 'Workforce');
 
   const dateStr = new Date().toISOString().slice(0, 10);
-  const cleanPlace = (!workPlace || workPlace === 'All Places' || workPlace === 'ALL') ? 'All' : workPlace.replace(/\s+/g, '_');
-  const filename = `TrackClock_Workforce_Members_${cleanPlace}_${dateStr}.xlsx`;
+  const filename = `TrackClock_Workforce_Employees_${dateStr}.xlsx`;
   XLSX.writeFile(wb, filename);
 
-  return { count: targetEmployees.length, filename };
+  return { count: rows.length - 1, filename };
 };

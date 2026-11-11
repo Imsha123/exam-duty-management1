@@ -117,20 +117,20 @@ export const EmployeeMarkDutyScreen: React.FC = () => {
           rols.length > 0
             ? rols
             : [
-                { id: 'role-1', name: 'Supervisor', code: 'SUP' },
-                { id: 'role-2', name: 'Invigilator', code: 'INV' },
-                { id: 'role-3', name: 'Tech Support', code: 'TECH' },
-              ],
+              { id: 'role-1', name: 'Supervisor', code: 'SUP' },
+              { id: 'role-2', name: 'Invigilator', code: 'INV' },
+              { id: 'role-3', name: 'Tech Support', code: 'TECH' },
+            ],
         );
 
         const finalShifts =
           shfs.length > 0
             ? shfs
             : [
-                { id: 'shift-1', name: 'Shift 1', defaultReportingTime: '07:30 AM', defaultEndTime: '01:30 PM' },
-                { id: 'shift-2', name: 'Shift 2', defaultReportingTime: '01:00 PM', defaultEndTime: '06:00 PM' },
-                { id: 'shift-3', name: 'Shift 3', defaultReportingTime: '05:30 PM', defaultEndTime: '10:00 PM' },
-              ];
+              { id: 'shift-1', name: 'Shift 1', defaultReportingTime: '07:30 AM', defaultEndTime: '01:30 PM' },
+              { id: 'shift-2', name: 'Shift 2', defaultReportingTime: '01:00 PM', defaultEndTime: '06:00 PM' },
+              { id: 'shift-3', name: 'Shift 3', defaultReportingTime: '05:30 PM', defaultEndTime: '10:00 PM' },
+            ];
         setShifts(finalShifts);
       })
       .catch((err) => {
@@ -256,7 +256,7 @@ export const EmployeeMarkDutyScreen: React.FC = () => {
       setCameraStream(stream);
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => { });
       }
     } catch (err) {
       console.warn('Live webcam not available, using device camera input', err);
@@ -276,7 +276,7 @@ export const EmployeeMarkDutyScreen: React.FC = () => {
   useEffect(() => {
     if (showCameraModal && cameraStream && videoRef.current) {
       videoRef.current.srcObject = cameraStream;
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
     }
   }, [showCameraModal, cameraStream]);
 
@@ -455,11 +455,11 @@ export const EmployeeMarkDutyScreen: React.FC = () => {
         attendanceFileId: uploadedFile?.id || undefined,
         attendanceFile: uploadedFile
           ? {
-              id: uploadedFile.id,
-              originalName: uploadedFile.name,
-              filePath: previewUrl || '',
-              size: uploadedFile.size,
-            }
+            id: uploadedFile.id,
+            originalName: uploadedFile.name,
+            filePath: previewUrl || '',
+            size: uploadedFile.size,
+          }
           : undefined,
       };
 
@@ -744,8 +744,8 @@ export const EmployeeMarkDutyScreen: React.FC = () => {
                         loadingMaster
                           ? 'Loading centers...'
                           : activeCenters.length === 0
-                          ? 'No centers found in this city'
-                          : '-- Type to Search Examination Center --'
+                            ? 'No centers found in this city'
+                            : '-- Type to Search Examination Center --'
                       }
                       searchPlaceholder="Type center name or code..."
                       className="form-select-control"

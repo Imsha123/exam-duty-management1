@@ -10,6 +10,7 @@ import {
   MapPin,
   School,
   GraduationCap,
+  Download,
 } from 'lucide-react';
 import authService, { isUserAdmin } from '../services/auth.service';
 
@@ -64,6 +65,12 @@ export const DesktopSidebar: React.FC = () => {
             path: '/my-duties',
             icon: <ClipboardList size={19} />,
           },
+          {
+            id: 'export-workforce-duties',
+            label: 'Export Workforce Duties',
+            path: '/export-workforce-duties',
+            icon: <Download size={19} />,
+          },
         ]
       : [
           {
@@ -77,6 +84,12 @@ export const DesktopSidebar: React.FC = () => {
             label: 'My Duties',
             path: '/my-duties',
             icon: <ClipboardList size={19} />,
+          },
+          {
+            id: 'export-workforce-duties',
+            label: 'Export Workforce Duties',
+            path: '/export-workforce-duties',
+            icon: <Download size={19} />,
           },
         ]),
     {
