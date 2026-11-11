@@ -193,7 +193,6 @@ export const AddCityScreen: React.FC = () => {
                 </div>
                 <div>
                   <h1 className="page-main-heading">Add City</h1>
-                  <p className="page-sub-heading">Manage examination operational cities</p>
                 </div>
               </div>
             </div>

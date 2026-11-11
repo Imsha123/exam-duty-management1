@@ -320,21 +320,18 @@ export const ExportWorkforceDutiesScreen: React.FC = () => {
           <main className="desktop-content-panel">
             <div style={{ maxWidth: '640px', width: '100%', margin: '0 auto', paddingBottom: '32px' }}>
               {/* Page Title Row */}
-              <div style={{ marginBottom: '22px' }}>
+              <div style={{ marginBottom: '20px' }}>
                 <h1
                   style={{
                     fontSize: '24px',
                     fontWeight: 700,
                     color: '#0F172A',
-                    margin: '0 0 6px 0',
+                    margin: 0,
                     letterSpacing: '-0.3px',
                   }}
                 >
                   Export Workforce Duties
                 </h1>
-                <p style={{ fontSize: '14px', color: '#64748B', margin: 0 }}>
-                  Generate and download assigned employee duties in Excel spreadsheet or official Awign PDF Tracker format.
-                </p>
               </div>
 
               {/* Top Navigation Tabs (White themed) */}

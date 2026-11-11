@@ -249,7 +249,6 @@ export const AddCenterScreen: React.FC = () => {
                 </div>
                 <div>
                   <h1 className="page-main-heading">Add Exam Center</h1>
-                  <p className="page-sub-heading">Configure examination centers across cities</p>
                 </div>
               </div>
 

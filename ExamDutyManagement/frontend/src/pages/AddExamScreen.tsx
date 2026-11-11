@@ -226,7 +226,6 @@ export const AddExamScreen: React.FC = () => {
                 </div>
                 <div>
                   <h1 className="page-main-heading">Add Exam Name</h1>
-                  <p className="page-sub-heading">Configure examinations and test programs</p>
                 </div>
               </div>
 
