@@ -72,6 +72,9 @@ export const AdminAssignDutyScreen: React.FC = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showFullPreview, setShowFullPreview] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showCameraModal, setShowCameraModal] = useState<boolean>(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Submission state
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -308,6 +311,66 @@ export const AdminAssignDutyScreen: React.FC = () => {
     if (!file) return;
     await uploadAndSetFile(file);
     if (e.target) e.target.value = '';
+  };
+
+  const startLiveCamera = async () => {
+    try {
+      setShowCameraModal(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false,
+      });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+      }
+    } catch (err) {
+      console.warn('Live webcam not available, using device camera input', err);
+      stopLiveCamera();
+      cameraInputRef.current?.click();
+    }
+  };
+
+  const stopLiveCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((track) => track.stop());
+      setCameraStream(null);
+    }
+    setShowCameraModal(false);
+  };
+
+  useEffect(() => {
+    if (showCameraModal && cameraStream && videoRef.current) {
+      videoRef.current.srcObject = cameraStream;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [showCameraModal, cameraStream]);
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const file = new File([blob], `attendance_proof_${Date.now()}.jpg`, { type: 'image/jpeg' });
+        stopLiveCamera();
+        uploadAndSetFile(file);
+      }
+    }, 'image/jpeg', 0.92);
+  };
+
+  const handleClearImage = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    setUploadedFile(null);
+    setUploadError(null);
   };
 
   // Filter Centers by Selected City
@@ -934,12 +997,231 @@ export const AdminAssignDutyScreen: React.FC = () => {
                   </div>
                 </div>
 
+                {/* ATTENDANCE PROOF: IMAGE ONLY + LIVE CAMERA */}
+                <div
+                  style={{
+                    marginTop: '28px',
+                    maxWidth: '560px',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    width: '100%',
+                    padding: '22px 24px',
+                    borderRadius: '12px',
+                    border: '1.5px dashed #93C5FD',
+                    background: '#F8FAFC',
+                    textAlign: 'center',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
+                  }}
+                >
+                  <label
+                    className="field-label"
+                    style={{
+                      fontSize: '14.5px',
+                      fontWeight: 700,
+                      marginBottom: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      color: '#1E293B',
+                    }}
+                  >
+                    <Camera size={18} color="#2563EB" />
+                    <span>Upload Attendance Photo Proof</span>
+                  </label>
+
+                  {uploadError && (
+                    <div className="alert-banner alert-error" style={{ marginBottom: '14px', textAlign: 'left' }}>
+                      <AlertCircle size={15} />
+                      <span style={{ fontSize: '13px' }}>{uploadError}</span>
+                    </div>
+                  )}
+
+                  {uploading ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px' }}>
+                      <Loader2 size={28} className="animate-spin text-blue" />
+                      <span style={{ fontSize: '13.5px', color: '#64748B', fontWeight: 600 }}>
+                        Uploading attendance photo...
+                      </span>
+                    </div>
+                  ) : previewUrl ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '100%',
+                          maxWidth: '320px',
+                          height: '180px',
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          border: '2px solid #3B82F6',
+                          background: '#0F172A',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => setShowFullPreview(true)}
+                        title="Click to zoom / view full size"
+                      >
+                        <img
+                          src={previewUrl}
+                          alt="Attendance proof"
+                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            background: 'rgba(0,0,0,0.65)',
+                            padding: '6px 10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            color: '#FFFFFF',
+                            fontSize: '12px',
+                          }}
+                        >
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <ImageIcon size={13} /> Photo Attached
+                          </span>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#93C5FD' }}>
+                            <Eye size={13} /> Click to View
+                          </span>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={startLiveCamera}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '6px 14px',
+                            background: '#EFF6FF',
+                            border: '1px solid #BFDBFE',
+                            color: '#1D4ED8',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <RotateCcw size={14} />
+                          <span>Retake (Camera)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '6px 14px',
+                            background: '#F8FAFC',
+                            border: '1px solid #CBD5E1',
+                            color: '#475569',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Upload size={14} />
+                          <span>Upload File</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleClearImage}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '6px 14px',
+                            background: '#FEF2F2',
+                            border: '1px solid #FECACA',
+                            color: '#DC2626',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <X size={14} />
+                          <span>Remove</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                      <p style={{ margin: '0 0 14px 0', fontSize: '14.5px', color: '#1E293B', fontWeight: 600 }}>
+                        Upload or capture attendance sheet photo proof
+                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                        <button
+                          type="button"
+                          onClick={startLiveCamera}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '11px 24px',
+                            background: '#2563EB',
+                            color: '#FFFFFF',
+                            borderRadius: '8px',
+                            border: 'none',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 4px rgba(37,99,235,0.2)',
+                          }}
+                        >
+                          <Camera size={18} />
+                          <span>Take Photo (Camera)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '11px 24px',
+                            background: '#FFFFFF',
+                            color: '#1E293B',
+                            borderRadius: '8px',
+                            border: '1.5px solid #CBD5E1',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <Upload size={18} color="#2563EB" />
+                          <span>Upload Photo (Files)</span>
+                        </button>
+                      </div>
+                      <span style={{ display: 'block', marginTop: '12px', fontSize: '12.5px', color: '#64748B' }}>
+                        Supports JPG, PNG, WEBP only (PDF/documents are strictly disabled)
+                      </span>
+                    </div>
+                  )}
+                </div>
+
                 {/* Hidden File Inputs */}
                 <input
                   type="file"
                   ref={fileInputRef}
                   style={{ display: 'none' }}
                   accept="image/jpeg,image/png,image/webp,image/jpg"
+                  onChange={handleImageSelect}
+                />
+                <input
+                  type="file"
+                  ref={cameraInputRef}
+                  style={{ display: 'none' }}
+                  accept="image/*"
+                  capture="environment"
                   onChange={handleImageSelect}
                 />
 
@@ -1191,6 +1473,179 @@ export const AdminAssignDutyScreen: React.FC = () => {
                   />
                 </div>
 
+                {/* ATTENDANCE PROOF: MOBILE */}
+                <div
+                  style={{
+                    padding: '16px',
+                    borderRadius: '10px',
+                    border: '1.5px dashed #93C5FD',
+                    background: '#F8FAFC',
+                    textAlign: 'center',
+                    marginTop: '8px',
+                  }}
+                >
+                  <label
+                    className="mobile-input-label"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    <Camera size={16} color="#2563EB" />
+                    <span>Upload Attendance Photo Proof</span>
+                  </label>
+
+                  {uploadError && (
+                    <div className="alert-banner alert-error" style={{ marginBottom: '10px', fontSize: '12.5px' }}>
+                      <AlertCircle size={14} />
+                      <span>{uploadError}</span>
+                    </div>
+                  )}
+
+                  {uploading ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '10px' }}>
+                      <Loader2 size={24} className="animate-spin text-blue" />
+                      <span style={{ fontSize: '12.5px', color: '#64748B', fontWeight: 600 }}>Uploading photo...</span>
+                    </div>
+                  ) : previewUrl ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '100%',
+                          maxWidth: '260px',
+                          height: '150px',
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          border: '2px solid #3B82F6',
+                          background: '#0F172A',
+                        }}
+                        onClick={() => setShowFullPreview(true)}
+                      >
+                        <img src={previewUrl} alt="Attendance proof" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            background: 'rgba(0,0,0,0.65)',
+                            padding: '4px 8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            color: '#FFFFFF',
+                            fontSize: '11px',
+                          }}
+                        >
+                          <span>Photo Attached</span>
+                          <span style={{ color: '#93C5FD' }}>View</span>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={startLiveCamera}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#EFF6FF',
+                            border: '1px solid #BFDBFE',
+                            color: '#1D4ED8',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                          }}
+                        >
+                          <RotateCcw size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                          Retake
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#F8FAFC',
+                            border: '1px solid #CBD5E1',
+                            color: '#475569',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                          }}
+                        >
+                          <Upload size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                          Upload File
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleClearImage}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#FEF2F2',
+                            border: '1px solid #FECACA',
+                            color: '#DC2626',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                          }}
+                        >
+                          <X size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#1E293B', fontWeight: 600 }}>
+                        Upload or capture attendance sheet photo proof
+                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                        <button
+                          type="button"
+                          onClick={startLiveCamera}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '9px 14px',
+                            background: '#2563EB',
+                            color: '#FFFFFF',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontWeight: 600,
+                            fontSize: '13px',
+                          }}
+                        >
+                          <Camera size={15} />
+                          <span>Camera</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '9px 14px',
+                            background: '#FFFFFF',
+                            color: '#1E293B',
+                            borderRadius: '6px',
+                            border: '1.5px solid #CBD5E1',
+                            fontWeight: 600,
+                            fontSize: '13px',
+                          }}
+                        >
+                          <Upload size={15} color="#2563EB" />
+                          <span>Upload File</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div style={{ marginTop: '12px' }}>
                   <button
                     type="submit"
@@ -1234,6 +1689,171 @@ export const AdminAssignDutyScreen: React.FC = () => {
           resourceId={detailsModalResourceId}
           onClose={() => setDetailsModalResourceId(null)}
         />
+      )}
+
+      {/* Live Camera Modal */}
+      {showCameraModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100060,
+            padding: '16px',
+          }}
+          onClick={stopLiveCamera}
+        >
+          <div
+            style={{
+              background: '#0F172A',
+              borderRadius: '16px',
+              maxWidth: '540px',
+              width: '100%',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              border: '1px solid #334155',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                padding: '14px 18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid #1E293B',
+                color: '#FFFFFF',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Camera size={18} color="#3B82F6" />
+                <span style={{ fontSize: '15px', fontWeight: 700 }}>Capture Attendance Sheet</span>
+              </div>
+              <button
+                type="button"
+                onClick={stopLiveCamera}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#94A3B8',
+                  cursor: 'pointer',
+                  padding: '4px',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ position: 'relative', background: '#000000', minHeight: '280px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                style={{ width: '100%', height: '100%', maxHeight: '60vh', objectFit: 'contain' }}
+              />
+            </div>
+
+            <div
+              style={{
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                background: '#0F172A',
+                borderTop: '1px solid #1E293B',
+              }}
+            >
+              <button
+                type="button"
+                onClick={stopLiveCamera}
+                style={{
+                  padding: '10px 18px',
+                  background: '#1E293B',
+                  border: '1px solid #334155',
+                  borderRadius: '8px',
+                  color: '#CBD5E1',
+                  fontWeight: 600,
+                  fontSize: '13.5px',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={capturePhoto}
+                style={{
+                  padding: '12px 28px',
+                  background: '#2563EB',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  fontSize: '14.5px',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <Camera size={18} />
+                <span>Capture Photo</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Full Photo Preview Lightbox */}
+      {showFullPreview && previewUrl && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100060,
+            padding: '20px',
+          }}
+          onClick={() => setShowFullPreview(false)}
+        >
+          <div style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
+            <img
+              src={previewUrl}
+              alt="Full Preview"
+              style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowFullPreview(false)}
+              style={{
+                position: 'absolute',
+                top: '-12px',
+                right: '-12px',
+                background: '#EF4444',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
